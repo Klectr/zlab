@@ -26,7 +26,7 @@ A visual organization tool for notes, text, shapes, and images.
 
 This project utilizes the following open-source libraries:
 
-  * **Kaioken:** A lightweight UI rendering library ([Kaioken](https://kaioken.dev))
+  * **Kiru:** A lightweight UI rendering library ([Kiru](https://kiru.dev))
   * **Tauri:** A framework for building desktop and mobile applications with web technologies ([https://v2.tauri.app/](https://v2.tauri.app/))
   * **TypeScript:** A typed superset of JavaScript that adds optional static typing
   * **ESLint:** A linter for enforcing code style and catching potential errors
@@ -73,7 +73,7 @@ This project uses [Bun](https://bun.sh) as its package manager.
 
 ### **Contributing**
 
-[Guidelines for contributors, including how to report bugs or submit pull requests. Mention how contributions to both Kaioken and Tauri integrations are handled. Also, emphasize the importance of following TypeScript and ESLint conventions.]
+[Guidelines for contributors, including how to report bugs or submit pull requests. Mention how contributions to both Kiru and Tauri integrations are handled. Also, emphasize the importance of following TypeScript and ESLint conventions.]
 
 ### **License**
 
@@ -85,5 +85,5 @@ This project uses [Bun](https://bun.sh) as its package manager.
 
 **Remember to replace the placeholder text with specific details about your project.**
 
-**Let me know if you'd like help filling in any specific sections or if you have any further questions about Kaioken, Tauri, TypeScript, or ESLint.**
+**Let me know if you'd like help filling in any specific sections or if you have any further questions about Kiru, Tauri, TypeScript, or ESLint.**
 
