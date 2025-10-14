@@ -1,5 +1,8 @@
 ### **Kslab**
 
+> [!IMPORTANT] 
+> Project on pause
+
 A visual organization tool for notes, text, shapes, and images.
 
 ### **Table of Contents**
