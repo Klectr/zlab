@@ -1,7 +1,7 @@
 ### **Kslab**
 
 > [!IMPORTANT] 
-> Project on pause
+> Project on pause for no real reason. Just working on other stuff
 
 A visual organization tool for notes, text, shapes, and images.
 
