@@ -13,7 +13,7 @@ export function ImportButton() {
 
   function _handleImport() {
     // guard clause to prevent overwriting existing cards
-    if (Object.keys(images.images.value).length || Object.keys(notes.notes.value).length) {
+    if (Object.keys(images.images.value).length || Object.keys(notes.notes.value).length || Object.keys(texts.texts.value).length) {
       const isConfirmed = confirm("Are you sure you want to overwrite your existing cards?")
       if (!isConfirmed) return
     }
