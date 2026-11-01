@@ -210,7 +210,7 @@ export function NoteCard({ key: itemKey, data: item }: NoteCardProps) {
 
               <Divider />
 
-              <button className="text-md dark:text-[#777] text-black" onclick={_handleClose}>x</button>
+              <button className="text-md dark:text-[#777] text-black cursor-pointer" onclick={_handleClose}>x</button>
 
             </div>
           </div>

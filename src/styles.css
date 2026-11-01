@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-info: #4f46e5;
+  --color-success: #267d46;
+  --color-warning: #a46319;
+  --color-error: #963030;
+}
 
 @font-face {
   font-family: "Virgil";
