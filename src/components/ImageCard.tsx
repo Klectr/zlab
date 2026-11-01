@@ -25,6 +25,8 @@ export function ImageCard(props: ImageCardProps) {
   const offsetY = ref(0)
   const initialResizeX = ref(0)
   const initialResizeY = ref(0)
+  const initialResizeW = ref(0)
+  const initialResizeH = ref(0)
   const openContextMenu = signal(false)
 
   function debounceLSUpdate(time?: number) {
@@ -63,13 +65,13 @@ export function ImageCard(props: ImageCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
-    const { pageX, pageY } = e
-    const [newX, newY] = [initialResizeX.current - pageX, initialResizeY.current - pageY]
-
-    const newW = -newX + item.value.dimensions.w
-    const newH = -newY + item.value.dimensions.h
-    const ratio = Math.min(newW / item.value.dimensions.w, newH / item.value.dimensions.h)
-    const newDim = { w: item.value.dimensions.w * ratio, h: item.value.dimensions.h * ratio }
+    const targetW = initialResizeW.current + (e.pageX - initialResizeX.current)
+    const targetH = initialResizeH.current + (e.pageY - initialResizeY.current)
+    const ratio = Math.min(targetW / initialResizeW.current, targetH / initialResizeH.current)
+    const newDim = {
+      w: Math.max(100, initialResizeW.current * ratio),
+      h: Math.max(80, initialResizeH.current * ratio),
+    }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
     ImagesSignal.default.images.notify()
@@ -80,6 +82,8 @@ export function ImageCard(props: ImageCardProps) {
     e.stopPropagation()
     initialResizeX.current = e.pageX
     initialResizeY.current = e.pageY
+    initialResizeW.current = item.value.dimensions.w
+    initialResizeH.current = item.value.dimensions.h
     pressed.value = true
     window.addEventListener('mousemove', _handleResizeMove)
     window.addEventListener('mouseup', _handleResizeMouseUp)
