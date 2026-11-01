@@ -1,5 +1,7 @@
-import { effect, onMount, Portal, ref, signal, type Signal } from "kiru"
+import { effect, onMount, Portal, ref, signal, untrack, type Signal } from "kiru"
 import { initMouseTracking, mouse } from "../utils/mouse"
+
+const noopClick = () => {}
 
 interface ContextMenuPortalProps {
   children: JSX.Children
@@ -38,6 +40,16 @@ export function ContextMenuPortal({
     document.addEventListener("pointerdown", _handlePointerDown, {
       passive: true,
     })
+    const isIOS =
+      /iP(ad|hone|od)/.test(window.navigator.userAgent) ||
+      (window.navigator.maxTouchPoints > 2 &&
+        /iPad|Macintosh/.test(window.navigator.userAgent))
+    if (isIOS) {
+      Array.from(document.body.children).forEach((child) =>
+        child.addEventListener("click", noopClick)
+      )
+      document.documentElement.addEventListener("click", noopClick)
+    }
     return () => {
       document.removeEventListener("click", _handleClickOutside, {
         capture: true,
@@ -48,7 +60,7 @@ export function ContextMenuPortal({
 
   effect(() => {
     if (!open.value) return
-    pos.value = { x: mouse.value.x, y: mouse.value.y }
+    pos.value = untrack(() => ({ x: mouse.value.x, y: mouse.value.y }))
     function _handleEscapeKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return
       closeAction?.()
