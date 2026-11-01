@@ -124,7 +124,7 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
         }}
       >
         <button
-          className="flex justify-center items-center hover:bg-blue-500 rounded w-5 h-5 dark:text-[#777] dark:hover:text-white text-white text-md absolute right-0 top-0"
+          className="flex justify-center items-center hover:bg-blue-500 rounded w-5 h-5 dark:text-[#777] dark:hover:text-white text-white text-md absolute right-0 top-0 cursor-pointer"
           onclick={_handleClose}>x</button>
 
         <ExpandIcon cb={_handleResizeMouseDown} />
