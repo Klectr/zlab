@@ -16,18 +16,33 @@ export function ContextMenuPortal({
   const elRef = ref<HTMLDivElement>(null)
 
   onMount(() => {
-    function _handleClickOutside(e: Event) {
-      if (!open.value) return
+    let pointerStartedOutside = true
+    function _handlePointerDown(e: PointerEvent) {
       const el = elRef.current
-      if (!el) return
-      if (e.target instanceof Node && el.contains(e.target)) return
+      pointerStartedOutside = !!el && !e.composedPath().includes(el)
+    }
+    function _handleClickOutside(e: MouseEvent) {
+      const el = elRef.current
+      if (!el || e.target === el || e.composedPath().includes(el)) return
+      if (e.detail === 0) pointerStartedOutside = true
+      if (!pointerStartedOutside) {
+        pointerStartedOutside = true
+        return
+      }
       closeAction?.()
     }
-    document.addEventListener("pointerdown", _handleClickOutside, true)
-    document.addEventListener("click", _handleClickOutside, true)
+    document.addEventListener("click", _handleClickOutside, {
+      capture: true,
+      passive: true,
+    })
+    document.addEventListener("pointerdown", _handlePointerDown, {
+      passive: true,
+    })
     return () => {
-      document.removeEventListener("pointerdown", _handleClickOutside, true)
-      document.removeEventListener("click", _handleClickOutside, true)
+      document.removeEventListener("click", _handleClickOutside, {
+        capture: true,
+      })
+      document.removeEventListener("pointerdown", _handlePointerDown)
     }
   })
 
