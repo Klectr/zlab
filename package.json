@@ -11,11 +11,14 @@
     "commit": "cz"
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/language": "^6.13.1",
     "@kaioken-core/hooks": "^0.1.0",
+    "@lezer/highlight": "^1.2.5",
     "@tauri-apps/api": "^2",
     "caniuse-lite": "^1.0.30001820",
-    "kaioken": "^0.44.3",
-    "tiny-markdown-editor": "^0.1.26"
+    "codemirror": "^6.0.2",
+    "kaioken": "^0.44.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
