@@ -1,6 +1,6 @@
 import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor } from "@codemirror/view"
 import { EditorState } from "@codemirror/state"
-import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands"
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } from "@codemirror/language"
 import { tags } from "@lezer/highlight"
@@ -55,11 +55,12 @@ export function MarkDownEditor({ initial, onChange }: MarkDownEditorProps) {
           EditorState.allowMultipleSelections.of(true),
           indentOnInput(),
           bracketMatching(),
-          keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
+          keymap.of([...defaultKeymap, ...historyKeymap]),
           markdown(),
           syntaxHighlighting(highlightStyle),
           editorTheme,
           EditorView.lineWrapping,
+          EditorView.contentAttributes.of({ spellcheck: "true" }),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
               onChange({ content: update.state.doc.toString() })
