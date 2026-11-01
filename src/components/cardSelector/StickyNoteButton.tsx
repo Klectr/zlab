@@ -6,7 +6,7 @@ import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
 
 export function StickyNoteButton() {
-  function _handleClick(e: MouseEvent) {
+  function _handleClick(e: Kiru.MouseEvent<SVGSVGElement>) {
     NotesSigal.default.addNote({
       type: CardTypes.NOTES,
       title: "New Note",

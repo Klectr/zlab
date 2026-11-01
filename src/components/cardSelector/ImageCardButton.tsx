@@ -8,7 +8,7 @@ import { defaultClassName } from "./utils"
 
 export function ImageCardButton() {
   const toast = useToast()
-  function _handleClick(mouseEvent: MouseEvent) {
+  function _handleClick(mouseEvent: Kiru.MouseEvent<SVGSVGElement>) {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = "image/*"
