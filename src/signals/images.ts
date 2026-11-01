@@ -31,6 +31,7 @@ function updateImageProperty<K extends keyof ImageCardType>(
   property: K,
   data: ImageCardType[K]
 ) {
+  if (!(id in images.value)) return
   const newData = {
     ...images.value[id],
     [property]: data,

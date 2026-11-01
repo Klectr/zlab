@@ -31,6 +31,7 @@ function updateTextProperty<K extends keyof TextCardType>(
   property: K,
   data: TextCardType[K]
 ) {
+  if (!(id in texts.value)) return
   const newData = {
     ...texts.value[id],
     [property]: data,

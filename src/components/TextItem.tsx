@@ -1,4 +1,4 @@
-import { effect, onMount, ref, setup, signal } from "kiru"
+import { effect, onCleanup, onMount, ref, setup, signal } from "kiru"
 import { TextSignal, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import texts, { TextCardType } from "../signals/texts"
@@ -110,6 +110,13 @@ export function TextItem(props: TextCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
     updateLocalStorage()
   }
+
+  onCleanup(() => {
+    window.removeEventListener('mousemove', _handleMouseMove)
+    window.removeEventListener('mouseup', _handleMouseUp)
+    window.removeEventListener('mousemove', _handleResizeMove)
+    window.removeEventListener('mouseup', _handleResizeMouseUp)
+  })
 
   function _handleClose(e: Kiru.MouseEvent<SVGSVGElement>) {
     e.stopPropagation()

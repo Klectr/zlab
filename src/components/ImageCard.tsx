@@ -1,4 +1,4 @@
-import { ref, setup, signal } from "kiru"
+import { onCleanup, ref, setup, signal } from "kiru"
 import { ImagesSignal, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import { LayerEnum } from "../utils/enums"
@@ -91,6 +91,13 @@ export function ImageCard(props: ImageCardProps) {
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
   }
+
+  onCleanup(() => {
+    window.removeEventListener('mousemove', _handleMouseMove)
+    window.removeEventListener('mouseup', _handleMouseUp)
+    window.removeEventListener('mousemove', _handleResizeMove)
+    window.removeEventListener('mouseup', _handleResizeMouseUp)
+  })
 
   function _handleClose() {
     ImagesSignal.default.removeImage(item.value.id)

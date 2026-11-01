@@ -1,4 +1,4 @@
-import { effect, ref, setup, signal } from "kiru"
+import { effect, onCleanup, ref, setup, signal } from "kiru"
 import { NotesSigal, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import notes, { NoteCardType } from "../signals/notes"
@@ -96,6 +96,13 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
   }
+
+  onCleanup(() => {
+    window.removeEventListener('mousemove', _handleMouseMove)
+    window.removeEventListener('mouseup', _handleMouseUp)
+    window.removeEventListener('mousemove', _handleResizeMove)
+    window.removeEventListener('mouseup', _handleResizeMouseUp)
+  })
 
   function _handleMdChange(e: MarkDownEditorChange) {
     NotesSigal.default.updateNoteProperty(itemKey, 'contents', e.content)

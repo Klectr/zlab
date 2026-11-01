@@ -29,6 +29,7 @@ function updateNoteProperty<K extends keyof NoteCardType>(
   property: K,
   data: NoteCardType[K]
 ) {
+  if (!(id in notes.value)) return
   const newData = {
     ...notes.value[id],
     [property]: data,
