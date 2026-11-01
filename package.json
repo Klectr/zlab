@@ -13,7 +13,7 @@
   "dependencies": {
     "@kaioken-core/hooks": "^0.1.0",
     "@tauri-apps/api": "^1",
-    "caniuse-lite": "^1.0.30001667",
+    "caniuse-lite": "^1.0.30001820",
     "kaioken": "^0.44.3",
     "tiny-markdown-editor": "^0.1.26"
   },
