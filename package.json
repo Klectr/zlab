@@ -11,13 +11,15 @@
     "commit": "cz"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.1",
     "@codemirror/lang-markdown": "^6.5.2",
     "@codemirror/language": "^6.13.1",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.15",
     "@kaioken-core/hooks": "^0.1.0",
     "@lezer/highlight": "^1.2.5",
     "@tauri-apps/api": "^2",
     "caniuse-lite": "^1.0.30001820",
-    "codemirror": "^6.0.2",
     "kaioken": "^0.44.3"
   },
   "devDependencies": {
