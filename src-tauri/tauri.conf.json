@@ -3,6 +3,7 @@
   "productName": "Zlab",
   "version": "1.0.0",
   "identifier": "com.zlab.dev",
+  "mainBinaryName": "Zlab",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -19,7 +20,8 @@
     ],
     "security": {
       "csp": null
-    }
+    },
+    "withGlobalTauri": true
   },
   "bundle": {
     "active": true,
