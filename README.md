@@ -1,7 +1,7 @@
-### **Kslab**
+### **Zlab**
 
 > [!IMPORTANT] 
-> Project on pause for no real reason. Just working on other stuff
+> Formerly Kslab — revived and renamed to Zlab.
 
 A visual organization tool for notes, text, shapes, and images.
 
@@ -35,7 +35,7 @@ This project utilizes the following open-source libraries:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://git.klectr.dev/Klectr/kslab.git
+   git clone https://github.com/Klectr/zlab.git
    ```
 2. **Install dependencies:**
 This project uses [Bun](https://bun.sh) as its package manager.
@@ -81,7 +81,7 @@ This project uses [Bun](https://bun.sh) as its package manager.
 
 **Additional sections you might consider:**
 
-  * **Roadmap** - Future plans for Kslab, such as implementing an infinite canvas or adding more features.
+  * **Roadmap** - Future plans for Zlab, such as implementing an infinite canvas or adding more features.
 
 **Remember to replace the placeholder text with specific details about your project.**
 

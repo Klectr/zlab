@@ -13,7 +13,7 @@ export function ExportButton() {
       ...notes.value,
       ...images.value
     }
-    const name = `Kslab_export`
+    const name = `Zlab_export`
     const jsonData = JSON.stringify(mergeState)
     createFileAndExport(name, jsonData, "text/json")
   }
