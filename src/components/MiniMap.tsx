@@ -1,4 +1,4 @@
-import { signal, useEffect, useRef } from "kaioken"
+import { useSignal, useEffect, useRef } from "kaioken"
 import notes, { NoteCardType } from "../signals/notes"
 import { canvasDimentsion } from "../signals"
 import { LayerEnum } from "../utils/enums"
@@ -11,8 +11,8 @@ const _defaults = { width: 0, height: 0 }
 
 export function MiniMap() {
   const el = useRef<HTMLDivElement>(null)
-  const scrollX = signal(0)
-  const scrollY = signal(0)
+  const scrollX = useSignal(0)
+  const scrollY = useSignal(0)
 
   const elMeta = el.current?.getBoundingClientRect() ?? _defaults
   const viewportWidth = window.innerWidth

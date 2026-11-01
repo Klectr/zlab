@@ -1,4 +1,4 @@
-import { signal, useEffect, useLayoutEffect, useRef } from "kaioken"
+import { useSignal, useEffect, useLayoutEffect, useRef } from "kaioken"
 import { TextSignal, focusedItem } from "../signals"
 import { useDebounce } from "../utils/useDebounce"
 import texts, { TextCardType } from "../signals/texts"
@@ -13,7 +13,7 @@ interface TextCardProps {
 
 export function TextItem({ key: itemKey, data: item }: TextCardProps) {
   const { debounce } = useDebounce()
-  const pressed = signal(false)
+  const pressed = useSignal(false)
   const newX = useRef(0)
   const newY = useRef(0)
   const offsetX = useRef(0)

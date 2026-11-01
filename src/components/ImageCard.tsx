@@ -1,4 +1,4 @@
-import { signal, useRef } from "kaioken"
+import { useSignal, useRef } from "kaioken"
 import { ImagesSignal, focusedItem } from "../signals"
 import { useDebounce } from "../utils/useDebounce"
 import { LayerEnum } from "../utils/enums"
@@ -15,14 +15,14 @@ interface ImageCardProps {
 
 export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
   const { debounce } = useDebounce()
-  const pressed = signal(false)
+  const pressed = useSignal(false)
   const newX = useRef(0)
   const newY = useRef(0)
   const offsetX = useRef(0)
   const offsetY = useRef(0)
   const initialResizeX = useRef(0)
   const initialResizeY = useRef(0)
-  const openContextMenu = signal(false)
+  const openContextMenu = useSignal(false)
 
   function debounceLSUpdate(time?: number) {
     debounce(() => {
