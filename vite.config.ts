@@ -14,6 +14,8 @@ export default defineConfig({
       failOnError: false,
       failOnWarning: false,
       lintOnStart: true,
+      include: ["src/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+      exclude: ["**/dist/**", "**/node_modules/**"],
     }),
     checker({
       typescript: true,
