@@ -1397,7 +1397,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "k-slab"
+name = "zlab"
 version = "1.0.0"
 dependencies = [
  "serde",
