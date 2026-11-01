@@ -1,14 +1,14 @@
 import { useClickOutside, useMouse } from "@kaioken-core/hooks";
-import { Portal, signal, useEffect, useRef } from "kaioken";
+import { Portal, useSignal, useEffect, useRef, type Signal } from "kaioken";
 
 interface ContextMenuPortalProps {
   children: JSX.Children
-  open: boolean
+  open: Signal<boolean>
   closeAction: (() => void) | null | undefined
 }
 export function ContextMenuPortal({ children, open, closeAction }: ContextMenuPortalProps) {
   const { mouse } = useMouse()
-  const pos = signal({ x: 0, y: 0 })
+  const pos = useSignal({ x: 0, y: 0 })
   const ref = useRef<HTMLDivElement>(null)
 
   useClickOutside(ref, () => {
@@ -16,8 +16,8 @@ export function ContextMenuPortal({ children, open, closeAction }: ContextMenuPo
   })
 
   useEffect(() => {
-    if (!open) return
-    pos.value = { x: mouse.x, y: mouse.y }
+    if (!open.value) return
+    pos.value = { x: mouse.value.x, y: mouse.value.y }
     function _handleEscapeKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return
       closeAction?.()
@@ -26,9 +26,9 @@ export function ContextMenuPortal({ children, open, closeAction }: ContextMenuPo
     return () => {
       document.removeEventListener("keydown", _handleEscapeKey)
     }
-  }, [open])
+  }, [open.value])
 
-  if (!open) return null
+  if (!open.value) return null
 
   return (
     <Portal

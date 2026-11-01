@@ -11,10 +11,10 @@
     "commit": "cz"
   },
   "dependencies": {
-    "@kaioken-core/hooks": "^0.0.8",
+    "@kaioken-core/hooks": "^0.1.0",
     "@tauri-apps/api": "^1",
     "caniuse-lite": "^1.0.30001667",
-    "kaioken": "^0.32.1",
+    "kaioken": "^0.44.3",
     "tiny-markdown-editor": "^0.1.26"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "vite": "^5.0.0",
     "vite-plugin-checker": "^0.8.0",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-plugin-kaioken": "^0.13.1"
+    "vite-plugin-kaioken": "^0.23.0"
   },
   "config": {
     "commitizen": {
