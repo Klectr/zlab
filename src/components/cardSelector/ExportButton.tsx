@@ -1,4 +1,4 @@
-import { ImagesSignal, NotesSigal } from "../../signals"
+import { ImagesSignal, NotesSigal, TextSignal } from "../../signals"
 import { createFileAndExport } from "../../utils/createFileAndExport"
 import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
@@ -8,10 +8,12 @@ export function ExportButton() {
   function _handleExport() {
     const { notes } = NotesSigal.default
     const { images } = ImagesSignal.default
+    const { texts } = TextSignal.default
 
     const mergeState = {
       ...notes.value,
-      ...images.value
+      ...images.value,
+      ...texts.value
     }
     const name = `Zlab_export`
     const jsonData = JSON.stringify(mergeState)
