@@ -1,4 +1,4 @@
-import { Signal } from "kaioken"
+import { Signal } from "kiru"
 import { Card, CardTypes } from "../types"
 
 export function updateLocalStorage(

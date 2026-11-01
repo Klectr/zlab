@@ -1,4 +1,4 @@
-import { useRef } from "kaioken"
+import { onMount, ref, signal } from "kiru"
 import { StickyNoteButton } from "./StickyNoteButton"
 import { ImageCardButton } from "./ImageCardButton"
 import { ExportButton } from "./ExportButton"
@@ -7,14 +7,20 @@ import { ImportButton } from "./ImportButton"
 import { Divider } from "../Divider"
 
 export function CardSelector() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = ref<HTMLDivElement>(null)
+  const centeredLeft = signal(window.innerWidth / 2)
 
-  return (
+  onMount(() => {
+    const width = containerRef.current?.getBoundingClientRect().width ?? 1
+    centeredLeft.value = window.innerWidth / 2 - width / 2
+  })
+
+  return () => (
     <div
       ref={containerRef}
       className="z-50 flex gap-1 border dark:border-[#3c3c3c] border-[#ddd] rounded-full fixed px-4 dark:bg-[#222] bg-[#eee] top-2 py-1 shadow-md"
       style={{
-        left: `${window.innerWidth / 2 - (containerRef.current?.getBoundingClientRect().width ?? 1) / 2}px`
+        left: `${centeredLeft.value}px`
       }}>
       <StickyNoteButton />
       <ImageCardButton />
@@ -27,9 +33,3 @@ export function CardSelector() {
     </div>
   )
 }
-
-
-
-
-
-

@@ -7,7 +7,7 @@ import { CardTypes } from "../../types";
 
 export function TextButton() {
 
-  function _handleClick(e: MouseEvent) {
+  function _handleClick(e: Kiru.MouseEvent<SVGSVGElement>) {
     TextSignal.default.addText({
       fontSize: 84,
       type: CardTypes.TEXTS,

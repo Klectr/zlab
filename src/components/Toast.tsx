@@ -1,14 +1,12 @@
 import {
   createContext,
-  memo,
+  onMount,
   Portal,
   Transition,
-  TransitionState,
   useContext,
-  useEffect,
-  useState,
-} from "kaioken"
-import { noop } from "kaioken/utils"
+  signal,
+  type TransitionState,
+} from "kiru"
 
 type Toast = {
   ts: number
@@ -19,6 +17,8 @@ type Toast = {
 }
 
 const defaultDuration = 3000
+
+const noop = () => {}
 
 const ToastContext = createContext<{
   showToast: (type: Toast["type"], message: string) => void
@@ -31,24 +31,25 @@ interface ToastProviderProps {
 }
 
 export function ToastContextProvider({ children }: ToastProviderProps) {
-  const [toasts, setToasts] = useState<Toast[]>([])
+  const toasts = signal<Toast[]>([])
 
-  useEffect(() => {
+  onMount(() => {
     const interval = setInterval(() => {
-      setToasts((prev) =>
-        prev.map((toast) => {
-          if (toast.expired) {
-            return toast
-          }
-          return {
-            ...toast,
-            expired: Date.now() > toast.expires,
-          }
-        })
-      )
+      const next = toasts.value.map((toast) => {
+        if (toast.expired) {
+          return toast
+        }
+        return {
+          ...toast,
+          expired: Date.now() > toast.expires,
+        }
+      })
+      if (next.some((toast, i) => toast.expired !== toasts.value[i].expired)) {
+        toasts.value = next
+      }
     }, 500)
     return () => clearInterval(interval)
-  }, [])
+  })
 
   const showToast = (
     type: Toast["type"],
@@ -62,14 +63,14 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
       message,
       expires: ts + (duration ?? defaultDuration),
     }
-    setToasts((prev) => [...prev, toast])
+    toasts.value = [...toasts.value, toast]
   }
 
-  return (
-    <ToastContext.Provider value={{ showToast }}>
+  return () => (
+    <ToastContext value={{ showToast }}>
       {children}
       <Portal container={() => document.getElementById("toast-root")!}>
-        {toasts.map((toast, i) => (
+        {toasts.value.map((toast, i) => (
           <Transition
             key={toast.ts}
             in={!toast.expired}
@@ -79,39 +80,37 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
             }}
             onTransitionEnd={(state) => {
               if (state === "exited") {
-                setToasts((prev) => prev.filter((t) => t.ts !== toast.ts))
+                toasts.value = toasts.value.filter((t) => t.ts !== toast.ts)
               }
             }}
             element={(state) => <ToastItem toast={toast} state={state} i={i} />}
           />
         ))}
       </Portal>
-    </ToastContext.Provider>
+    </ToastContext>
   )
 }
 
-const ToastItem = memo(
-  ({
-    toast,
-    state,
-    i,
-  }: {
-    toast: Toast
-    state: TransitionState
-    i: number
-  }) => {
-    if (state == "exited") return null
-    const translateX = state === "entered" ? 0 : 250
-    const translateY = i * 70
-    return (
-      <div
-        style={{
-          transform: `translate(${translateX}px, ${translateY}px)`,
-        }}
-        className={`toast toast-${toast.type}`}
-      >
-        <span className="toast-message">{toast.message}</span>
-      </div>
-    )
-  }
-)
+function ToastItem({
+  toast,
+  state,
+  i,
+}: {
+  toast: Toast
+  state: TransitionState
+  i: number
+}) {
+  if (state == "exited") return null
+  const translateX = state === "entered" ? 0 : 250
+  const translateY = i * 70
+  return (
+    <div
+      style={{
+        transform: `translate(${translateX}px, ${translateY}px)`,
+      }}
+      className={`toast toast-${toast.type}`}
+    >
+      <span className="toast-message">{toast.message}</span>
+    </div>
+  )
+}

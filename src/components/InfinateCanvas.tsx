@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "kaioken"
+import { onMount, ref } from "kiru"
 import { ImagesSignal, NotesSigal, TextSignal, canvasDimentsion } from "../signals"
 import { NoteCard } from "./NoteCard"
 import notes from "../signals/notes"
@@ -10,14 +10,13 @@ import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
 import { TextItem } from "./TextItem"
 import texts from "../signals/texts"
-import { useDebounce } from "../utils/useDebounce"
+import { createDebounce } from "../utils/useDebounce"
 
 export default function InfiniteCanvas() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isDarkTheme = useThemeDetector()
-  const { debounce } = useDebounce()
+  const containerRef = ref<HTMLDivElement>(null)
+  const { debounce } = createDebounce()
 
-  useEffect(() => {
+  onMount(() => {
     const initPos = getInitialPosition(canvasDimentsion)
     window.scrollTo(initPos)
 
@@ -48,51 +47,55 @@ export default function InfiniteCanvas() {
       window.removeEventListener("resize", _updateDimensions)
       window.removeEventListener("scroll", _updatePosition)
     }
-  }, [])
+  })
 
-  return (
-    <>
-      <Logo />
-      <CardSelector />
-      <MiniMap />
+  return () => {
+    const isDarkTheme = useThemeDetector()
 
-      <div
-        className="h-screen w-full absolute top-0 left-0"
-      >
+    return (
+      <>
+        <Logo />
+        <CardSelector />
+        <MiniMap />
+
         <div
-          className="dark:bg-black absolute top-0 left-0"
-          ref={containerRef}
-          style={{
-            width: `${canvasDimentsion.value.width}px`,
-            height: `${canvasDimentsion.value.width}px`,
-            backgroundSize: "30px 30px",
-            backgroundImage: `radial-gradient(circle, rgba(${isDarkTheme ? '255, 255, 255, 0.2' : '0, 0, 0, 0.2'}) 1px, transparent 1px)`,
-          }}>
-          {Object.keys(NotesSigal.default.notes.value).map((itemKey: string) => {
-            const item = NotesSigal.default.notes.value[itemKey]
-            return (
-              <NoteCard key={itemKey} data={item} />
-            )
-          })}
+          className="h-screen w-full absolute top-0 left-0"
+        >
+          <div
+            className="dark:bg-black absolute top-0 left-0"
+            ref={containerRef}
+            style={{
+              width: `${canvasDimentsion.value.width}px`,
+              height: `${canvasDimentsion.value.width}px`,
+              backgroundSize: "30px 30px",
+              backgroundImage: `radial-gradient(circle, rgba(${isDarkTheme ? '255, 255, 255, 0.2' : '0, 0, 0, 0.2'}) 1px, transparent 1px)`,
+            }}>
+            {Object.keys(NotesSigal.default.notes.value).map((itemKey: string) => {
+              const item = NotesSigal.default.notes.value[itemKey]
+              return (
+                <NoteCard key={itemKey} itemKey={itemKey} data={item} />
+              )
+            })}
 
-          {Object.keys(ImagesSignal.default.images.value).map((itemKey: string) => {
-            const item = ImagesSignal.default.images.value[itemKey]
-            return (
-              <ImageCard key={itemKey} data={item} />
-            )
-          })}
+            {Object.keys(ImagesSignal.default.images.value).map((itemKey: string) => {
+              const item = ImagesSignal.default.images.value[itemKey]
+              return (
+                <ImageCard key={itemKey} itemKey={itemKey} data={item} />
+              )
+            })}
 
-          {Object.keys(TextSignal.default.texts.value).map((itemKey: string) => {
-            const item = TextSignal.default.texts.value[itemKey]
-            return (
-              <TextItem key={itemKey} data={item} />
-            )
-          })}
+            {Object.keys(TextSignal.default.texts.value).map((itemKey: string) => {
+              const item = TextSignal.default.texts.value[itemKey]
+              return (
+                <TextItem key={itemKey} itemKey={itemKey} data={item} />
+              )
+            })}
 
+          </div>
         </div>
-      </div>
-    </>
-  )
+      </>
+    )
+  }
 }
 
 interface ScrollToOptions extends ScrollOptions {
@@ -116,10 +119,3 @@ function getInitialPosition(canvasDimensions: typeof canvasDimentsion): ScrollTo
   if (!initPosition) return defaultScroll
   return initPosition
 }
-
-
-
-
-
-
-

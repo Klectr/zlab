@@ -1,6 +1,6 @@
-import { useSignal, useRef } from "kaioken"
+import { ref, setup, signal } from "kiru"
 import { ImagesSignal, focusedItem } from "../signals"
-import { useDebounce } from "../utils/useDebounce"
+import { createDebounce } from "../utils/useDebounce"
 import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
 import { updateLocalStorage } from "../utils/localStorage"
@@ -9,20 +9,23 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { CardTypes } from "../types"
 
 interface ImageCardProps {
-  key: ImageCardType['id']
+  itemKey: ImageCardType['id']
   data: ImageCardType
 }
 
-export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
-  const { debounce } = useDebounce()
-  const pressed = useSignal(false)
-  const newX = useRef(0)
-  const newY = useRef(0)
-  const offsetX = useRef(0)
-  const offsetY = useRef(0)
-  const initialResizeX = useRef(0)
-  const initialResizeY = useRef(0)
-  const openContextMenu = useSignal(false)
+export function ImageCard(props: ImageCardProps) {
+  const $ = setup<ImageCardProps>()
+  const itemKey = props.itemKey
+  const item = $.derive((p) => p.data)
+  const { debounce } = createDebounce()
+  const pressed = signal(false)
+  const newX = ref(0)
+  const newY = ref(0)
+  const offsetX = ref(0)
+  const offsetY = ref(0)
+  const initialResizeX = ref(0)
+  const initialResizeY = ref(0)
+  const openContextMenu = signal(false)
 
   function debounceLSUpdate(time?: number) {
     debounce(() => {
@@ -49,7 +52,7 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
     window.removeEventListener('mouseup', _handleMouseUp)
   }
 
-  function _handleMouseDown(e: MouseEvent) {
+  function _handleMouseDown(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
     focusedItem.value = itemKey
     offsetX.current = e.offsetX
@@ -63,17 +66,17 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
     const { pageX, pageY } = e
     const [newX, newY] = [initialResizeX.current - pageX, initialResizeY.current - pageY]
 
-    const newW = -newX + item.dimensions.w
-    const newH = -newY + item.dimensions.h
-    const ratio = Math.min(newW / item.dimensions.w, newH / item.dimensions.h)
-    const newDim = { w: item.dimensions.w * ratio, h: item.dimensions.h * ratio }
+    const newW = -newX + item.value.dimensions.w
+    const newH = -newY + item.value.dimensions.h
+    const ratio = Math.min(newW / item.value.dimensions.w, newH / item.value.dimensions.h)
+    const newDim = { w: item.value.dimensions.w * ratio, h: item.value.dimensions.h * ratio }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
     ImagesSignal.default.images.notify()
   }
 
 
-  function _handleResizeMouseDown(e: MouseEvent) {
+  function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
     e.stopPropagation()
     initialResizeX.current = e.pageX
     initialResizeY.current = e.pageY
@@ -90,12 +93,12 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
   }
 
   function _handleClose() {
-    ImagesSignal.default.removeImage(item.id)
+    ImagesSignal.default.removeImage(item.value.id)
     ImagesSignal.default.images.notify()
     debounceLSUpdate()
   }
 
-  function _handleMouseClick(e: MouseEvent) {
+  function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
     openContextMenu.value = !openContextMenu.value
   }
@@ -104,82 +107,88 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
     openContextMenu.value = false
   }
 
-  return (
-    <>
-      <div
-        oncontextmenu={_handleMouseClick}
-        onmousedown={_handleMouseDown}
-        className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] absolute"
-        style={{
-          zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
-          top: `${item.position.y}px`,
-          left: `${item.position.x}px`,
-          width: `${item.dimensions.w}px`,
-          height: `${item.dimensions.h}px`,
-          backgroundColor: '#181818',
-          backgroundImage: `url(${item.contents})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <button
-          className="flex justify-center items-center hover:bg-blue-500 rounded w-5 h-5 dark:text-[#777] dark:hover:text-white text-white text-md absolute right-0 top-0 cursor-pointer"
-          onclick={_handleClose}>x</button>
+  return () => {
+    const it = item.value
 
-        <ExpandIcon cb={_handleResizeMouseDown} />
-      </div >
+    return (
+      <>
+        <div
+          oncontextmenu={_handleMouseClick}
+          onmousedown={_handleMouseDown}
+          className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] absolute"
+          style={{
+            zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
+            top: `${it.position.y}px`,
+            left: `${it.position.x}px`,
+            width: `${it.dimensions.w}px`,
+            height: `${it.dimensions.h}px`,
+            backgroundColor: '#181818',
+            backgroundImage: `url(${it.contents})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <button
+            className="flex justify-center items-center hover:bg-blue-500 rounded w-5 h-5 dark:text-[#777] dark:hover:text-white text-white text-md absolute right-0 top-0 cursor-pointer"
+            onclick={_handleClose}>x</button>
 
-      <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
-        <div className="bg-[#3c3c3c] flex flex-col rounded">
-          <div className="flex justify-between items-center">
-            <div className="text-md dark:text-[#999] text-black px-2 py-1">
-              {item.title}
+          <ExpandIcon cb={_handleResizeMouseDown} />
+        </div >
+
+        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
+          <div className="bg-[#3c3c3c] flex flex-col rounded">
+            <div className="flex justify-between items-center">
+              <div className="text-md dark:text-[#999] text-black px-2 py-1">
+                {it.title}
+              </div>
+            </div>
+
+            <hr className="border dark:border-[#2c2c2c] border-[#ddd] m-0 p-0" />
+
+            <div>
+              <ul>
+                <li className="flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
+                  <button onclick={_handleClose} className="text-md dark:text-[#999]  text-black">
+                    Delete
+                  </button>
+                </li>
+                <li className="flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
+                </li>
+              </ul>
             </div>
           </div>
+        </ContextMenuPortal>
+      </>
 
-          <hr className="border dark:border-[#2c2c2c] border-[#ddd] m-0 p-0" />
-
-          <div>
-            <ul>
-              <li className="flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
-                <button onclick={_handleClose} className="text-md dark:text-[#999]  text-black">
-                  Delete
-                </button>
-              </li>
-              <li className="flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
-              </li>
-            </ul>
-          </div>
-        </div>
-      </ContextMenuPortal>
-    </>
-
-  )
+    )
+  }
 }
 
 
 function ExpandIcon({ cb }: {
-  cb: (this: GlobalEventHandlers, ev: MouseEvent) => void
+  cb: Kiru.MouseEventHandler<SVGSVGElement>
 }) {
-  const isDarkTheme = useThemeDetector()
-  return (
-    <svg
-      onmousedown={cb}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={isDarkTheme ? "#777" : "#999"}
-      stroke-width="1"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg]"
-    >
-      <path d="M2 10v4" />
-      <path d="M4 8v8" />
-      <path d="M6 5v14" />
-    </svg>
-  )
+  return () => {
+    const isDarkTheme = useThemeDetector()
+    return (
+      <svg
+        onmousedown={cb}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={isDarkTheme ? "#777" : "#999"}
+        stroke-width="1"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg]"
+      >
+        <path d="M2 10v4" />
+        <path d="M4 8v8" />
+        <path d="M6 5v14" />
+      </svg>
+    )
+  }
 }

@@ -1,4 +1,3 @@
-import { memo } from "kaioken"
 import InfiniteCanvas from "./components/InfinateCanvas"
 import { ToastContextProvider } from "./components/Toast"
 import { useThemeDetector } from "./utils/useThemeDetector"
@@ -6,12 +5,10 @@ import { useThemeDetector } from "./utils/useThemeDetector"
 export function App() {
   useThemeDetector()
 
-  return (
+  return () => (
     <ToastContextProvider>
-      <MemoInfyCanvas />
+      <InfiniteCanvas />
       <div id="context-menu-portal" />
     </ToastContextProvider>
   )
 }
-
-const MemoInfyCanvas = memo(InfiniteCanvas)

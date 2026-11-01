@@ -1,4 +1,4 @@
-import { signal } from "kaioken"
+import { signal } from "kiru"
 
 /** this should be an ID of some card/item */
 export const focusedItem = signal<string | null>(null)

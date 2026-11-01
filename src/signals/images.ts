@@ -1,4 +1,4 @@
-import { signal } from "kaioken"
+import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
 import { focusedItem } from "."
 

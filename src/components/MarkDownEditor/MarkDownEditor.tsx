@@ -4,7 +4,7 @@ import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } from "@codemirror/language"
 import { tags } from "@lezer/highlight"
-import { useEffect, useRef } from "kaioken"
+import { onCleanup, onMount, ref } from "kiru"
 
 export interface MarkDownEditorChange {
   content: string
@@ -39,11 +39,12 @@ const highlightStyle = HighlightStyle.define([
 ])
 
 export function MarkDownEditor({ initial, onChange }: MarkDownEditorProps) {
-  const elRef = useRef<HTMLDivElement>(null)
+  const elRef = ref<HTMLDivElement>(null)
+  let view: EditorView | undefined
 
-  useEffect(() => {
+  onMount(() => {
     if (!elRef.current) return
-    const view = new EditorView({
+    view = new EditorView({
       parent: elRef.current,
       state: EditorState.create({
         doc: initial,
@@ -69,10 +70,11 @@ export function MarkDownEditor({ initial, onChange }: MarkDownEditorProps) {
         ],
       }),
     })
-    return () => view.destroy()
-  }, [])
+  })
 
-  return (
+  onCleanup(() => view?.destroy())
+
+  return () => (
     <div
       className={'h-full overflow-hidden'}
       ref={elRef}

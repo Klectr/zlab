@@ -1,20 +1,20 @@
-import { useEffect, useState } from "kaioken"
+import { signal } from "kiru"
+
+const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)")
+
+export const isDarkTheme = signal(darkThemeMq.matches)
+
+let listening = false
+
+export function initThemeDetector() {
+  if (listening) return
+  listening = true
+  darkThemeMq.addEventListener("change", (e: MediaQueryListEvent) => {
+    isDarkTheme.value = e.matches
+  })
+}
 
 export function useThemeDetector() {
-  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(getCurrentTheme())
-  function getCurrentTheme() {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-  }
-
-  const mqListener = (e: MediaQueryListEvent) => {
-    setIsDarkTheme(e.matches)
-  }
-
-  useEffect(() => {
-    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)")
-    darkThemeMq.addListener(mqListener)
-    return () => darkThemeMq.removeListener(mqListener)
-  }, [])
-
-  return isDarkTheme
+  initThemeDetector()
+  return isDarkTheme.value
 }
