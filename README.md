@@ -27,7 +27,6 @@ A visual organization tool for notes, text, shapes, and images.
 This project utilizes the following open-source libraries:
 
   * **Kiru:** A lightweight UI rendering library ([Kiru](https://kiru.dev))
-  * **Tauri:** A framework for building desktop and mobile applications with web technologies ([https://v2.tauri.app/](https://v2.tauri.app/))
   * **TypeScript:** A typed superset of JavaScript that adds optional static typing
   * **ESLint:** A linter for enforcing code style and catching potential errors
 
@@ -45,21 +44,17 @@ This project uses [Bun](https://bun.sh) as its package manager.
 
 ### **Installation**
 
-#### **Desktop Application**
+Zlab is a web app — there is no desktop build. For development:
 
-[Instructions on how to download, install, and run the desktop application. Mention any dependencies or prerequisites.]
+```bash
+bun run dev
+```
 
-**Note:** These instructions might involve installing Tauri and any additional dependencies for the desktop application.
+For production, `bun run build` emits a static `dist/` you can serve from any static host (HTTPS required for installation, see below).
 
-#### **Web Application**
-
-[Instructions on how to access and use the web application. Specify if it's a standalone web app or runs within Tauri.]
-
-**Note:** These instructions might involve running the web application directly in a browser if it's standalone.
+**Install as an app (PWA):** open Zlab in Chrome over HTTPS (or localhost) and choose **Install Zlab** from the address-bar install icon or the browser menu. It installs like a native app, works offline after the first load, and keeps your boards in the browser's local storage on that origin.
 
 ### **Usage**
-
-#### **Desktop Application**
 
 * **Add notes:** Click the "+" button to create a new note.
 * **Edit notes:** Double-click a note to edit its content.
@@ -67,13 +62,9 @@ This project uses [Bun](https://bun.sh) as its package manager.
 * **Add shapes and images:** Use the toolbar to add various shapes and images.
 * **Customize appearance:** Change the color, size, and other properties of elements.
 
-#### **Web Application**
-
-[Instructions for using the web application, similar to the desktop application]
-
 ### **Contributing**
 
-[Guidelines for contributors, including how to report bugs or submit pull requests. Mention how contributions to both Kiru and Tauri integrations are handled. Also, emphasize the importance of following TypeScript and ESLint conventions.]
+[Guidelines for contributors, including how to report bugs or submit pull requests. Also, emphasize the importance of following TypeScript and ESLint conventions.]
 
 ### **License**
 
@@ -84,6 +75,4 @@ This project uses [Bun](https://bun.sh) as its package manager.
   * **Roadmap** - Future plans for Zlab, such as implementing an infinite canvas or adding more features.
 
 **Remember to replace the placeholder text with specific details about your project.**
-
-**Let me know if you'd like help filling in any specific sections or if you have any further questions about Kiru, Tauri, TypeScript, or ESLint.**
 
