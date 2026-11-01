@@ -4,8 +4,8 @@ import { useDebounce } from "../utils/useDebounce"
 import notes, { NoteCardType } from "../signals/notes"
 import { LayerEnum } from "../utils/enums"
 import { useThemeDetector } from "../utils/useThemeDetector"
-import { MarkDownEditor } from "./MarkDownEditor/MarkDownEditor"
-import { ChangeEvent } from "tiny-markdown-editor"
+import { MarkDownEditor, type MarkDownEditorChange } from "./MarkDownEditor/MarkDownEditor"
+
 import { Divider } from "./Divider"
 import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
@@ -94,7 +94,7 @@ export function NoteCard({ key: itemKey, data: item }: NoteCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
   }
 
-  function _handleMdChange(e: ChangeEvent) {
+  function _handleMdChange(e: MarkDownEditorChange) {
     NotesSigal.default.updateNoteProperty(itemKey, 'contents', e.content)
     NotesSigal.default.notes.notify()
     updateLocalStorage()
