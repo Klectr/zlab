@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint"
 import pluginReact from "eslint-plugin-react"
 
 export default [
+  { ignores: ["dist/**"] },
   { files: ["./src/**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { plugins: { react: pluginReact } },
   {
