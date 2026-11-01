@@ -22,6 +22,7 @@ export function TextItem(props: TextCardProps) {
   const offsetX = ref(0)
   const offsetY = ref(0)
   const initialResizeX = ref(0)
+  const initialFontSize = ref(0)
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
 
@@ -87,9 +88,10 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
-    const { pageX } = e
-    const newX = initialResizeX.current - pageX
-    const newFontSize = Math.floor(-newX + item.value.fontSize)
+    const newFontSize = Math.max(
+      10,
+      Math.floor(initialFontSize.current + (e.pageX - initialResizeX.current))
+    )
 
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
     TextSignal.default.texts.notify()
@@ -99,6 +101,7 @@ export function TextItem(props: TextCardProps) {
   function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
     e.stopPropagation()
     initialResizeX.current = e.pageX
+    initialFontSize.current = item.value.fontSize
     pressed.value = true
     window.addEventListener('mousemove', _handleResizeMove)
     window.addEventListener('mouseup', _handleResizeMouseUp)

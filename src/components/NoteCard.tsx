@@ -29,6 +29,8 @@ export function NoteCard(props: NoteCardProps) {
   const offsetY = ref(0)
   const initialResizeX = ref(0)
   const initialResizeY = ref(0)
+  const initialResizeW = ref(0)
+  const initialResizeH = ref(0)
   const openContextMenu = signal(false)
   const showHelp = signal(false)
 
@@ -70,11 +72,8 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
-    const { pageX, pageY } = e
-    const [newX, newY] = [initialResizeX.current - pageX, initialResizeY.current - pageY]
-
-    const newW = -newX + item.value.dimensions.w
-    const newH = -newY + item.value.dimensions.h
+    const newW = Math.max(100, initialResizeW.current + (e.pageX - initialResizeX.current))
+    const newH = Math.max(80, initialResizeH.current + (e.pageY - initialResizeY.current))
     const newDim = { w: newW, h: newH }
 
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
@@ -85,6 +84,8 @@ export function NoteCard(props: NoteCardProps) {
   function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
     initialResizeX.current = e.pageX
     initialResizeY.current = e.pageY
+    initialResizeW.current = item.value.dimensions.w
+    initialResizeH.current = item.value.dimensions.h
     pressed.value = true
     window.addEventListener('mousemove', _handleResizeMove)
     window.addEventListener('mouseup', _handleResizeMouseUp)
