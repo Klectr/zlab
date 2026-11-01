@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "@kaioken-core/hooks": "^0.1.0",
-    "@tauri-apps/api": "^1",
+    "@tauri-apps/api": "^2",
     "caniuse-lite": "^1.0.30001820",
     "kaioken": "^0.44.3",
     "tiny-markdown-editor": "^0.1.26"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@tauri-apps/cli": "^1",
+    "@tauri-apps/cli": "^2",
     "autoprefixer": "^10.4.18",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
