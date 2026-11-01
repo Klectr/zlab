@@ -130,7 +130,7 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
         <ExpandIcon cb={_handleResizeMouseDown} />
       </div >
 
-      <ContextMenuPortal open={openContextMenu.value} closeAction={_handleContextClose}>
+      <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
         <div className="bg-[#3c3c3c] flex flex-col rounded">
           <div className="flex justify-between items-center">
             <div className="text-md dark:text-[#999] text-black px-2 py-1">
