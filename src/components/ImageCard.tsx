@@ -160,7 +160,7 @@ export function ImageCard({ key: itemKey, data: item }: ImageCardProps) {
 
 
 function ExpandIcon({ cb }: {
-  cb: ((this: GlobalEventHandlers, ev: MouseEvent) => void) | null | undefined
+  cb: (this: GlobalEventHandlers, ev: MouseEvent) => void
 }) {
   const isDarkTheme = useThemeDetector()
   return (

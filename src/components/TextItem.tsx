@@ -170,7 +170,7 @@ export function TextItem({ key: itemKey, data: item }: TextCardProps) {
 }
 
 interface CloseIconProps {
-  cb: ((this: GlobalEventHandlers, ev: MouseEvent) => void) | null | undefined,
+  cb: (this: GlobalEventHandlers, ev: MouseEvent) => void,
   item: TextSignal.TextCardType
 }
 
@@ -202,7 +202,7 @@ function CloseIcon({ item, cb }: CloseIconProps) {
 }
 
 interface ExpandIconProps {
-  cb: ((this: GlobalEventHandlers, ev: MouseEvent) => void) | null | undefined,
+  cb: (this: GlobalEventHandlers, ev: MouseEvent) => void,
   item: TextSignal.TextCardType
 }
 

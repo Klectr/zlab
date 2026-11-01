@@ -17,7 +17,7 @@ export function ContextMenuPortal({ children, open, closeAction }: ContextMenuPo
 
   useEffect(() => {
     if (!open) return
-    pos.value = { x: mouse.x, y: mouse.y }
+    pos.value = mouse.value
     function _handleEscapeKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return
       closeAction?.()
