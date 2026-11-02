@@ -84,6 +84,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleMouseDown(e: Kiru.MouseEvent<HTMLDivElement>) {
     focusedItem.value = itemKey
+    if (e.button !== 0) return
     offsetX.current = e.offsetX
     offsetY.current = e.offsetY
     pressed.value = true
@@ -103,6 +104,7 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
+    if (e.button !== 0) return
     e.stopPropagation()
     initialResizeX.current = e.pageX
     initialFontSize.current = item.value.fontSize

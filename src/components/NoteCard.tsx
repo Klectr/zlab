@@ -68,6 +68,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMouseDown(e: Kiru.MouseEvent<HTMLDivElement>) {
+    if (e.button !== 0) return
     e.preventDefault()
     offsetX.current = e.offsetX
     offsetY.current = e.offsetY
@@ -87,6 +88,7 @@ export function NoteCard(props: NoteCardProps) {
 
 
   function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
+    if (e.button !== 0) return
     initialResizeX.current = e.pageX
     initialResizeY.current = e.pageY
     initialResizeW.current = item.value.dimensions.w
