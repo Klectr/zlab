@@ -15,6 +15,12 @@ function loadLocalStorage() {
       parsed && typeof parsed === "object" && !Array.isArray(parsed)
         ? parsed
         : {}
+    for (const entry of Object.values(texts.value)) {
+      const card = entry as { position?: { x?: unknown; y?: unknown } }
+      if (!card || typeof card !== "object" || !card.position || typeof card.position !== "object") continue
+      if (typeof card.position.x === "number" && card.position.x < 0) card.position.x = 0
+      if (typeof card.position.y === "number" && card.position.y < 0) card.position.y = 0
+    }
   } catch {
     texts.value = {}
   }
