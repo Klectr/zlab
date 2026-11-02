@@ -42,8 +42,8 @@ export function ImageCardButton() {
             title: "New Image",
             contents: content as string,
             position: {
-              x: mouseEvent.pageX - 100,
-              y: mouseEvent.pageY + (window.innerHeight / 2) - 100
+              x: Math.max(0, mouseEvent.pageX - 100),
+              y: Math.max(0, mouseEvent.pageY + (window.innerHeight / 2) - 100)
             },
             dimensions: {
               w: normalizedW,
