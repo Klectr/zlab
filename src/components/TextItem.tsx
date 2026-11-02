@@ -63,8 +63,8 @@ export function TextItem(props: TextCardProps) {
     e.preventDefault()
     if (!pressed.value) return
 
-    newX.current = e.pageX - offsetX.current
-    newY.current = e.pageY - offsetY.current
+    newX.current = Math.max(0, e.pageX - offsetX.current)
+    newY.current = Math.max(0, e.pageY - offsetY.current)
     const newPos = { x: newX.current, y: newY.current }
 
     TextSignal.default.updateTextProperty(itemKey, 'position', newPos)
