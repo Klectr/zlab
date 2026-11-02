@@ -66,8 +66,20 @@ export function ContextMenuPortal({
       closeAction?.()
     }
     document.addEventListener("keydown", _handleEscapeKey)
+    const frame = requestAnimationFrame(() => {
+      const el = elRef.current
+      if (!el || !open.value) return
+      const rect = el.getBoundingClientRect()
+      if (rect.width === 0 && rect.height === 0) return
+      untrack(() => {
+        const x = Math.min(pos.value.x, Math.max(0, window.innerWidth - rect.width))
+        const y = Math.min(pos.value.y, Math.max(0, window.innerHeight - rect.height))
+        if (x !== pos.value.x || y !== pos.value.y) pos.value = { x, y }
+      })
+    })
     return () => {
       document.removeEventListener("keydown", _handleEscapeKey)
+      cancelAnimationFrame(frame)
     }
   })
 
