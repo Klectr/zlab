@@ -65,12 +65,9 @@ export function ImageCard(props: ImageCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
-    const targetW = initialResizeW.current + (e.pageX - initialResizeX.current)
-    const targetH = initialResizeH.current + (e.pageY - initialResizeY.current)
-    const ratio = Math.min(targetW / initialResizeW.current, targetH / initialResizeH.current)
     const newDim = {
-      w: Math.max(100, initialResizeW.current * ratio),
-      h: Math.max(80, initialResizeH.current * ratio),
+      w: Math.max(100, initialResizeW.current + (e.pageX - initialResizeX.current)),
+      h: Math.max(80, initialResizeH.current + (e.pageY - initialResizeY.current)),
     }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
