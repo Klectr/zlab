@@ -11,8 +11,13 @@ export function CardSelector() {
   const centeredLeft = signal(window.innerWidth / 2)
 
   onMount(() => {
-    const width = containerRef.current?.getBoundingClientRect().width ?? 1
-    centeredLeft.value = window.innerWidth / 2 - width / 2
+    const _updateCenteredLeft = () => {
+      const width = containerRef.current?.getBoundingClientRect().width ?? 1
+      centeredLeft.value = window.innerWidth / 2 - width / 2
+    }
+    _updateCenteredLeft()
+    window.addEventListener("resize", _updateCenteredLeft)
+    return () => window.removeEventListener("resize", _updateCenteredLeft)
   })
 
   return () => (
