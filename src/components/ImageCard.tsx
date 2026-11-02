@@ -149,7 +149,7 @@ export function ImageCard(props: ImageCardProps) {
         <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
           <div className="bg-[#3c3c3c] flex flex-col rounded">
             <div className="flex justify-between items-center">
-              <div className="text-md dark:text-[#999] text-black px-2 py-1">
+              <div className="text-md text-[#999] px-2 py-1">
                 {it.title}
               </div>
             </div>
@@ -158,8 +158,8 @@ export function ImageCard(props: ImageCardProps) {
 
             <div>
               <ul>
-                <li className="flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
-                  <button onclick={_handleClose} className="text-md dark:text-[#999]  text-black">
+                <li className="group flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
+                  <button onclick={_handleClose} className="text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                     Delete
                   </button>
                 </li>
