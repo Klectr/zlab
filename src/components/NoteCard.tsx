@@ -152,6 +152,9 @@ export function NoteCard(props: NoteCardProps) {
   function _handleKeyDown(e: KeyboardEvent) {
     if (!e.ctrlKey) return
 
+    const target = e.target as HTMLElement | null
+    if (target && typeof target.closest === "function" && target.closest("input, textarea, select, [contenteditable]")) return
+
     // TODO: add support for other os
     // TODO: add modal popup
 
