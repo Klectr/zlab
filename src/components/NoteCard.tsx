@@ -47,8 +47,8 @@ export function NoteCard(props: NoteCardProps) {
     e.preventDefault()
     if (!pressed.value) return
 
-    newX.current = e.pageX - offsetX.current
-    newY.current = e.pageY - offsetY.current
+    newX.current = Math.max(0, e.pageX - offsetX.current)
+    newY.current = Math.max(0, e.pageY - offsetY.current)
     const newPos = { x: newX.current, y: newY.current }
 
     NotesSigal.default.updateNoteProperty(itemKey, 'position', newPos)
