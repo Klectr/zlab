@@ -55,8 +55,9 @@ export function ImageCard(props: ImageCardProps) {
   }
 
   function _handleMouseDown(e: Kiru.MouseEvent<HTMLDivElement>) {
-    e.preventDefault()
     focusedItem.value = itemKey
+    if (e.button !== 0) return
+    e.preventDefault()
     offsetX.current = e.offsetX
     offsetY.current = e.offsetY
     pressed.value = true
@@ -76,6 +77,7 @@ export function ImageCard(props: ImageCardProps) {
 
 
   function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
+    if (e.button !== 0) return
     e.stopPropagation()
     initialResizeX.current = e.pageX
     initialResizeY.current = e.pageY
