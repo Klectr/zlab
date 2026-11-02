@@ -4,12 +4,59 @@ import texts, { TextCardType } from "../../signals/texts"
 import { Card, CardTypes } from "../../types"
 import { convertBase64ToJson } from "../../utils/convertBase64ToJson"
 import { updateLocalStorage } from "../../utils/localStorage"
+import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
 
 type legacySupportTypes = { type: CardTypes | string }
 
+type ImportEntry = Omit<Card<CardTypes>, "id" | "type"> &
+  legacySupportTypes & { fontSize?: unknown }
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value)
+}
+
+function isValidEntry(item: unknown): item is ImportEntry {
+  if (!isRecord(item)) return false
+  const isImage =
+    item.type === CardTypes.IMAGES || item.type === "image"
+  const isNote = item.type === CardTypes.NOTES || item.type === "note"
+  const isText = item.type === CardTypes.TEXTS || item.type === "text"
+  if (!isImage && !isNote && !isText) return false
+  if (typeof item.title !== "string") return false
+  if (typeof item.contents !== "string") return false
+  if (!isRecord(item.position)) return false
+  if (!isFiniteNumber(item.position.x) || !isFiniteNumber(item.position.y))
+    return false
+  if (!isRecord(item.dimensions)) return false
+  if (!isFiniteNumber(item.dimensions.w) || item.dimensions.w <= 0)
+    return false
+  if (!isFiniteNumber(item.dimensions.h) || item.dimensions.h <= 0)
+    return false
+  if (isText && (!isFiniteNumber(item.fontSize) || item.fontSize <= 0))
+    return false
+  return true
+}
+
+function parseImportData(data: unknown): ImportEntry[] | null {
+  if (!isRecord(data)) return null
+  const entries: ImportEntry[] = []
+  for (const key in data) {
+    const item: unknown = data[key]
+    if (!isValidEntry(item)) return null
+    const { id: _, ...rest } = item as Record<string, unknown>
+    entries.push(rest as ImportEntry)
+  }
+  return entries
+}
+
 export function ImportButton() {
+  const toast = useToast()
 
   function _handleImport() {
     // guard clause to prevent overwriting existing cards
@@ -32,21 +79,21 @@ export function ImportButton() {
       reader.readAsDataURL(file)
       reader.onload = function(readerEvent) {
         let content = readerEvent.target?.result;
-        // get only the base64 parts and not any identifiers
         content = (content as string).split(',')[1]
-        const data: Record<string, Omit<Card<CardTypes>, 'type'> & legacySupportTypes> = convertBase64ToJson(content)
-        for (const key in data) {
-          const item = data[key]
-          const { id: _, ...rest } = item
+        const entries = parseImportData(convertBase64ToJson(content))
+        if (!entries) {
+          toast.showToast("error", "Could not import that file.")
+          return
+        }
+        for (const item of entries) {
           if (item.type === CardTypes.IMAGES || item.type == 'image') {
-            images.addImage(rest as ImageCardType)
+            images.addImage(item as unknown as Omit<ImageCardType, "id">)
             continue
           } else if (item.type === CardTypes.NOTES || item.type === 'note') {
-            notes.addNote(rest as NoteCardType)
+            notes.addNote(item as unknown as Omit<NoteCardType, "id">)
             continue
           } else if (item.type === CardTypes.TEXTS || item.type === 'text') {
-            texts.addText(rest as TextCardType)
-            continue
+            texts.addText(item as unknown as Omit<TextCardType, "id">)
           }
         }
 
