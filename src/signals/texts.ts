@@ -9,7 +9,15 @@ export type TextCardType = Card<CardTypes.TEXTS> & {
 const texts = signal<Record<TextCardType["id"], TextCardType>>({})
 
 function loadLocalStorage() {
-  texts.value = JSON.parse(localStorage.getItem("texts") ?? "{}")
+  try {
+    const parsed = JSON.parse(localStorage.getItem("texts") ?? "{}")
+    texts.value =
+      parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? parsed
+        : {}
+  } catch {
+    texts.value = {}
+  }
 }
 
 function addText(data: Omit<TextCardType, "id">) {

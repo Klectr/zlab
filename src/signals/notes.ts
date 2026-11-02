@@ -7,7 +7,15 @@ export type NoteCardType = Card<CardTypes.NOTES>
 const notes = signal<Record<NoteCardType["id"], NoteCardType>>({})
 
 function loadLocalStorage() {
-  notes.value = JSON.parse(localStorage.getItem("notes") ?? "{}")
+  try {
+    const parsed = JSON.parse(localStorage.getItem("notes") ?? "{}")
+    notes.value =
+      parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? parsed
+        : {}
+  } catch {
+    notes.value = {}
+  }
 }
 
 function addNote(data: Omit<NoteCardType, "id">) {

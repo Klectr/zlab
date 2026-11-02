@@ -7,7 +7,15 @@ export type ImageCardType = Card<CardTypes.IMAGES>
 const images = signal<Record<ImageCardType["id"], ImageCardType>>({})
 
 function loadLocalStorage() {
-  images.value = JSON.parse(localStorage.getItem("images") ?? "{}")
+  try {
+    const parsed = JSON.parse(localStorage.getItem("images") ?? "{}")
+    images.value =
+      parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? parsed
+        : {}
+  } catch {
+    images.value = {}
+  }
 }
 
 function addImage(data: Omit<ImageCardType, "id">) {
