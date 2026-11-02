@@ -125,6 +125,7 @@ export function TextItem(props: TextCardProps) {
     e.stopPropagation()
     TextSignal.default.removeText(item.value.id)
     TextSignal.default.texts.notify()
+    updateLocalStorage()
   }
 
   function _handleContentInput(e: InputEvent) {
