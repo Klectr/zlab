@@ -31,8 +31,8 @@ function isValidEntry(item: unknown): item is ImportEntry {
   if (typeof item.title !== "string") return false
   if (typeof item.contents !== "string") return false
   if (!isRecord(item.position)) return false
-  if (!isFiniteNumber(item.position.x) || !isFiniteNumber(item.position.y))
-    return false
+  if (!isFiniteNumber(item.position.x) || item.position.x < 0) return false
+  if (!isFiniteNumber(item.position.y) || item.position.y < 0) return false
   if (!isRecord(item.dimensions)) return false
   if (!isFiniteNumber(item.dimensions.w) || item.dimensions.w <= 0)
     return false
