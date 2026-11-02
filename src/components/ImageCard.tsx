@@ -163,8 +163,6 @@ export function ImageCard(props: ImageCardProps) {
                     Delete
                   </button>
                 </li>
-                <li className="flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
-                </li>
               </ul>
             </div>
           </div>
