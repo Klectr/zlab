@@ -54,10 +54,13 @@ export function ImageCardButton() {
           try {
             updateLocalStorage(CardTypes.IMAGES, images.images).notify()
           } catch (e: unknown) {
-            if (e instanceof DOMException) {
-              if (e.name !== 'QuotaExceededError') return
-              toast.showToast("error", "Could not add such a girthy image!")
-              ImagesSignal.default.removeImage(imgId)
+            if (!(e instanceof DOMException) || e.name !== 'LocalStorageError') return
+            toast.showToast("error", "Could not add such a girthy image!")
+            ImagesSignal.default.removeImage(imgId)
+            try {
+              updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+            } catch {
+              return
             }
           }
         }
