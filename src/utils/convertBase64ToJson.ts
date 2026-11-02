@@ -5,13 +5,11 @@ export function convertBase64ToJson(
     if (!data) throw new Error("no data to decode")
     if (data instanceof ArrayBuffer)
       throw new Error("cannot decode array buffer yet")
-    // Decode Base64 to string
-    const jsonString = atob(data)
+    const bytes = Uint8Array.from(atob(data), (char) => char.charCodeAt(0))
+    const jsonString = new TextDecoder("utf-8").decode(bytes)
 
-    // Parse string to JSON
     const jsonObject = JSON.parse(jsonString)
 
-    // Display the JSON object
     return jsonObject
   } catch (error) {
     console.error("Error decoding Base64:", error)
