@@ -59,6 +59,10 @@ export function TextItem(props: TextCardProps) {
     }, time)
   }
 
+  function persistLocalStorage() {
+    localStorage.setItem(CardTypes.TEXTS, JSON.stringify(texts.texts.value))
+  }
+
   function _handleMouseMove(e: MouseEvent) {
     e.preventDefault()
     if (!pressed.value) return
@@ -125,7 +129,7 @@ export function TextItem(props: TextCardProps) {
     e.stopPropagation()
     TextSignal.default.removeText(item.value.id)
     TextSignal.default.texts.notify()
-    updateLocalStorage()
+    persistLocalStorage()
   }
 
   function _handleContentInput(e: InputEvent) {

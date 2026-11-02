@@ -43,6 +43,11 @@ export function NoteCard(props: NoteCardProps) {
     }, time)
   }
 
+  function persistLocalStorage() {
+    localStorage.setItem("notes", JSON.stringify(notes.notes.value))
+    saved.value = true
+  }
+
   function _handleMouseMove(e: MouseEvent) {
     e.preventDefault()
     if (!pressed.value) return
@@ -115,7 +120,7 @@ export function NoteCard(props: NoteCardProps) {
   function _handleClose() {
     NotesSigal.default.removeNote(item.value.id)
     NotesSigal.default.notes.notify()
-    updateLocalStorage()
+    persistLocalStorage()
   }
 
   function _handleFocusCard() {
