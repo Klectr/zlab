@@ -3,6 +3,8 @@ import { initMouseTracking, mouse } from "../utils/mouse"
 
 const noopClick = () => {}
 
+const closeHandlers = new Set<() => void>()
+
 interface ContextMenuPortalProps {
   children: JSX.Children
   open: Signal<boolean>
@@ -16,8 +18,10 @@ export function ContextMenuPortal({
   initMouseTracking()
   const pos = signal({ x: 0, y: 0 })
   const elRef = ref<HTMLDivElement>(null)
+  const closeSelf = () => closeAction?.()
 
   onMount(() => {
+    closeHandlers.add(closeSelf)
     let pointerStartedOutside = true
     function _handlePointerDown(e: PointerEvent) {
       const el = elRef.current
@@ -51,6 +55,7 @@ export function ContextMenuPortal({
       document.documentElement.addEventListener("click", noopClick)
     }
     return () => {
+      closeHandlers.delete(closeSelf)
       document.removeEventListener("click", _handleClickOutside, {
         capture: true,
       })
@@ -60,6 +65,9 @@ export function ContextMenuPortal({
 
   effect(() => {
     if (!open.value) return
+    for (const close of [...closeHandlers]) {
+      if (close !== closeSelf) close()
+    }
     pos.value = untrack(() => ({ x: mouse.value.x, y: mouse.value.y }))
     function _handleEscapeKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return
