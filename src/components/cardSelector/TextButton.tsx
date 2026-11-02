@@ -14,8 +14,8 @@ export function TextButton() {
       title: "New Note",
       contents: "todo: fill me",
       position: {
-        x: e.pageX - 100,
-        y: e.pageY + (window.innerHeight / 2) - 100
+        x: Math.max(0, e.pageX - 100),
+        y: Math.max(0, e.pageY + (window.innerHeight / 2) - 100)
       },
       dimensions: {
         w: 200,
