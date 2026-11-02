@@ -106,7 +106,7 @@ export function ImageCard(props: ImageCardProps) {
   function _handleClose() {
     ImagesSignal.default.removeImage(item.value.id)
     ImagesSignal.default.images.notify()
-    debounceLSUpdate()
+    updateLocalStorage(CardTypes.IMAGES, images.images).notify()
   }
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
