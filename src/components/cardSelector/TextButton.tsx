@@ -2,13 +2,15 @@ import { Tooltip } from "./Tooltip";
 import { TextSignal } from "../../signals";
 import texts from "../../signals/texts";
 import { updateLocalStorage } from "../../utils/localStorage";
+import { useToast } from "../Toast";
 import { defaultClassName } from "./utils";
 import { CardTypes } from "../../types";
 
 export function TextButton() {
+  const toast = useToast()
 
   function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
-    TextSignal.default.addText({
+    const textId = TextSignal.default.addText({
       fontSize: 84,
       type: CardTypes.TEXTS,
       title: "New Note",
@@ -22,7 +24,18 @@ export function TextButton() {
         h: 100
       }
     })
-    updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+    try {
+      updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+    } catch (err: unknown) {
+      if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
+      toast.showToast("error", "Could not save that text!")
+      TextSignal.default.removeText(textId)
+      try {
+        updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+      } catch {
+        return
+      }
+    }
   }
 
   return (

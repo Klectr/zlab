@@ -2,12 +2,14 @@ import { NotesSigal } from "../../signals"
 import notes from "../../signals/notes"
 import { CardTypes } from "../../types"
 import { updateLocalStorage } from "../../utils/localStorage"
+import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
 
 export function StickyNoteButton() {
+  const toast = useToast()
   function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
-    NotesSigal.default.addNote({
+    const noteId = NotesSigal.default.addNote({
       type: CardTypes.NOTES,
       title: "New Note",
       contents: "",
@@ -20,7 +22,18 @@ export function StickyNoteButton() {
         h: 200
       }
     })
-    updateLocalStorage(CardTypes.NOTES, notes.notes)
+    try {
+      updateLocalStorage(CardTypes.NOTES, notes.notes)
+    } catch (err: unknown) {
+      if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
+      toast.showToast("error", "Could not save that note!")
+      NotesSigal.default.removeNote(noteId)
+      try {
+        updateLocalStorage(CardTypes.NOTES, notes.notes)
+      } catch {
+        return
+      }
+    }
   }
 
   return (

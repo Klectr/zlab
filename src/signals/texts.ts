@@ -34,6 +34,7 @@ function addText(data: Omit<TextCardType, "id">) {
   texts.value[newCard.id] = newCard
   texts.notify()
   focusedItem.value = newCard.id
+  return newCard.id
 }
 
 function removeText(id: TextCardType["id"]) {
