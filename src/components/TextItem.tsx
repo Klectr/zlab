@@ -162,6 +162,7 @@ export function TextItem(props: TextCardProps) {
       .map((child, i) => _plainTextFromNode(child, i === 0))
       .join("")
     texts.updateTextProperty(itemKey, 'contents', val)
+    _measureAndStoreDimensions()
     updateLocalStorage()
   }
 
