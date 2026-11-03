@@ -64,7 +64,7 @@ export function MiniMap() {
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
-            <div key={imageKey} className={"absolute dark:bg-green-500 bg-green-300 dark:hover:bg-blue-500 hover:bg-blue-300 cursor-pointer border dark:border-[#222] border-green-500 rounded"}
+            <button type="button" aria-label="Scroll to image" key={imageKey} className={"absolute dark:bg-green-500 bg-green-300 dark:hover:bg-blue-500 hover:bg-blue-300 cursor-pointer border dark:border-[#222] border-green-500 rounded"}
               onclick={_handleItemClick}
               style={{
                 width: `${newWidth}px`,
@@ -73,7 +73,7 @@ export function MiniMap() {
                 left: `${newLeft}px`,
                 zIndex: `${newZIndex}`
               }}
-            ></div>
+            ></button>
           )
         })}
 
@@ -98,7 +98,7 @@ export function MiniMap() {
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
-            <div key={noteKey} className={"absolute dark:bg-gray-500 bg-gray-300 hover:bg-blue-500 cursor-pointer border dark:border-[#222] border-gray-400 rounded"}
+            <button type="button" aria-label="Scroll to note" key={noteKey} className={"absolute dark:bg-gray-500 bg-gray-300 hover:bg-blue-500 cursor-pointer border dark:border-[#222] border-gray-400 rounded"}
               onclick={_handleItemClick}
               style={{
                 width: `${newWidth}px`,
@@ -107,7 +107,7 @@ export function MiniMap() {
                 left: `${newLeft}px`,
                 zIndex: `${newZIndex}`
               }}
-            ></div>
+            ></button>
           )
         })}
 
@@ -123,7 +123,7 @@ export function MiniMap() {
           }
 
           return (
-            <div key={textKey} className={"bg-indigo-500 hover:bg-blue-500 cursor-pointer rounded"}
+            <button type="button" aria-label="Scroll to text item" key={textKey} className={"bg-indigo-500 hover:bg-blue-500 cursor-pointer rounded"}
               onclick={_handleItemClick}
               style={{
                 position: 'absolute',
@@ -134,7 +134,7 @@ export function MiniMap() {
                 border: '1px solid #222',
                 zIndex: `${LayerEnum.MINIMAP + 1}`
               }}
-            ></div>
+            ></button>
           )
         })}
 
