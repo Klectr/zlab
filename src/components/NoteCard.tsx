@@ -277,7 +277,7 @@ export function NoteCard(props: NoteCardProps) {
             className={"dark:text-white absolute dark:bg-[#1c1c1c] bg-[#fff] rounded-md p-1 z-[1000] border border-blue-500"}
             style={{
               top: `${it.position.y}px`,
-              left: `${it.position.x - 120}px`
+              left: `${Math.max(0, it.position.x - 120)}px`
             }}
           >
             <div className="flex flex-col text-sm dark:text-[#999] text-black">
