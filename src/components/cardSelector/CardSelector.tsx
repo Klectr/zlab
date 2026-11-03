@@ -13,7 +13,7 @@ export function CardSelector() {
   onMount(() => {
     const _updateCenteredLeft = () => {
       const width = containerRef.current?.getBoundingClientRect().width ?? 1
-      centeredLeft.value = window.innerWidth / 2 - width / 2
+      centeredLeft.value = Math.max(0, window.innerWidth / 2 - width / 2)
     }
     _updateCenteredLeft()
     window.addEventListener("resize", _updateCenteredLeft)
