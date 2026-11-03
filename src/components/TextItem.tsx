@@ -200,7 +200,7 @@ export function TextItem(props: TextCardProps) {
       <div
         ref={elRef}
         onmousedown={_handleMouseDown}
-        className="text-container transition flex flex-col justify-stretch rounded absolute"
+        className="text-container dark:text-white transition flex flex-col justify-stretch rounded absolute"
         style={{
           outline: outline,
           fontSize: fontSize,
