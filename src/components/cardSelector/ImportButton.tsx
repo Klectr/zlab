@@ -107,8 +107,8 @@ export function ImportButton() {
 
   return (
     <Tooltip message="Import Json File">
+      <button type="button" aria-label="Import Json File" onclick={_handleImport} className="flex items-center">
       <svg
-        onclick={_handleImport}
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
@@ -125,6 +125,7 @@ export function ImportButton() {
         <polyline points="7 10 12 15 17 10" />
         <line x1="12" x2="12" y1="15" y2="3" />
       </svg>
+      </button>
     </Tooltip>
   )
 }

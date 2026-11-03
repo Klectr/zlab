@@ -7,7 +7,7 @@ import { CardTypes } from "../../types";
 
 export function TextButton() {
 
-  function _handleClick(e: Kiru.MouseEvent<SVGSVGElement>) {
+  function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     TextSignal.default.addText({
       fontSize: 84,
       type: CardTypes.TEXTS,
@@ -27,8 +27,8 @@ export function TextButton() {
 
   return (
     <Tooltip message="Create a Text Node">
+      <button type="button" aria-label="Create a Text Node" onclick={_handleClick} className="flex items-center">
       <svg
-        onclick={_handleClick}
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
@@ -44,6 +44,7 @@ export function TextButton() {
         <path d="m6 16 6-12 6 12" />
         <path d="M8 12h8" />
       </svg>
+      </button>
     </Tooltip>
   )
 }
