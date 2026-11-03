@@ -1,6 +1,7 @@
 import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
 import { focusedItem } from "."
+import { isValidCardEntry } from "../utils/localStorage"
 
 export type ImageCardType = Card<CardTypes.IMAGES>
 
@@ -13,11 +14,13 @@ function loadLocalStorage() {
       parsed && typeof parsed === "object" && !Array.isArray(parsed)
         ? parsed
         : {}
-    for (const entry of Object.values(images.value)) {
-      const card = entry as { position?: { x?: unknown; y?: unknown } }
-      if (!card || typeof card !== "object" || !card.position || typeof card.position !== "object") continue
-      if (typeof card.position.x === "number" && card.position.x < 0) card.position.x = 0
-      if (typeof card.position.y === "number" && card.position.y < 0) card.position.y = 0
+    for (const [key, entry] of Object.entries(images.value)) {
+      if (!isValidCardEntry(entry, false)) {
+        delete images.value[key]
+        continue
+      }
+      if (entry.position.x < 0) entry.position.x = 0
+      if (entry.position.y < 0) entry.position.y = 0
     }
   } catch {
     images.value = {}
