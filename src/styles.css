@@ -18,7 +18,12 @@
   box-sizing: border-box;
 }
 
-*:focus {
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.text-p:focus-visible {
   outline: none;
 }
 
