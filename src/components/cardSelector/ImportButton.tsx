@@ -85,21 +85,39 @@ export function ImportButton() {
           toast.showToast("error", "Could not import that file.")
           return
         }
+        const addedImageIds: string[] = []
+        const addedNoteIds: string[] = []
+        const addedTextIds: string[] = []
         for (const item of entries) {
           if (item.type === CardTypes.IMAGES || item.type == 'image') {
-            images.addImage(item as unknown as Omit<ImageCardType, "id">)
+            addedImageIds.push(images.addImage(item as unknown as Omit<ImageCardType, "id">))
             continue
           } else if (item.type === CardTypes.NOTES || item.type === 'note') {
-            notes.addNote(item as unknown as Omit<NoteCardType, "id">)
+            addedNoteIds.push(notes.addNote(item as unknown as Omit<NoteCardType, "id">))
             continue
           } else if (item.type === CardTypes.TEXTS || item.type === 'text') {
-            texts.addText(item as unknown as Omit<TextCardType, "id">)
+            addedTextIds.push(texts.addText(item as unknown as Omit<TextCardType, "id">))
           }
         }
 
-        updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
-        updateLocalStorage(CardTypes.IMAGES, images.images).notify()
-        updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+        try {
+          updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
+          updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+          updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+        } catch (err: unknown) {
+          if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
+          toast.showToast("error", "Could not save the imported cards!")
+          for (const id of addedImageIds) images.removeImage(id)
+          for (const id of addedNoteIds) notes.removeNote(id)
+          for (const id of addedTextIds) texts.removeText(id)
+          try {
+            updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
+            updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+            updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+          } catch {
+            return
+          }
+        }
       }
     }
     input.click()
