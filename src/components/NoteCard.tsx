@@ -137,6 +137,11 @@ export function NoteCard(props: NoteCardProps) {
     _exportFile()
   }
 
+  function _handleContextExportClick() {
+    _exportFile()
+    _handleContextClose()
+  }
+
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
     openContextMenu.value = !openContextMenu.value
@@ -261,7 +266,7 @@ export function NoteCard(props: NoteCardProps) {
                     </button>
                   </li>
                   <li className="group flex items-center gap-2 hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer px-2 py-1">
-                    <button onclick={_handleExportClick} className="text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button onclick={_handleContextExportClick} className="text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       export
                     </button>
                   </li>
