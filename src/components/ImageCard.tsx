@@ -76,7 +76,7 @@ export function ImageCard(props: ImageCardProps) {
   }
 
 
-  function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
+  function _handleResizeMouseDown(e: Kiru.MouseEvent<HTMLButtonElement>) {
     if (e.button !== 0) return
     e.stopPropagation()
     initialResizeX.current = e.pageX
@@ -177,28 +177,33 @@ export function ImageCard(props: ImageCardProps) {
 
 
 function ExpandIcon({ cb }: {
-  cb: Kiru.MouseEventHandler<SVGSVGElement>
+  cb: Kiru.MouseEventHandler<HTMLButtonElement>
 }) {
   return () => {
     const isDarkTheme = useThemeDetector()
     return (
-      <svg
+      <button
+        type="button"
+        aria-label="Resize image"
         onmousedown={cb}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={isDarkTheme ? "#777" : "#999"}
-        stroke-width="1"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg]"
+        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex"
       >
-        <path d="M2 10v4" />
-        <path d="M4 8v8" />
-        <path d="M6 5v14" />
-      </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={isDarkTheme ? "#777" : "#999"}
+          stroke-width="1"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M2 10v4" />
+          <path d="M4 8v8" />
+          <path d="M6 5v14" />
+        </svg>
+      </button>
     )
   }
 }
