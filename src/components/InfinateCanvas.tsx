@@ -8,6 +8,8 @@ import images from "../signals/images"
 import { CardSelector } from "./cardSelector/CardSelector"
 import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
+import { createImageCardFromFile } from "../utils/createImageCard"
+import { useToast } from "./Toast"
 import { TextItem } from "./TextItem"
 import texts from "../signals/texts"
 import { createDebounce } from "../utils/useDebounce"
@@ -15,6 +17,7 @@ import { createDebounce } from "../utils/useDebounce"
 export default function InfiniteCanvas() {
   const containerRef = ref<HTMLDivElement>(null)
   const { debounce } = createDebounce()
+  const toast = useToast()
 
   onMount(() => {
     const initPos = getInitialPosition(canvasDimentsion)
@@ -40,11 +43,25 @@ export default function InfiniteCanvas() {
       e.preventDefault()
     }
 
+    function _handleFileDrop(e: DragEvent) {
+      e.preventDefault()
+      const target = e.target as HTMLElement | null
+      if (target?.closest?.(".cm-editor")) return
+      const file = Array.from(e.dataTransfer?.files ?? []).find((f) =>
+        f.type.startsWith("image/")
+      )
+      if (!file) return
+      createImageCardFromFile(file, {
+        x: Math.max(0, e.pageX - 100),
+        y: Math.max(0, e.pageY - 100)
+      }, () => toast.showToast("error", "Could not add such a girthy image!"))
+    }
+
     _updateDimensions()
     window.addEventListener("resize", _updateDimensions)
     window.addEventListener("scroll", _updatePosition)
     window.addEventListener("dragover", _preventFileDropNavigation)
-    window.addEventListener("drop", _preventFileDropNavigation)
+    window.addEventListener("drop", _handleFileDrop)
     notes.loadLocalStorage()
     images.loadLocalStorage()
     texts.loadLocalStorage()
@@ -53,7 +70,7 @@ export default function InfiniteCanvas() {
       window.removeEventListener("resize", _updateDimensions)
       window.removeEventListener("scroll", _updatePosition)
       window.removeEventListener("dragover", _preventFileDropNavigation)
-      window.removeEventListener("drop", _preventFileDropNavigation)
+      window.removeEventListener("drop", _handleFileDrop)
     }
   })
 
