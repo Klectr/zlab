@@ -36,9 +36,15 @@ export default function InfiniteCanvas() {
       })
     }
 
+    function _preventFileDropNavigation(e: DragEvent) {
+      e.preventDefault()
+    }
+
     _updateDimensions()
     window.addEventListener("resize", _updateDimensions)
     window.addEventListener("scroll", _updatePosition)
+    window.addEventListener("dragover", _preventFileDropNavigation)
+    window.addEventListener("drop", _preventFileDropNavigation)
     notes.loadLocalStorage()
     images.loadLocalStorage()
     texts.loadLocalStorage()
@@ -46,6 +52,8 @@ export default function InfiniteCanvas() {
     return () => {
       window.removeEventListener("resize", _updateDimensions)
       window.removeEventListener("scroll", _updatePosition)
+      window.removeEventListener("dragover", _preventFileDropNavigation)
+      window.removeEventListener("drop", _preventFileDropNavigation)
     }
   })
 
