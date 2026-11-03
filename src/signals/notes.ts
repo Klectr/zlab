@@ -15,7 +15,7 @@ function loadLocalStorage() {
         ? parsed
         : {}
     for (const [key, entry] of Object.entries(notes.value)) {
-      if (!isValidCardEntry(entry, false)) {
+      if (!isValidCardEntry(entry, false, key)) {
         delete notes.value[key]
         continue
       }

@@ -24,8 +24,13 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value)
 }
 
-export function isValidCardEntry(value: unknown, needsFontSize: boolean) {
+export function isValidCardEntry(
+  value: unknown,
+  needsFontSize: boolean,
+  expectedId?: string
+) {
   if (!isRecord(value)) return false
+  if (expectedId !== undefined && value.id !== expectedId) return false
   if (typeof value.title !== "string") return false
   if (typeof value.contents !== "string") return false
   if (!isRecord(value.position)) return false
