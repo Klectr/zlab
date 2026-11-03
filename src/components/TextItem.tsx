@@ -121,7 +121,11 @@ export function TextItem(props: TextCardProps) {
     updateLocalStorage()
   }
 
-  function _handleResizeMouseDown(e: Kiru.MouseEvent<SVGSVGElement>) {
+  function _handleFocus() {
+    focusedItem.value = itemKey
+  }
+
+  function _handleResizeMouseDown(e: Kiru.MouseEvent<HTMLButtonElement>) {
     if (e.button !== 0) return
     e.stopPropagation()
     initialResizeX.current = e.pageX
@@ -145,7 +149,7 @@ export function TextItem(props: TextCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
   })
 
-  function _handleClose(e: Kiru.MouseEvent<SVGSVGElement>) {
+  function _handleClose(e: Kiru.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
     TextSignal.default.removeText(item.value.id)
     TextSignal.default.texts.notify()
@@ -213,6 +217,7 @@ export function TextItem(props: TextCardProps) {
             ref={pRef}
             //@ts-expect-error oninput doesnt exist on the props type
             oninput={_handleContentInput}
+            onfocus={_handleFocus}
             contentEditable
             className={'text-p inline-block px-2 w-full select-none drop-shadow relative'}>
           </p>
@@ -227,7 +232,7 @@ export function TextItem(props: TextCardProps) {
 }
 
 interface CloseIconProps {
-  cb: Kiru.MouseEventHandler<SVGSVGElement>,
+  cb: Kiru.MouseEventHandler<HTMLButtonElement>,
   itemId: TextCardType['id']
 }
 
@@ -235,33 +240,38 @@ function CloseIcon({ cb, itemId }: CloseIconProps) {
   return () => {
     const isDark = useThemeDetector()
     return (
-      <svg
+      <button
+        type="button"
+        aria-label="Delete text"
         onclick={cb}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill={isDark ? 'black' : 'white'}
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
         className="text-close cursor-pointer w-4 h-4 absolute top-[-8px] right-[-8px]"
         style={{
           display: focusedItem.value === itemId ? 'unset' : 'none'
         }}
-
       >
-        <circle cx="12" cy="12" r="10" />
-        <path d="m15 9-6 6" />
-        <path d="m9 9 6 6" />
-      </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill={isDark ? 'black' : 'white'}
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          className="w-4 h-4 block"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="m15 9-6 6" />
+          <path d="m9 9 6 6" />
+        </svg>
+      </button>
     )
   }
 }
 
 interface ExpandIconProps {
-  cb: Kiru.MouseEventHandler<SVGSVGElement>,
+  cb: Kiru.MouseEventHandler<HTMLButtonElement>,
   itemId: TextCardType['id']
 }
 
@@ -269,24 +279,30 @@ function ExpandIcon({ cb, itemId }: ExpandIconProps) {
   return () => {
     const isDark = useThemeDetector()
     return (
-      <svg
+      <button
+        type="button"
+        aria-label="Resize text"
         onmousedown={cb}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill={isDark ? 'black' : 'white'}
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
         className="h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize"
         style={{
           display: focusedItem.value === itemId ? 'unset' : 'none'
         }}
       >
-        <rect width="18" height="18" x="3" y="3" rx="2" />
-      </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill={isDark ? 'black' : 'white'}
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          className="h-4 w-4 block"
+        >
+          <rect width="18" height="18" x="3" y="3" rx="2" />
+        </svg>
+      </button>
     )
   }
 }

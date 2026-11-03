@@ -223,13 +223,11 @@ export function NoteCard(props: NoteCardProps) {
                 <div style={saveIndicatorStyle} className="rounded-full w-1 h-1 dark:bg-white bg-green-500"></div>
               </div>
               <div className="flex gap-2">
-                <div
-                  onclick={_handleExportClick}
-                  className="flex items-center">
+                <button type="button" aria-label="Export note" onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
                     className="dark:text-[#5c5c5c] cursor-pointer w-4 h-4 text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
                   />
-                </div>
+                </button>
 
                 <Divider />
 
