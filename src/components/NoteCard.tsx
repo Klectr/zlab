@@ -231,7 +231,7 @@ export function NoteCard(props: NoteCardProps) {
 
                 <Divider />
 
-                <button className="text-md dark:text-[#777] text-black cursor-pointer" onclick={_handleClose}>x</button>
+                <button type="button" aria-label="Delete note" className="text-md dark:text-[#777] text-black cursor-pointer" onclick={_handleClose}>x</button>
 
               </div>
             </div>
