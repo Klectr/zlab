@@ -11,6 +11,24 @@ interface TextCardProps {
   data: TextCardType
 }
 
+const _BLOCK_TAGS = new Set(["DIV", "P", "LI", "PRE"])
+
+function _plainTextFromNode(node: Node, isFirst = false): string {
+  if (node.nodeType === 3) return node.textContent ?? ""
+  if (node.nodeType !== 1) return ""
+  const el = node as HTMLElement
+  if (el.tagName === "BR") return "\n"
+  const inner = Array.from(el.childNodes)
+    .map((child, i) => _plainTextFromNode(child, isFirst && i === 0))
+    .join("")
+  if (_BLOCK_TAGS.has(el.tagName)) {
+    const stripped = inner.replace(/\n$/, "")
+    if (isFirst && stripped !== "") return stripped
+    return "\n" + stripped
+  }
+  return inner
+}
+
 export function TextItem(props: TextCardProps) {
   const $ = setup<TextCardProps>()
   const itemKey = props.itemKey
@@ -136,7 +154,9 @@ export function TextItem(props: TextCardProps) {
 
   function _handleContentInput(e: InputEvent) {
     const el = e.target as HTMLParagraphElement & Pick<HTMLInputElement, 'oninput'>
-    const val = el.innerHTML.split('<br>').join('\n')
+    const val = Array.from(el.childNodes)
+      .map((child, i) => _plainTextFromNode(child, i === 0))
+      .join("")
     texts.updateTextProperty(itemKey, 'contents', val)
     updateLocalStorage()
   }
