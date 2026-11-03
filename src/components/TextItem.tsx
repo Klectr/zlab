@@ -50,6 +50,7 @@ export function TextItem(props: TextCardProps) {
     const elDems = elRef.current?.getBoundingClientRect()
     const elW = elDems?.width ?? 100
     const elH = elDems?.height ?? 100
+    if (elW <= 0 || elH <= 0) return
     const newDems: Card<CardTypes.TEXTS>['dimensions'] = { w: elW, h: elH }
     TextSignal.default.updateTextProperty(itemKey, 'dimensions', newDems)
     TextSignal.default.texts.notify()
