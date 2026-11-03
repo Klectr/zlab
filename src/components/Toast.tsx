@@ -105,6 +105,7 @@ function ToastItem({
   const translateY = i * 70
   return (
     <div
+      role={toast.type === "error" ? "alert" : "status"}
       style={{
         transform: `translate(${translateX}px, ${translateY}px)`,
       }}
