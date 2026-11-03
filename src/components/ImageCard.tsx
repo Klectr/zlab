@@ -95,11 +95,29 @@ export function ImageCard(props: ImageCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
   }
 
+  function persistLocalStorage() {
+    updateLocalStorage(CardTypes.IMAGES, images.images)
+  }
+
+  function flushLocalStorage() {
+    try {
+      persistLocalStorage()
+    } catch {
+      return
+    }
+  }
+
+  window.addEventListener('beforeunload', flushLocalStorage)
+  window.addEventListener('pagehide', flushLocalStorage)
+
   onCleanup(() => {
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
+    window.removeEventListener('beforeunload', flushLocalStorage)
+    window.removeEventListener('pagehide', flushLocalStorage)
+    flushLocalStorage()
   })
 
   function _handleClose() {
