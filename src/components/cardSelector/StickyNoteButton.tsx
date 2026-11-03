@@ -6,7 +6,7 @@ import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
 
 export function StickyNoteButton() {
-  function _handleClick(e: Kiru.MouseEvent<SVGSVGElement>) {
+  function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     NotesSigal.default.addNote({
       type: CardTypes.NOTES,
       title: "New Note",
@@ -25,8 +25,8 @@ export function StickyNoteButton() {
 
   return (
     <Tooltip message="Create a Sticky Note">
+      <button type="button" aria-label="Create a Sticky Note" onclick={_handleClick} className="flex items-center">
       <svg
-        onclick={_handleClick}
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
@@ -42,6 +42,7 @@ export function StickyNoteButton() {
         <path
           d="M15 3v4a2 2 0 0 0 2 2h4" />
       </svg>
+      </button>
     </Tooltip>
   )
 

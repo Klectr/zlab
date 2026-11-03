@@ -8,7 +8,7 @@ import { defaultClassName } from "./utils"
 
 export function ImageCardButton() {
   const toast = useToast()
-  function _handleClick(mouseEvent: Kiru.MouseEvent<SVGSVGElement>) {
+  function _handleClick(mouseEvent: Kiru.MouseEvent<HTMLButtonElement>) {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = "image/*"
@@ -72,8 +72,8 @@ export function ImageCardButton() {
 
   return (
     <Tooltip message="Create an Image">
+      <button type="button" aria-label="Create an Image" onclick={_handleClick} className="flex items-center">
       <svg
-        onclick={_handleClick}
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
@@ -98,6 +98,7 @@ export function ImageCardButton() {
         <path
           d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
       </svg>
+      </button>
     </Tooltip>
   )
 }
