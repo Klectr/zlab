@@ -6,14 +6,25 @@ import { updateLocalStorage } from "./localStorage"
 export function createImageCardFromFile(
   file: File,
   position: { x: number; y: number },
-  onPersistError: () => void
+  onPersistError: () => void,
+  onLoadError: () => void
 ) {
   const reader = new FileReader()
   reader.readAsDataURL(file)
+  reader.onerror = function () {
+    onLoadError()
+  }
   reader.onload = function (readerEvent) {
     const image = document.createElement("img")
+    image.onerror = function () {
+      onLoadError()
+    }
     image.onload = function () {
       const { width, height } = image
+      if (!(width > 0) || !(height > 0)) {
+        onLoadError()
+        return
+      }
 
       const len = Math.sqrt(width * width + height * height)
       const normalizedW = (width / len) * 300

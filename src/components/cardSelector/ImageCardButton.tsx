@@ -18,7 +18,7 @@ export function ImageCardButton() {
       createImageCardFromFile(el.files[0], {
         x: Math.max(0, pageX - 100),
         y: Math.max(0, pageY + (window.innerHeight / 2) - 100)
-      }, () => toast.showToast("error", "Could not add such a girthy image!"))
+      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
     }
     input.click()
   }
