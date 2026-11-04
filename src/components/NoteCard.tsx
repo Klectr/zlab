@@ -187,17 +187,19 @@ export function NoteCard(props: NoteCardProps) {
     if (!e.ctrlKey) return
 
     const target = e.target as HTMLElement | null
-    if (target && typeof target.closest === "function" && target.closest("input, textarea, select, [contenteditable]")) return
+    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable]")
 
     // TODO: add support for other os
     // TODO: add modal popup
 
     switch (e.key) {
       case 'Delete':
+        if (inEditableTarget) return
         e.preventDefault()
         _handleClose()
         break
       case 'Backspace':
+        if (inEditableTarget) return
         e.preventDefault()
         _handleClose()
         break
