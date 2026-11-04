@@ -52,7 +52,7 @@ bun run dev
 
 For production, `bun run build` emits a static `dist/` you can serve from any static host (HTTPS required for installation, see below).
 
-**Install as an app (PWA):** open Zlab in Chrome over HTTPS (or localhost) and choose **Install Zlab** from the address-bar install icon or the browser menu. It installs like a native app and works offline from the second load on (the first load registers the offline cache), and keeps your boards in the browser's local storage on that origin.
+**Install as an app (PWA):** open Zlab in Chrome over HTTPS (or localhost) and choose **Install Zlab** from the address-bar install icon or the browser menu. It installs like a native app and works offline once the first load has finished (the service worker precaches the app shell and its assets as it registers), and keeps your boards in the browser's local storage on that origin.
 
 ### **Usage**
 
