@@ -1,4 +1,4 @@
-import { ImagesSignal } from "../signals"
+import { ImagesSignal, canvasDimentsion } from "../signals"
 import images from "../signals/images"
 import { CardTypes } from "../types"
 import { updateLocalStorage } from "./localStorage"
@@ -24,11 +24,22 @@ export function createImageCardFromFile(
       if (typeof content == "string") img = content?.split(":")[1]
       if (!img) return
 
+      const clampedPosition = {
+        x: Math.min(
+          Math.max(position.x, 0),
+          Math.max(0, canvasDimentsion.value.width - normalizedW)
+        ),
+        y: Math.min(
+          Math.max(position.y, 0),
+          Math.max(0, canvasDimentsion.value.height - normalizedH)
+        ),
+      }
+
       const imgId = ImagesSignal.default.addImage({
         type: CardTypes.IMAGES,
         title: "New Image",
         contents: content as string,
-        position,
+        position: clampedPosition,
         dimensions: {
           w: normalizedW,
           h: normalizedH
