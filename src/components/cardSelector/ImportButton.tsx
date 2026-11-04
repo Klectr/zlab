@@ -2,8 +2,12 @@ import images, { ImageCardType } from "../../signals/images"
 import notes, { NoteCardType } from "../../signals/notes"
 import texts, { TextCardType } from "../../signals/texts"
 import { Card, CardTypes } from "../../types"
+import { canvasDimentsion } from "../../signals"
 import { convertBase64ToJson } from "../../utils/convertBase64ToJson"
-import { updateLocalStorage } from "../../utils/localStorage"
+import {
+  clampCardEntryToCanvas,
+  updateLocalStorage,
+} from "../../utils/localStorage"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
@@ -50,6 +54,13 @@ function parseImportData(data: unknown): ImportEntry[] | null {
     const item: unknown = data[key]
     if (!isValidEntry(item)) return null
     const { id: _, ...rest } = item as Record<string, unknown>
+    clampCardEntryToCanvas(
+      rest as {
+        position: { x: number; y: number }
+        dimensions: { w: number; h: number }
+      },
+      canvasDimentsion.value
+    )
     entries.push(rest as ImportEntry)
   }
   return entries
