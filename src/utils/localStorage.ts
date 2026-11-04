@@ -24,6 +24,25 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value)
 }
 
+export function clampCardEntryToCanvas(
+  entry: {
+    position: { x: number; y: number }
+    dimensions: { w: number; h: number }
+  },
+  canvas: { width: number; height: number }
+) {
+  entry.dimensions.w = Math.min(entry.dimensions.w, canvas.width)
+  entry.dimensions.h = Math.min(entry.dimensions.h, canvas.height)
+  entry.position.x = Math.min(
+    Math.max(entry.position.x, 0),
+    canvas.width - entry.dimensions.w
+  )
+  entry.position.y = Math.min(
+    Math.max(entry.position.y, 0),
+    canvas.height - entry.dimensions.h
+  )
+}
+
 export function isValidCardEntry(
   value: unknown,
   needsFontSize: boolean,

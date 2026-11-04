@@ -1,7 +1,10 @@
 import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
-import { focusedItem } from "."
-import { isValidCardEntry } from "../utils/localStorage"
+import { canvasDimentsion, focusedItem } from "."
+import {
+  clampCardEntryToCanvas,
+  isValidCardEntry,
+} from "../utils/localStorage"
 
 export type ImageCardType = Card<CardTypes.IMAGES>
 
@@ -19,8 +22,7 @@ function loadLocalStorage() {
         delete images.value[key]
         continue
       }
-      if (entry.position.x < 0) entry.position.x = 0
-      if (entry.position.y < 0) entry.position.y = 0
+      clampCardEntryToCanvas(entry, canvasDimentsion.value)
     }
   } catch {
     images.value = {}
