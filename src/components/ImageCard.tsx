@@ -74,8 +74,8 @@ export function ImageCard(props: ImageCardProps) {
 
   function _handleResizeMove(e: MouseEvent) {
     const newDim = {
-      w: Math.max(100, initialResizeW.current + (e.pageX - initialResizeX.current)),
-      h: Math.max(80, initialResizeH.current + (e.pageY - initialResizeY.current)),
+      w: Math.max(100, Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x)),
+      h: Math.max(80, Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y)),
     }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
