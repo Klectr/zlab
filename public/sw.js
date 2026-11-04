@@ -7,15 +7,15 @@ self.addEventListener("install", (event) => {
       .open(CACHE_NAME)
       .then(async (cache) => {
         await cache.addAll(APP_SHELL)
-        const shell = await cache.match("/index.html")
-        const html = shell ? await shell.text() : ""
-        const assets = [
-          ...new Set(
-            [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
-          ),
-        ]
-        if (assets.length) {
-          await cache.addAll(assets).catch(() => {})
+        try {
+          const shell = await cache.match("/index.html")
+          const html = shell ? await shell.text() : ""
+          const assets = [
+            ...new Set(
+              [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
+            ),
+          ]
+          await Promise.all(assets.map((a) => cache.add(a).catch(() => {})))
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
             const cssResponse = await cache.match(asset)
             const css = cssResponse ? await cssResponse.text() : ""
@@ -24,9 +24,9 @@ self.addEventListener("install", (event) => {
                 [...css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)].map((m) => m[1])
               ),
             ]
-            if (refs.length) await cache.addAll(refs).catch(() => {})
+            await Promise.all(refs.map((r) => cache.add(r).catch(() => {})))
           }
-        }
+        } catch {}
       })
       .then(() => self.skipWaiting())
   )
