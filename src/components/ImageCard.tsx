@@ -6,6 +6,7 @@ import images, { ImageCardType } from "../signals/images"
 import { updateLocalStorage } from "../utils/localStorage"
 import { useThemeDetector } from "../utils/useThemeDetector"
 import { ContextMenuPortal } from "./ContextMenuPortal"
+import { mouse } from "../utils/mouse"
 import { CardTypes } from "../types"
 
 interface ImageCardProps {
@@ -128,6 +129,7 @@ export function ImageCard(props: ImageCardProps) {
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
+    mouse.value = { x: e.clientX, y: e.clientY }
     openContextMenu.value = !openContextMenu.value
   }
 
