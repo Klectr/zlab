@@ -1,4 +1,4 @@
-import { onMount, ref, signal } from "kiru"
+import { onMount, signal } from "kiru"
 import notes, { NoteCardType } from "../signals/notes"
 import { canvasDimentsion } from "../signals"
 import { LayerEnum } from "../utils/enums"
@@ -7,10 +7,8 @@ import texts, { TextCardType } from "../signals/texts"
 
 const _MAP_OFFSET = 20
 const _MAP_SCALE_FACTOR = 10
-const _defaults = { width: 0, height: 0 }
 
 export function MiniMap() {
-  const el = ref<HTMLDivElement>(null)
   const scrollX = signal(0)
   const scrollY = signal(0)
 
@@ -25,18 +23,17 @@ export function MiniMap() {
   })
 
   return () => {
-    const elMeta = el.current?.getBoundingClientRect() ?? _defaults
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-    const xPos = viewportWidth - elMeta?.width - _MAP_OFFSET
-    const yPos = viewportHeight - elMeta.height - _MAP_OFFSET
     const width = canvasDimentsion.value.width / _MAP_SCALE_FACTOR
     const height = canvasDimentsion.value.height / _MAP_SCALE_FACTOR
+    const xPos = viewportWidth - width - _MAP_OFFSET
+    const yPos = viewportHeight - height - _MAP_OFFSET
 
     return (
       <div
         className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded"
-        ref={el} style={{
+        style={{
           width: `${width}px`,
           height: `${height}px`,
           translate: `${xPos}px ${yPos}px`,
