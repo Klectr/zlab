@@ -59,8 +59,8 @@ export function MiniMap() {
 
           const newWidth = image.dimensions.w / _MAP_SCALE_FACTOR
           const newHeight = image.dimensions.h / _MAP_SCALE_FACTOR
-          const newTop = (image.position.y / _MAP_SCALE_FACTOR)
-          const newLeft = (image.position.x / _MAP_SCALE_FACTOR)
+          const newTop = Math.max(0, Math.min(image.position.y / _MAP_SCALE_FACTOR, height - newHeight))
+          const newLeft = Math.max(0, Math.min(image.position.x / _MAP_SCALE_FACTOR, width - newWidth))
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
@@ -93,8 +93,8 @@ export function MiniMap() {
 
           const newWidth = note.dimensions.w / _MAP_SCALE_FACTOR
           const newHeight = note.dimensions.h / _MAP_SCALE_FACTOR
-          const newTop = (note.position.y / _MAP_SCALE_FACTOR)
-          const newLeft = (note.position.x / _MAP_SCALE_FACTOR)
+          const newTop = Math.max(0, Math.min(note.position.y / _MAP_SCALE_FACTOR, height - newHeight))
+          const newLeft = Math.max(0, Math.min(note.position.x / _MAP_SCALE_FACTOR, width - newWidth))
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
@@ -122,15 +122,20 @@ export function MiniMap() {
             })
           }
 
+          const newWidth = text.dimensions.w / _MAP_SCALE_FACTOR
+          const newHeight = text.dimensions.h / _MAP_SCALE_FACTOR
+          const newTop = Math.max(0, Math.min(text.position.y / _MAP_SCALE_FACTOR, height - newHeight))
+          const newLeft = Math.max(0, Math.min(text.position.x / _MAP_SCALE_FACTOR, width - newWidth))
+
           return (
             <button type="button" aria-label="Scroll to text item" key={textKey} className={"bg-indigo-500 hover:bg-blue-500 cursor-pointer rounded"}
               onclick={_handleItemClick}
               style={{
                 position: 'absolute',
-                width: `${text.dimensions.w / _MAP_SCALE_FACTOR}px`,
-                height: `${text.dimensions.h / _MAP_SCALE_FACTOR}px`,
-                top: `${(text.position.y / _MAP_SCALE_FACTOR)}px`,
-                left: `${(text.position.x / _MAP_SCALE_FACTOR)}px`,
+                width: `${newWidth}px`,
+                height: `${newHeight}px`,
+                top: `${newTop}px`,
+                left: `${newLeft}px`,
                 border: '1px solid #222',
                 zIndex: `${LayerEnum.MINIMAP + 1}`
               }}
