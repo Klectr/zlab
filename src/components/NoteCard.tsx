@@ -10,6 +10,7 @@ import { Divider } from "./Divider"
 import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { ContextMenuPortal } from "./ContextMenuPortal"
+import { mouse } from "../utils/mouse"
 import { HelpIcon } from "./icons/HelpIcon"
 
 interface NoteCardProps {
@@ -158,6 +159,7 @@ export function NoteCard(props: NoteCardProps) {
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
+    mouse.value = { x: e.clientX, y: e.clientY }
     openContextMenu.value = !openContextMenu.value
   }
 
