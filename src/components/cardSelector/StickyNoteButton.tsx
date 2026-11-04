@@ -1,4 +1,4 @@
-import { NotesSigal } from "../../signals"
+import { NotesSigal, canvasDimentsion } from "../../signals"
 import notes from "../../signals/notes"
 import { CardTypes } from "../../types"
 import { updateLocalStorage } from "../../utils/localStorage"
@@ -14,8 +14,8 @@ export function StickyNoteButton() {
       title: "New Note",
       contents: "",
       position: {
-        x: Math.max(0, e.pageX - 100),
-        y: Math.max(0, e.pageY + (window.innerHeight / 2) - 100)
+        x: Math.min(Math.max(0, e.pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
+        y: Math.min(Math.max(0, e.pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 200))
       },
       dimensions: {
         w: 200,

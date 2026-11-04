@@ -1,5 +1,5 @@
 import { Tooltip } from "./Tooltip";
-import { TextSignal } from "../../signals";
+import { TextSignal, canvasDimentsion } from "../../signals";
 import texts from "../../signals/texts";
 import { updateLocalStorage } from "../../utils/localStorage";
 import { useToast } from "../Toast";
@@ -16,8 +16,8 @@ export function TextButton() {
       title: "New Note",
       contents: "todo: fill me",
       position: {
-        x: Math.max(0, e.pageX - 100),
-        y: Math.max(0, e.pageY + (window.innerHeight / 2) - 100)
+        x: Math.min(Math.max(0, e.pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
+        y: Math.min(Math.max(0, e.pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 100))
       },
       dimensions: {
         w: 200,
