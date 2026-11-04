@@ -65,7 +65,7 @@ export default function InfiniteCanvas() {
       createImageCardFromFile(file, {
         x: Math.max(0, e.pageX - 100),
         y: Math.max(0, e.pageY - 100)
-      }, () => toast.showToast("error", "Could not add such a girthy image!"))
+      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
     }
 
     _updateDimensions()
