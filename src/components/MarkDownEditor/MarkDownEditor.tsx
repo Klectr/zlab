@@ -2,6 +2,7 @@ import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor } 
 import { EditorState } from "@codemirror/state"
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
+import { search, searchKeymap } from "@codemirror/search"
 import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } from "@codemirror/language"
 import { tags } from "@lezer/highlight"
 import { onCleanup, onMount, ref } from "kiru"
@@ -56,7 +57,8 @@ export function MarkDownEditor({ initial, onChange }: MarkDownEditorProps) {
           EditorState.allowMultipleSelections.of(true),
           indentOnInput(),
           bracketMatching(),
-          keymap.of([...defaultKeymap, ...historyKeymap]),
+          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+          search(),
           markdown(),
           syntaxHighlighting(highlightStyle),
           editorTheme,
