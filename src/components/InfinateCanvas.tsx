@@ -39,6 +39,17 @@ export default function InfiniteCanvas() {
       })
     }
 
+    function _flushPosition() {
+      try {
+        localStorage.setItem("pos", JSON.stringify({
+          left: window.scrollX,
+          top: window.scrollY
+        }))
+      } catch {
+        return
+      }
+    }
+
     function _preventFileDropNavigation(e: DragEvent) {
       e.preventDefault()
     }
@@ -62,6 +73,8 @@ export default function InfiniteCanvas() {
     window.addEventListener("scroll", _updatePosition)
     window.addEventListener("dragover", _preventFileDropNavigation)
     window.addEventListener("drop", _handleFileDrop)
+    window.addEventListener("beforeunload", _flushPosition)
+    window.addEventListener("pagehide", _flushPosition)
     notes.loadLocalStorage()
     images.loadLocalStorage()
     texts.loadLocalStorage()
@@ -71,6 +84,9 @@ export default function InfiniteCanvas() {
       window.removeEventListener("scroll", _updatePosition)
       window.removeEventListener("dragover", _preventFileDropNavigation)
       window.removeEventListener("drop", _handleFileDrop)
+      window.removeEventListener("beforeunload", _flushPosition)
+      window.removeEventListener("pagehide", _flushPosition)
+      _flushPosition()
     }
   })
 
