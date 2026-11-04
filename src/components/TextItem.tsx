@@ -41,6 +41,8 @@ export function TextItem(props: TextCardProps) {
   const offsetY = ref(0)
   const initialResizeX = ref(0)
   const initialFontSize = ref(0)
+  const initialResizeW = ref(0)
+  const initialResizeH = ref(0)
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
 
@@ -118,10 +120,21 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
-    const newFontSize = Math.max(
-      10,
-      Math.floor(initialFontSize.current + (e.pageX - initialResizeX.current))
+    const candidate = Math.floor(
+      initialFontSize.current + (e.pageX - initialResizeX.current)
     )
+    const scaleCap = Math.min(
+      initialResizeW.current > 0
+        ? (canvasDimentsion.value.width - item.value.position.x) /
+            initialResizeW.current
+        : Infinity,
+      initialResizeH.current > 0
+        ? (canvasDimentsion.value.height - item.value.position.y) /
+            initialResizeH.current
+        : Infinity
+    )
+    const fontCap = Math.floor(initialFontSize.current * scaleCap)
+    const newFontSize = Math.max(10, Math.min(candidate, fontCap))
 
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
     TextSignal.default.texts.notify()
@@ -137,6 +150,8 @@ export function TextItem(props: TextCardProps) {
     e.stopPropagation()
     initialResizeX.current = e.pageX
     initialFontSize.current = item.value.fontSize
+    initialResizeW.current = item.value.dimensions.w
+    initialResizeH.current = item.value.dimensions.h
     pressed.value = true
     window.addEventListener('mousemove', _handleResizeMove)
     window.addEventListener('mouseup', _handleResizeMouseUp)
