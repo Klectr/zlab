@@ -1,11 +1,33 @@
-const CACHE_NAME = "zlab-v2"
+const CACHE_NAME = "zlab-v3"
 const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest"]
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
+      .then(async (cache) => {
+        await cache.addAll(APP_SHELL)
+        const shell = await cache.match("/index.html")
+        const html = shell ? await shell.text() : ""
+        const assets = [
+          ...new Set(
+            [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
+          ),
+        ]
+        if (assets.length) {
+          await cache.addAll(assets).catch(() => {})
+          for (const asset of assets.filter((a) => a.endsWith(".css"))) {
+            const cssResponse = await cache.match(asset)
+            const css = cssResponse ? await cssResponse.text() : ""
+            const refs = [
+              ...new Set(
+                [...css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)].map((m) => m[1])
+              ),
+            ]
+            if (refs.length) await cache.addAll(refs).catch(() => {})
+          }
+        }
+      })
       .then(() => self.skipWaiting())
   )
 })
