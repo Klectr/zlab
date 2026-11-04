@@ -28,11 +28,26 @@ export function clampCardEntryToCanvas(
   entry: {
     position: { x: number; y: number }
     dimensions: { w: number; h: number }
+    fontSize?: unknown
   },
   canvas: { width: number; height: number }
 ) {
+  const origW = entry.dimensions.w
+  const origH = entry.dimensions.h
   entry.dimensions.w = Math.min(entry.dimensions.w, canvas.width)
   entry.dimensions.h = Math.min(entry.dimensions.h, canvas.height)
+  if (
+    typeof entry.fontSize === "number" &&
+    Number.isFinite(entry.fontSize) &&
+    entry.fontSize > 0
+  ) {
+    const scale = Math.min(
+      entry.dimensions.w / origW,
+      entry.dimensions.h / origH
+    )
+    if (scale < 1)
+      entry.fontSize = Math.max(1, Math.round(entry.fontSize * scale))
+  }
   entry.position.x = Math.min(
     Math.max(entry.position.x, 0),
     canvas.width - entry.dimensions.w
