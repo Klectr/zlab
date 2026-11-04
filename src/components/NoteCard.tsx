@@ -1,5 +1,5 @@
 import { effect, onCleanup, ref, setup, signal } from "kiru"
-import { NotesSigal, focusedItem } from "../signals"
+import { NotesSigal, canvasDimentsion, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import notes, { NoteCardType } from "../signals/notes"
 import { LayerEnum } from "../utils/enums"
@@ -53,8 +53,14 @@ export function NoteCard(props: NoteCardProps) {
     e.preventDefault()
     if (!pressed.value) return
 
-    newX.current = Math.max(0, e.pageX - offsetX.current)
-    newY.current = Math.max(0, e.pageY - offsetY.current)
+    newX.current = Math.min(
+      Math.max(0, e.pageX - offsetX.current),
+      Math.max(0, canvasDimentsion.value.width - item.value.dimensions.w)
+    )
+    newY.current = Math.min(
+      Math.max(0, e.pageY - offsetY.current),
+      Math.max(0, canvasDimentsion.value.height - item.value.dimensions.h)
+    )
     const newPos = { x: newX.current, y: newY.current }
 
     NotesSigal.default.updateNoteProperty(itemKey, 'position', newPos)
