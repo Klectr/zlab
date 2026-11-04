@@ -9,12 +9,13 @@ export function createFileAndExport(
 ) {
   const date = createFileCompliantDateString()
   const fileName = `${name}_${date}.${_getFileType(type)}`
-  const file = createFileFromData(data, fileName, "text/json")
+  const file = createFileFromData(data, fileName, type)
   const url = URL.createObjectURL(file)
   const a = document.createElement("a")
   a.download = fileName
   a.href = url
   a.click()
+  URL.revokeObjectURL(url)
 }
 
 function _getFileType(type: acceptableFileTypes): "json" | "md" {
