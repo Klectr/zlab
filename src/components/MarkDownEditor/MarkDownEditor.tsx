@@ -15,6 +15,7 @@ export interface MarkDownEditorChange {
 interface MarkDownEditorProps {
   initial: string
   onChange: (e: MarkDownEditorChange) => void
+  onFocus?: () => void
 }
 
 const editorThemeSpec = {
@@ -40,7 +41,7 @@ const highlightStyle = HighlightStyle.define([
   { tag: tags.strong, fontWeight: "bold" },
 ])
 
-export function MarkDownEditor({ initial, onChange }: MarkDownEditorProps) {
+export function MarkDownEditor({ initial, onChange, onFocus }: MarkDownEditorProps) {
   initThemeDetector()
   const elRef = ref<HTMLDivElement>(null)
   const themeCompartment = new Compartment()
@@ -77,6 +78,9 @@ export function MarkDownEditor({ initial, onChange }: MarkDownEditorProps) {
           EditorView.lineWrapping,
           EditorView.contentAttributes.of({ spellcheck: "true" }),
           EditorView.updateListener.of((update) => {
+            if (update.focusChanged && update.view.hasFocus) {
+              onFocus?.()
+            }
             if (update.docChanged) {
               onChange({ content: update.state.doc.toString() })
             }
