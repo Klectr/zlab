@@ -1,5 +1,5 @@
 import { effect, onCleanup, onMount, ref, setup, signal } from "kiru"
-import { TextSignal, focusedItem } from "../signals"
+import { TextSignal, canvasDimentsion, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import texts, { TextCardType } from "../signals/texts"
 import { LayerEnum } from "../utils/enums"
@@ -86,8 +86,14 @@ export function TextItem(props: TextCardProps) {
     e.preventDefault()
     if (!pressed.value) return
 
-    newX.current = Math.max(0, e.pageX - offsetX.current)
-    newY.current = Math.max(0, e.pageY - offsetY.current)
+    newX.current = Math.min(
+      Math.max(0, e.pageX - offsetX.current),
+      Math.max(0, canvasDimentsion.value.width - item.value.dimensions.w)
+    )
+    newY.current = Math.min(
+      Math.max(0, e.pageY - offsetY.current),
+      Math.max(0, canvasDimentsion.value.height - item.value.dimensions.h)
+    )
     const newPos = { x: newX.current, y: newY.current }
 
     TextSignal.default.updateTextProperty(itemKey, 'position', newPos)

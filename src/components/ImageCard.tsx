@@ -1,5 +1,5 @@
 import { onCleanup, ref, setup, signal } from "kiru"
-import { ImagesSignal, focusedItem } from "../signals"
+import { ImagesSignal, canvasDimentsion, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
@@ -40,8 +40,14 @@ export function ImageCard(props: ImageCardProps) {
     e.preventDefault()
     if (!pressed.value) return
 
-    newX.current = Math.max(0, e.pageX - offsetX.current)
-    newY.current = Math.max(0, e.pageY - offsetY.current)
+    newX.current = Math.min(
+      Math.max(0, e.pageX - offsetX.current),
+      Math.max(0, canvasDimentsion.value.width - item.value.dimensions.w)
+    )
+    newY.current = Math.min(
+      Math.max(0, e.pageY - offsetY.current),
+      Math.max(0, canvasDimentsion.value.height - item.value.dimensions.h)
+    )
     const newPos = { x: newX.current, y: newY.current }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'position', newPos)
