@@ -1,5 +1,5 @@
 import { onMount, ref } from "kiru"
-import { ImagesSignal, NotesSigal, TextSignal, canvasDimentsion } from "../signals"
+import { ImagesSignal, NotesSigal, TextSignal, canvasDimentsion, focusedItem } from "../signals"
 import { NoteCard } from "./NoteCard"
 import notes from "../signals/notes"
 import { MiniMap } from "./MiniMap"
@@ -89,6 +89,9 @@ export default function InfiniteCanvas() {
           <div
             className="dark:bg-black absolute top-0 left-0"
             ref={containerRef}
+            onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {
+              if (e.target === containerRef.current) focusedItem.value = null
+            }}
             style={{
               width: `${canvasDimentsion.value.width}px`,
               height: `${canvasDimentsion.value.height}px`,
