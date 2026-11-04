@@ -1,7 +1,10 @@
 import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
-import { focusedItem } from "."
-import { isValidCardEntry } from "../utils/localStorage"
+import { canvasDimentsion, focusedItem } from "."
+import {
+  clampCardEntryToCanvas,
+  isValidCardEntry,
+} from "../utils/localStorage"
 
 export type TextCardType = Card<CardTypes.TEXTS> & {
   fontSize: number
@@ -21,8 +24,7 @@ function loadLocalStorage() {
         delete texts.value[key]
         continue
       }
-      if (entry.position.x < 0) entry.position.x = 0
-      if (entry.position.y < 0) entry.position.y = 0
+      clampCardEntryToCanvas(entry, canvasDimentsion.value)
     }
   } catch {
     texts.value = {}
