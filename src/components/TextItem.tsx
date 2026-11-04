@@ -54,6 +54,14 @@ export function TextItem(props: TextCardProps) {
     const elH = elDems?.height ?? 100
     if (elW <= 0 || elH <= 0) return
     const newDems: Card<CardTypes.TEXTS>['dimensions'] = { w: elW, h: elH }
+    const pos = item.value.position
+    const clampedPos = {
+      x: Math.min(Math.max(pos.x, 0), Math.max(0, canvasDimentsion.value.width - elW)),
+      y: Math.min(Math.max(pos.y, 0), Math.max(0, canvasDimentsion.value.height - elH)),
+    }
+    if (clampedPos.x !== pos.x || clampedPos.y !== pos.y) {
+      TextSignal.default.updateTextProperty(itemKey, 'position', clampedPos)
+    }
     TextSignal.default.updateTextProperty(itemKey, 'dimensions', newDems)
     TextSignal.default.texts.notify()
   }
