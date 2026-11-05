@@ -37,7 +37,16 @@ export function ContextMenuPortal({
       }
       closeAction?.()
     }
+    function _handleContextMenuOutside(e: MouseEvent) {
+      const el = elRef.current
+      if (el && e.composedPath().includes(el)) return
+      closeAction?.()
+    }
     document.addEventListener("click", _handleClickOutside, {
+      capture: true,
+      passive: true,
+    })
+    document.addEventListener("contextmenu", _handleContextMenuOutside, {
       capture: true,
       passive: true,
     })
@@ -57,6 +66,9 @@ export function ContextMenuPortal({
     return () => {
       closeHandlers.delete(closeSelf)
       document.removeEventListener("click", _handleClickOutside, {
+        capture: true,
+      })
+      document.removeEventListener("contextmenu", _handleContextMenuOutside, {
         capture: true,
       })
       document.removeEventListener("pointerdown", _handlePointerDown)
