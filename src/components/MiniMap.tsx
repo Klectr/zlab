@@ -25,8 +25,13 @@ export function MiniMap() {
   return () => {
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-    const width = canvasDimentsion.value.width / _MAP_SCALE_FACTOR
-    const height = canvasDimentsion.value.height / _MAP_SCALE_FACTOR
+    const scaleFactor = Math.max(
+      _MAP_SCALE_FACTOR,
+      canvasDimentsion.value.width / (viewportWidth / 2),
+      canvasDimentsion.value.height / (viewportHeight / 2)
+    )
+    const width = canvasDimentsion.value.width / scaleFactor
+    const height = canvasDimentsion.value.height / scaleFactor
     const xPos = Math.max(0, viewportWidth - width - _MAP_OFFSET)
     const yPos = Math.max(0, viewportHeight - height - _MAP_OFFSET)
 
@@ -54,10 +59,10 @@ export function MiniMap() {
             })
           }
 
-          const newWidth = image.dimensions.w / _MAP_SCALE_FACTOR
-          const newHeight = image.dimensions.h / _MAP_SCALE_FACTOR
-          const newTop = Math.max(0, Math.min(image.position.y / _MAP_SCALE_FACTOR, height - newHeight))
-          const newLeft = Math.max(0, Math.min(image.position.x / _MAP_SCALE_FACTOR, width - newWidth))
+          const newWidth = image.dimensions.w / scaleFactor
+          const newHeight = image.dimensions.h / scaleFactor
+          const newTop = Math.max(0, Math.min(image.position.y / scaleFactor, height - newHeight))
+          const newLeft = Math.max(0, Math.min(image.position.x / scaleFactor, width - newWidth))
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
@@ -88,10 +93,10 @@ export function MiniMap() {
             })
           }
 
-          const newWidth = note.dimensions.w / _MAP_SCALE_FACTOR
-          const newHeight = note.dimensions.h / _MAP_SCALE_FACTOR
-          const newTop = Math.max(0, Math.min(note.position.y / _MAP_SCALE_FACTOR, height - newHeight))
-          const newLeft = Math.max(0, Math.min(note.position.x / _MAP_SCALE_FACTOR, width - newWidth))
+          const newWidth = note.dimensions.w / scaleFactor
+          const newHeight = note.dimensions.h / scaleFactor
+          const newTop = Math.max(0, Math.min(note.position.y / scaleFactor, height - newHeight))
+          const newLeft = Math.max(0, Math.min(note.position.x / scaleFactor, width - newWidth))
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
@@ -119,10 +124,10 @@ export function MiniMap() {
             })
           }
 
-          const newWidth = text.dimensions.w / _MAP_SCALE_FACTOR
-          const newHeight = text.dimensions.h / _MAP_SCALE_FACTOR
-          const newTop = Math.max(0, Math.min(text.position.y / _MAP_SCALE_FACTOR, height - newHeight))
-          const newLeft = Math.max(0, Math.min(text.position.x / _MAP_SCALE_FACTOR, width - newWidth))
+          const newWidth = text.dimensions.w / scaleFactor
+          const newHeight = text.dimensions.h / scaleFactor
+          const newTop = Math.max(0, Math.min(text.position.y / scaleFactor, height - newHeight))
+          const newLeft = Math.max(0, Math.min(text.position.x / scaleFactor, width - newWidth))
 
           return (
             <button type="button" aria-label="Scroll to text item" key={textKey} className={"bg-indigo-500 hover:bg-blue-500 cursor-pointer rounded"}
@@ -143,10 +148,10 @@ export function MiniMap() {
         <div
           className={'pointer-events-none absolute bg-blue-500/10 border dark:border-blue-800 border-blue-500 rounded'}
           style={{
-            width: `${viewportWidth / _MAP_SCALE_FACTOR}px`,
-            height: `${viewportHeight / _MAP_SCALE_FACTOR}px`,
-            top: `${scrollY.value / _MAP_SCALE_FACTOR}px`,
-            left: `${scrollX.value / _MAP_SCALE_FACTOR}px`,
+            width: `${viewportWidth / scaleFactor}px`,
+            height: `${viewportHeight / scaleFactor}px`,
+            top: `${scrollY.value / scaleFactor}px`,
+            left: `${scrollX.value / scaleFactor}px`,
             zIndex: `${LayerEnum.MINIMAP * 1000}`,
           }}></div>
       </div >
