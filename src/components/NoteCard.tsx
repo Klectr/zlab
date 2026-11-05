@@ -268,7 +268,7 @@ export function NoteCard(props: NoteCardProps) {
             <hr className="border dark:border-[#2c2c2c] border-[#ddd]" />
 
             {/* Content Body */}
-            <MarkDownEditor initial={it.contents} onChange={_handleMdChange} onFocus={_handleFocusCard} />
+            <MarkDownEditor initial={it.contents} title={it.title} onChange={_handleMdChange} onFocus={_handleFocusCard} />
             <ExpandIcon cb={_handleResizeMouseDown} />
           </div>
 
