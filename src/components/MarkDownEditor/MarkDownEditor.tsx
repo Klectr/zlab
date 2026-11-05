@@ -76,7 +76,7 @@ export function MarkDownEditor({ initial, onChange, onFocus }: MarkDownEditorPro
           syntaxHighlighting(highlightStyle),
           themeCompartment.of(EditorView.theme(editorThemeSpec, { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
-          EditorView.contentAttributes.of({ spellcheck: "true" }),
+          EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": "Note editor" }),
           EditorView.updateListener.of((update) => {
             if (update.focusChanged && update.view.hasFocus) {
               onFocus?.()
