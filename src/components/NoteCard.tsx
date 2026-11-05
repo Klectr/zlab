@@ -213,12 +213,11 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
-    if (!e.ctrlKey) return
+    if (!e.ctrlKey && !e.metaKey) return
 
     const target = e.target as HTMLElement | null
     const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable]")
 
-    // TODO: add support for other os
     // TODO: add modal popup
 
     switch (e.key) {
