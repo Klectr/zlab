@@ -87,6 +87,9 @@ export function ImportButton() {
       const file = el.files[0]
 
       const reader = new FileReader()
+      reader.onerror = function() {
+        toast.showToast("error", "Could not import that file.")
+      }
       reader.readAsDataURL(file)
       reader.onload = function(readerEvent) {
         let content = readerEvent.target?.result;
