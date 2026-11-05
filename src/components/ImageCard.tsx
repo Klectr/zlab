@@ -65,8 +65,8 @@ export function ImageCard(props: ImageCardProps) {
     focusedItem.value = itemKey
     if (e.button !== 0) return
     e.preventDefault()
-    offsetX.current = e.offsetX
-    offsetY.current = e.offsetY
+    offsetX.current = e.pageX - item.value.position.x
+    offsetY.current = e.pageY - item.value.position.y
     pressed.value = true
     window.addEventListener('mousemove', _handleMouseMove)
     window.addEventListener('mouseup', _handleMouseUp)
