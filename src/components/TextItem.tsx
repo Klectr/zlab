@@ -93,6 +93,10 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleMouseMove(e: MouseEvent) {
+    if (e.buttons === 0) {
+      _handleMouseUp(e)
+      return
+    }
     e.preventDefault()
     if (!pressed.value) return
 
@@ -128,6 +132,10 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
+    if (e.buttons === 0) {
+      _handleResizeMouseUp()
+      return
+    }
     const candidate = Math.floor(
       initialFontSize.current + (e.pageX - initialResizeX.current)
     )
