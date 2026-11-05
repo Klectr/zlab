@@ -27,8 +27,8 @@ export function MiniMap() {
     const viewportHeight = window.innerHeight
     const width = canvasDimentsion.value.width / _MAP_SCALE_FACTOR
     const height = canvasDimentsion.value.height / _MAP_SCALE_FACTOR
-    const xPos = viewportWidth - width - _MAP_OFFSET
-    const yPos = viewportHeight - height - _MAP_OFFSET
+    const xPos = Math.max(0, viewportWidth - width - _MAP_OFFSET)
+    const yPos = Math.max(0, viewportHeight - height - _MAP_OFFSET)
 
     return (
       <div
