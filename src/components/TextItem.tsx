@@ -5,6 +5,11 @@ import texts, { TextCardType } from "../signals/texts"
 import { LayerEnum } from "../utils/enums"
 import { Card, CardTypes } from "../types"
 import { useThemeDetector } from "../utils/useThemeDetector"
+import { useToast } from "./Toast"
+import {
+  claimSaveFailureReport,
+  clearSaveFailureReport,
+} from "../utils/localStorage"
 
 interface TextCardProps {
   itemKey: TextCardType['id']
@@ -82,14 +87,25 @@ export function TextItem(props: TextCardProps) {
     _measureAndStoreDimensions()
   })
 
+  const toast = useToast()
+
   function updateLocalStorage(time?: number) {
     debounce(() => {
-      localStorage.setItem(CardTypes.TEXTS, JSON.stringify(texts.texts.value))
+      try {
+        localStorage.setItem(CardTypes.TEXTS, JSON.stringify(texts.texts.value))
+      } catch {
+        if (claimSaveFailureReport()) {
+          toast.showToast("error", "Could not save your changes!")
+        }
+        return
+      }
+      clearSaveFailureReport()
     }, time)
   }
 
   function persistLocalStorage() {
     localStorage.setItem(CardTypes.TEXTS, JSON.stringify(texts.texts.value))
+    clearSaveFailureReport()
   }
 
   function _handleMouseMove(e: MouseEvent) {

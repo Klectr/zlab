@@ -12,6 +12,11 @@ import { createFileAndExport } from "../utils/createFileAndExport"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { HelpIcon } from "./icons/HelpIcon"
+import { useToast } from "./Toast"
+import {
+  claimSaveFailureReport,
+  clearSaveFailureReport,
+} from "../utils/localStorage"
 
 interface NoteCardProps {
   itemKey: NoteCardType['id']
@@ -36,16 +41,26 @@ export function NoteCard(props: NoteCardProps) {
   const showHelp = signal(false)
 
   const { debounce } = createDebounce()
+  const toast = useToast()
 
   function updateLocalStorage(time?: number) {
     debounce(() => {
-      localStorage.setItem("notes", JSON.stringify(notes.notes.value))
+      try {
+        localStorage.setItem("notes", JSON.stringify(notes.notes.value))
+      } catch {
+        if (claimSaveFailureReport()) {
+          toast.showToast("error", "Could not save your changes!")
+        }
+        return
+      }
+      clearSaveFailureReport()
       saved.value = true
     }, time)
   }
 
   function persistLocalStorage() {
     localStorage.setItem("notes", JSON.stringify(notes.notes.value))
+    clearSaveFailureReport()
     saved.value = true
   }
 

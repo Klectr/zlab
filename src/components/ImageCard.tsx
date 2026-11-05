@@ -3,8 +3,13 @@ import { ImagesSignal, canvasDimentsion, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
-import { updateLocalStorage } from "../utils/localStorage"
+import {
+  claimSaveFailureReport,
+  clearSaveFailureReport,
+  updateLocalStorage,
+} from "../utils/localStorage"
 import { useThemeDetector } from "../utils/useThemeDetector"
+import { useToast } from "./Toast"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { CardTypes } from "../types"
@@ -30,9 +35,19 @@ export function ImageCard(props: ImageCardProps) {
   const initialResizeH = ref(0)
   const openContextMenu = signal(false)
 
+  const toast = useToast()
+
   function debounceLSUpdate(time?: number) {
     debounce(() => {
-      updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+      try {
+        updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+      } catch {
+        if (claimSaveFailureReport()) {
+          toast.showToast("error", "Could not save your changes!")
+        }
+        return
+      }
+      clearSaveFailureReport()
     }, time)
   }
 
