@@ -18,6 +18,22 @@ interface TextCardProps {
 
 const _BLOCK_TAGS = new Set(["DIV", "P", "LI", "PRE", "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE"])
 
+function _firstContentIsBlock(el: HTMLElement): boolean | null {
+  for (const child of Array.from(el.childNodes)) {
+    if (child.nodeType === 3) {
+      if (child.textContent?.trim()) return false
+      continue
+    }
+    if (child.nodeType !== 1) continue
+    const childEl = child as HTMLElement
+    if (childEl.tagName === "BR") return false
+    if (_BLOCK_TAGS.has(childEl.tagName)) return true
+    const nested = _firstContentIsBlock(childEl)
+    if (nested !== null) return nested
+  }
+  return null
+}
+
 function _plainTextFromNode(node: Node, isFirst = false): string {
   if (node.nodeType === 3) return node.textContent ?? ""
   if (node.nodeType !== 1) return ""
@@ -27,9 +43,8 @@ function _plainTextFromNode(node: Node, isFirst = false): string {
     .map((child, i) => _plainTextFromNode(child, isFirst && i === 0))
     .join("")
   if (_BLOCK_TAGS.has(el.tagName)) {
-    const firstChild = el.firstElementChild
     const deduped =
-      !isFirst && firstChild && _BLOCK_TAGS.has(firstChild.tagName)
+      !isFirst && _firstContentIsBlock(el)
         ? inner.replace(/^\n/, "")
         : inner
     const stripped = deduped.replace(/\n$/, "")
