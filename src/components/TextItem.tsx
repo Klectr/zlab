@@ -272,6 +272,9 @@ export function TextItem(props: TextCardProps) {
             oninput={_handleContentInput}
             onfocus={_handleFocus}
             contentEditable
+            role="textbox"
+            aria-label="Text editor"
+            aria-multiline="true"
             className={'text-p inline-block px-2 w-full select-none drop-shadow relative'}>
           </p>
         </pre>
