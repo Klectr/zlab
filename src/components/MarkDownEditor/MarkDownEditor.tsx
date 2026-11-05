@@ -14,6 +14,7 @@ export interface MarkDownEditorChange {
 
 interface MarkDownEditorProps {
   initial: string
+  title?: string
   onChange: (e: MarkDownEditorChange) => void
   onFocus?: () => void
 }
@@ -41,7 +42,9 @@ const highlightStyle = HighlightStyle.define([
   { tag: tags.strong, fontWeight: "bold" },
 ])
 
-export function MarkDownEditor({ initial, onChange, onFocus }: MarkDownEditorProps) {
+export function MarkDownEditor({ initial, title, onChange, onFocus }: MarkDownEditorProps) {
+  const trimmedTitle = title?.trim()
+  const ariaLabel = trimmedTitle ? `Note editor: ${trimmedTitle}` : "Note editor"
   initThemeDetector()
   const elRef = ref<HTMLDivElement>(null)
   const themeCompartment = new Compartment()
@@ -76,7 +79,7 @@ export function MarkDownEditor({ initial, onChange, onFocus }: MarkDownEditorPro
           syntaxHighlighting(highlightStyle),
           themeCompartment.of(EditorView.theme(editorThemeSpec, { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
-          EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": "Note editor" }),
+          EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel }),
           EditorView.updateListener.of((update) => {
             if (update.focusChanged && update.view.hasFocus) {
               onFocus?.()
