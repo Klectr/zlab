@@ -13,7 +13,20 @@ export function updateLocalStorage(
       "LocalStorageError"
     )
   }
+  clearSaveFailureReport()
   return collection
+}
+
+let saveFailureReported = false
+
+export function claimSaveFailureReport() {
+  if (saveFailureReported) return false
+  saveFailureReported = true
+  return true
+}
+
+export function clearSaveFailureReport() {
+  saveFailureReported = false
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
