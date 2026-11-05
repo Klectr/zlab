@@ -16,7 +16,7 @@ interface TextCardProps {
   data: TextCardType
 }
 
-const _BLOCK_TAGS = new Set(["DIV", "P", "LI", "PRE"])
+const _BLOCK_TAGS = new Set(["DIV", "P", "LI", "PRE", "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE"])
 
 function _plainTextFromNode(node: Node, isFirst = false): string {
   if (node.nodeType === 3) return node.textContent ?? ""
@@ -27,8 +27,14 @@ function _plainTextFromNode(node: Node, isFirst = false): string {
     .map((child, i) => _plainTextFromNode(child, isFirst && i === 0))
     .join("")
   if (_BLOCK_TAGS.has(el.tagName)) {
-    const stripped = inner.replace(/\n$/, "")
+    const firstChild = el.firstElementChild
+    const deduped =
+      !isFirst && firstChild && _BLOCK_TAGS.has(firstChild.tagName)
+        ? inner.replace(/^\n/, "")
+        : inner
+    const stripped = deduped.replace(/\n$/, "")
     if (isFirst && stripped !== "") return stripped
+    if (isFirst && inner === "") return ""
     return "\n" + stripped
   }
   return inner
