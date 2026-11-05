@@ -85,7 +85,16 @@ export function ContextMenuPortal({
       if (e.key !== "Escape") return
       closeAction?.()
     }
+    function _handleViewportChange() {
+      closeAction?.()
+    }
     document.addEventListener("keydown", _handleEscapeKey)
+    window.addEventListener("scroll", _handleViewportChange, {
+      capture: true,
+      passive: true,
+    })
+    window.addEventListener("resize", _handleViewportChange)
+    window.addEventListener("blur", _handleViewportChange)
     const frame = requestAnimationFrame(() => {
       const el = elRef.current
       if (!el || !open.value) return
@@ -99,6 +108,11 @@ export function ContextMenuPortal({
     })
     return () => {
       document.removeEventListener("keydown", _handleEscapeKey)
+      window.removeEventListener("scroll", _handleViewportChange, {
+        capture: true,
+      })
+      window.removeEventListener("resize", _handleViewportChange)
+      window.removeEventListener("blur", _handleViewportChange)
       cancelAnimationFrame(frame)
     }
   })
