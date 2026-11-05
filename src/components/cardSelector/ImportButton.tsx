@@ -2,7 +2,7 @@ import images, { ImageCardType } from "../../signals/images"
 import notes, { NoteCardType } from "../../signals/notes"
 import texts, { TextCardType } from "../../signals/texts"
 import { Card, CardTypes } from "../../types"
-import { canvasDimentsion } from "../../signals"
+import { canvasDimentsion, focusedItem } from "../../signals"
 import { convertBase64ToJson } from "../../utils/convertBase64ToJson"
 import {
   clampCardEntryToCanvas,
@@ -96,18 +96,25 @@ export function ImportButton() {
           toast.showToast("error", "Could not import that file.")
           return
         }
-        const addedImageIds: string[] = []
-        const addedNoteIds: string[] = []
-        const addedTextIds: string[] = []
+        const prevNotes = JSON.parse(JSON.stringify(notes.notes.value))
+        const prevImages = JSON.parse(JSON.stringify(images.images.value))
+        const prevTexts = JSON.parse(JSON.stringify(texts.texts.value))
+        notes.notes.value = {}
+        notes.notes.notify()
+        images.images.value = {}
+        images.images.notify()
+        texts.texts.value = {}
+        texts.texts.notify()
+        focusedItem.value = null
         for (const item of entries) {
           if (item.type === CardTypes.IMAGES || item.type == 'image') {
-            addedImageIds.push(images.addImage(item as unknown as Omit<ImageCardType, "id">))
+            images.addImage(item as unknown as Omit<ImageCardType, "id">)
             continue
           } else if (item.type === CardTypes.NOTES || item.type === 'note') {
-            addedNoteIds.push(notes.addNote(item as unknown as Omit<NoteCardType, "id">))
+            notes.addNote(item as unknown as Omit<NoteCardType, "id">)
             continue
           } else if (item.type === CardTypes.TEXTS || item.type === 'text') {
-            addedTextIds.push(texts.addText(item as unknown as Omit<TextCardType, "id">))
+            texts.addText(item as unknown as Omit<TextCardType, "id">)
           }
         }
 
@@ -118,9 +125,12 @@ export function ImportButton() {
         } catch (err: unknown) {
           if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
           toast.showToast("error", "Could not save the imported cards!")
-          for (const id of addedImageIds) images.removeImage(id)
-          for (const id of addedNoteIds) notes.removeNote(id)
-          for (const id of addedTextIds) texts.removeText(id)
+          notes.notes.value = prevNotes
+          notes.notes.notify()
+          images.images.value = prevImages
+          images.images.notify()
+          texts.texts.value = prevTexts
+          texts.texts.notify()
           try {
             updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
             updateLocalStorage(CardTypes.IMAGES, images.images).notify()
