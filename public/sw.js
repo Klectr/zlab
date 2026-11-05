@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v3"
+const CACHE_NAME = "zlab-v4"
 const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest"]
 
 self.addEventListener("install", (event) => {
@@ -41,6 +41,33 @@ self.addEventListener("activate", (event) => {
           keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
         )
       )
+      .then(async () => {
+        try {
+          const cache = await caches.open(CACHE_NAME)
+          const shell = await cache.match("/index.html")
+          const html = shell ? await shell.text() : ""
+          const keep = new Set(
+            [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1])
+          )
+          if (keep.size === 0) return
+          for (const asset of [...keep].filter((a) => a.endsWith(".css"))) {
+            const cssResponse = await cache.match(asset)
+            const css = cssResponse ? await cssResponse.text() : ""
+            for (const ref of css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)) {
+              keep.add(ref[1])
+            }
+          }
+          const requests = await cache.keys()
+          await Promise.all(
+            requests
+              .filter((request) => {
+                const path = new URL(request.url).pathname
+                return path.startsWith("/assets/") && !keep.has(path)
+              })
+              .map((request) => cache.delete(request))
+          )
+        } catch {}
+      })
       .then(() => self.clients.claim())
   )
 })
