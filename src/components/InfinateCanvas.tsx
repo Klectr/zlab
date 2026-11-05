@@ -160,6 +160,16 @@ function getInitialPosition(canvasDimensions: typeof canvasDimentsion): ScrollTo
     console.error("no local storage for pos " + e)
   }
 
-  if (!initPosition) return defaultScroll
-  return initPosition
+  if (
+    !initPosition ||
+    typeof initPosition !== "object" ||
+    Array.isArray(initPosition) ||
+    !Number.isFinite(initPosition.left) ||
+    !Number.isFinite(initPosition.top)
+  )
+    return defaultScroll
+  return {
+    left: Math.max(0, initPosition.left),
+    top: Math.max(0, initPosition.top),
+  }
 }
