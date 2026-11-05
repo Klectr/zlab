@@ -32,10 +32,14 @@ export default function InfiniteCanvas() {
 
     function _updatePosition() {
       debounce(() => {
-        localStorage.setItem("pos", JSON.stringify({
-          left: window.scrollX,
-          top: window.scrollY
-        }))
+        try {
+          localStorage.setItem("pos", JSON.stringify({
+            left: window.scrollX,
+            top: window.scrollY
+          }))
+        } catch {
+          return
+        }
       })
     }
 
