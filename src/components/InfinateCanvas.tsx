@@ -58,14 +58,15 @@ export default function InfiniteCanvas() {
       e.preventDefault()
       const target = e.target as HTMLElement | null
       if (target?.closest?.(".cm-editor")) return
-      const file = Array.from(e.dataTransfer?.files ?? []).find((f) =>
+      const files = Array.from(e.dataTransfer?.files ?? []).filter((f) =>
         f.type.startsWith("image/")
       )
-      if (!file) return
-      createImageCardFromFile(file, {
-        x: Math.max(0, e.pageX - 100),
-        y: Math.max(0, e.pageY - 100)
-      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+      files.forEach((file, i) => {
+        createImageCardFromFile(file, {
+          x: Math.max(0, e.pageX - 100 + i * 24),
+          y: Math.max(0, e.pageY - 100 + i * 24)
+        }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+      })
     }
 
     _updateDimensions()
