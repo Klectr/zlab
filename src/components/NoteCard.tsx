@@ -212,6 +212,7 @@ export function NoteCard(props: NoteCardProps) {
         _handleClose()
         break
       case 'e':
+      case 'E':
         e.preventDefault()
         _exportFile()
         break
