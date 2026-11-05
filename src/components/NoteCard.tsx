@@ -166,7 +166,13 @@ export function NoteCard(props: NoteCardProps) {
   function _handleClose() {
     NotesSigal.default.removeNote(item.value.id)
     NotesSigal.default.notes.notify()
-    persistLocalStorage()
+    try {
+      persistLocalStorage()
+    } catch {
+      if (claimSaveFailureReport()) {
+        toast.showToast("error", "Could not save your changes!")
+      }
+    }
   }
 
   function _handleFocusCard() {

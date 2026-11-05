@@ -153,7 +153,13 @@ export function ImageCard(props: ImageCardProps) {
   function _handleClose() {
     ImagesSignal.default.removeImage(item.value.id)
     ImagesSignal.default.images.notify()
-    updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+    try {
+      updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+    } catch {
+      if (claimSaveFailureReport()) {
+        toast.showToast("error", "Could not save your changes!")
+      }
+    }
   }
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
