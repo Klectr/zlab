@@ -37,6 +37,10 @@ export function ImageCard(props: ImageCardProps) {
   }
 
   function _handleMouseMove(e: MouseEvent) {
+    if (e.buttons === 0) {
+      _handleMouseUp(e)
+      return
+    }
     e.preventDefault()
     if (!pressed.value) return
 
@@ -73,6 +77,10 @@ export function ImageCard(props: ImageCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
+    if (e.buttons === 0) {
+      _handleResizeMouseUp()
+      return
+    }
     const newDim = {
       w: Math.max(100, Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x)),
       h: Math.max(80, Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y)),

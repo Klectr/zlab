@@ -50,6 +50,10 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMouseMove(e: MouseEvent) {
+    if (e.buttons === 0) {
+      _handleMouseUp(e)
+      return
+    }
     e.preventDefault()
     if (!pressed.value) return
 
@@ -85,6 +89,10 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
+    if (e.buttons === 0) {
+      _handleResizeMouseUp()
+      return
+    }
     const newW = Math.max(100, Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x))
     const newH = Math.max(80, Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y))
     const newDim = { w: newW, h: newH }
