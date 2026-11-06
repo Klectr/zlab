@@ -194,6 +194,8 @@ export function ImageCard(props: ImageCardProps) {
             backgroundPosition: 'center'
           }}
         >
+          <span role="img" aria-label={it.title.trim() ? it.title : "Image"} className="sr-only"></span>
+
           <button
             type="button"
             aria-label="Delete image"
