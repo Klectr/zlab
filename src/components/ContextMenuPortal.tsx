@@ -116,11 +116,18 @@ export function ContextMenuPortal({
       window.removeEventListener("resize", _handleViewportChange)
       window.removeEventListener("blur", _handleViewportChange)
       cancelAnimationFrame(frame)
+      const active = document.activeElement as HTMLElement | null
+      const activeInPortal =
+        !!active &&
+        (!!elRef.current?.contains(active) ||
+          !!active.closest?.("#context-menu-portal"))
+      const activeIsBody = !active || active === document.body
       if (
         previouslyFocused &&
-        previouslyFocused !== document.activeElement &&
+        previouslyFocused !== active &&
         document.contains(previouslyFocused) &&
-        !previouslyFocused.closest("#context-menu-portal")
+        !previouslyFocused.closest("#context-menu-portal") &&
+        (activeInPortal || activeIsBody)
       ) {
         previouslyFocused.focus({ preventScroll: true })
       }
