@@ -83,6 +83,8 @@ export function ImageCard(props: ImageCardProps) {
   function _handleMouseDown(e: Kiru.MouseEvent<HTMLDivElement>) {
     focusedItem.value = itemKey
     if (e.button !== 0) return
+    const target = e.target as HTMLElement | null
+    if (target && typeof target.closest === "function" && target.closest("button")) return
     e.preventDefault()
     offsetX.current = e.pageX - item.value.position.x
     offsetY.current = e.pageY - item.value.position.y
