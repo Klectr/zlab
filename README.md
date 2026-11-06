@@ -18,10 +18,6 @@ A visual organization tool for notes, text, shapes, and images.
   * [Contributing]()
   * [License]()
 
-### **Screenshots**
-
-![screenshot](./src/assets/repo/screenshot.png)
-
 ### **Technologies**
 
 This project utilizes the following open-source libraries:
