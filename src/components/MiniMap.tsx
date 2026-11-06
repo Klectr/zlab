@@ -17,6 +17,7 @@ export function MiniMap() {
       scrollX.value = window.scrollX
       scrollY.value = window.scrollY
     }
+    _handleScroll()
     window.addEventListener('scroll', _handleScroll)
 
     return () => window.removeEventListener('scroll', _handleScroll)
