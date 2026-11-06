@@ -16,7 +16,7 @@ interface TextCardProps {
   data: TextCardType
 }
 
-const _BLOCK_TAGS = new Set(["DIV", "P", "LI", "PRE", "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE"])
+const _BLOCK_TAGS = new Set(["DIV", "P", "LI", "PRE", "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE", "TR", "TD", "TH", "DT", "DD"])
 
 function _firstContentIsBlock(el: HTMLElement): boolean | null {
   for (const child of Array.from(el.childNodes)) {
