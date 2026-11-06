@@ -3,20 +3,15 @@
 > [!IMPORTANT] 
 > Formerly Kslab — revived and renamed to Zlab.
 
-A visual organization tool for notes, text, shapes, and images.
+A visual organization tool for notes, text, and images on an infinite canvas.
 
 ### **Table of Contents**
 
-  * [Technologies]()
-  * [Development Setup]()
-  * [Installation]()
-      * [Desktop Application]() 
-      * [Web Application]() 
-  * [Usage]()
-      * [Desktop Application]() 
-      * [Web Application]() 
-  * [Contributing]()
-  * [License]()
+  * [Technologies](#technologies)
+  * [Development Setup](#development-setup)
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Contributing](#contributing)
 
 ### **Technologies**
 
@@ -52,23 +47,13 @@ For production, `bun run build` emits a static `dist/` you can serve from any st
 
 ### **Usage**
 
-* **Add notes:** Click the "+" button to create a new note.
-* **Edit notes:** Double-click a note to edit its content.
-* **Move notes:** Drag and drop notes to reposition them on the canvas.
-* **Add shapes and images:** Use the toolbar to add various shapes and images.
-* **Customize appearance:** Change the color, size, and other properties of elements.
+* **Create cards:** Use the toolbar to create a sticky note, add an image, or create a text item.
+* **Edit:** Click into a note or text item and type; notes are written in Markdown.
+* **Move and resize:** Drag a card to reposition it on the canvas, and drag its corner handle to resize it.
+* **Delete:** Use a card's close button, or right-click a note or image card for its context menu.
+* **Save and share a board:** Use the toolbar to export the board as a JSON file, and import a JSON file to replace the current board.
+* **Find a card:** Click a card's marker on the minimap to scroll to it.
 
 ### **Contributing**
 
-[Guidelines for contributors, including how to report bugs or submit pull requests. Also, emphasize the importance of following TypeScript and ESLint conventions.]
-
-### **License**
-
-[Specify the license under which the project is released (e.g., MIT, Apache License 2.0)]
-
-**Additional sections you might consider:**
-
-  * **Roadmap** - Future plans for Zlab, such as implementing an infinite canvas or adding more features.
-
-**Remember to replace the placeholder text with specific details about your project.**
-
+Report bugs and request features by opening a GitHub issue. For code changes, open a pull request against `main`, keep the change focused, follow the existing TypeScript and ESLint conventions, and make sure `bun run build` passes before submitting.
