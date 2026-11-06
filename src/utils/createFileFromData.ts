@@ -3,7 +3,7 @@ export function createFileFromData(
   name: string,
   type: BlobPropertyBag["type"]
 ) {
-  return new File(Array.from(data), name, {
+  return new File([data], name, {
     type: type,
   })
 }
