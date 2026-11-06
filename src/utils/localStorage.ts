@@ -58,8 +58,10 @@ export function clampCardEntryToCanvas(
       entry.dimensions.w / origW,
       entry.dimensions.h / origH
     )
+    let fontSize = entry.fontSize
     if (scale < 1)
-      entry.fontSize = Math.max(1, Math.round(entry.fontSize * scale))
+      fontSize = Math.max(1, Math.round(fontSize * scale))
+    entry.fontSize = Math.min(fontSize, canvas.height * 6)
   }
   entry.position.x = Math.min(
     Math.max(entry.position.x, 0),
