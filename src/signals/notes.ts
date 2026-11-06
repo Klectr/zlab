@@ -5,6 +5,7 @@ import {
   clampCardEntryToCanvas,
   isValidCardEntry,
 } from "../utils/localStorage"
+import { createId } from "../utils/createId"
 
 export type NoteCardType = Card<CardTypes.NOTES>
 
@@ -32,7 +33,7 @@ function loadLocalStorage() {
 function addNote(data: Omit<NoteCardType, "id">) {
   const newCard = {
     ...data,
-    id: crypto.randomUUID(),
+    id: createId(),
   }
   notes.value[newCard.id] = newCard
   notes.notify()

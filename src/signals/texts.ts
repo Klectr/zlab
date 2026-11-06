@@ -5,6 +5,7 @@ import {
   clampCardEntryToCanvas,
   isValidCardEntry,
 } from "../utils/localStorage"
+import { createId } from "../utils/createId"
 
 export type TextCardType = Card<CardTypes.TEXTS> & {
   fontSize: number
@@ -34,7 +35,7 @@ function loadLocalStorage() {
 function addText(data: Omit<TextCardType, "id">) {
   const newCard = {
     ...data,
-    id: crypto.randomUUID(),
+    id: createId(),
   }
   texts.value[newCard.id] = newCard
   texts.notify()
