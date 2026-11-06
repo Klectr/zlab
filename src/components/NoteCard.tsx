@@ -339,9 +339,9 @@ export function NoteCard(props: NoteCardProps) {
             }}
           >
             <div className="flex flex-col text-sm dark:text-[#999] text-black">
-              <small>ctrl + del = delete</small>
-              <small>ctrl + back = delete</small>
-              <small>ctrl + e = export</small>
+              <small>ctrl/cmd + del = delete</small>
+              <small>ctrl/cmd + back = delete</small>
+              <small>ctrl/cmd + e = export</small>
             </div>
           </div>
         }
