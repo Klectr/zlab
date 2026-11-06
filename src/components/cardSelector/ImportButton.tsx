@@ -54,6 +54,12 @@ function parseImportData(data: unknown): ImportEntry[] | null {
     const item: unknown = data[key]
     if (!isValidEntry(item)) return null
     const { id: _, ...rest } = item as Record<string, unknown>
+    if (item.type === CardTypes.IMAGES || item.type === "image")
+      rest.type = CardTypes.IMAGES
+    else if (item.type === CardTypes.NOTES || item.type === "note")
+      rest.type = CardTypes.NOTES
+    else if (item.type === CardTypes.TEXTS || item.type === "text")
+      rest.type = CardTypes.TEXTS
     clampCardEntryToCanvas(
       rest as {
         position: { x: number; y: number }
