@@ -5,6 +5,7 @@ import {
   clampCardEntryToCanvas,
   isValidCardEntry,
 } from "../utils/localStorage"
+import { createId } from "../utils/createId"
 
 export type ImageCardType = Card<CardTypes.IMAGES>
 
@@ -32,7 +33,7 @@ function loadLocalStorage() {
 function addImage(data: Omit<ImageCardType, "id">) {
   const newCard = {
     ...data,
-    id: crypto.randomUUID(),
+    id: createId(),
   }
   images.value[newCard.id] = newCard
   images.notify()
