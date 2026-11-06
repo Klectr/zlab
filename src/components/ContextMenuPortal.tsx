@@ -81,6 +81,7 @@ export function ContextMenuPortal({
       if (close !== closeSelf) close()
     }
     pos.value = untrack(() => ({ x: mouse.value.x, y: mouse.value.y }))
+    const previouslyFocused = document.activeElement as HTMLElement | null
     function _handleEscapeKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return
       closeAction?.()
@@ -98,6 +99,7 @@ export function ContextMenuPortal({
     const frame = requestAnimationFrame(() => {
       const el = elRef.current
       if (!el || !open.value) return
+      el.querySelector("button")?.focus({ preventScroll: true })
       const rect = el.getBoundingClientRect()
       if (rect.width === 0 && rect.height === 0) return
       untrack(() => {
@@ -114,6 +116,14 @@ export function ContextMenuPortal({
       window.removeEventListener("resize", _handleViewportChange)
       window.removeEventListener("blur", _handleViewportChange)
       cancelAnimationFrame(frame)
+      if (
+        previouslyFocused &&
+        previouslyFocused !== document.activeElement &&
+        document.contains(previouslyFocused) &&
+        !previouslyFocused.closest("#context-menu-portal")
+      ) {
+        previouslyFocused.focus({ preventScroll: true })
+      }
     }
   })
 
