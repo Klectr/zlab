@@ -316,12 +316,12 @@ export function NoteCard(props: NoteCardProps) {
               <div>
                 <ul>
                   <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button type="button" aria-label="Delete note" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       Delete
                     </button>
                   </li>
                   <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button type="button" aria-label="Export note" onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       export
                     </button>
                   </li>
