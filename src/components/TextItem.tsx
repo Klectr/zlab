@@ -34,14 +34,49 @@ function _firstContentIsBlock(el: HTMLElement): boolean | null {
   return null
 }
 
+function _lastContentIsBlock(node: Node): boolean | null {
+  if (node.nodeType === 3) return node.textContent?.trim() ? false : null
+  if (node.nodeType !== 1) return null
+  const el = node as HTMLElement
+  if (el.tagName === "BR") return false
+  if (_BLOCK_TAGS.has(el.tagName)) return true
+  const children = Array.from(el.childNodes)
+  for (let i = children.length - 1; i >= 0; i--) {
+    const nested = _lastContentIsBlock(children[i])
+    if (nested !== null) return nested
+  }
+  return null
+}
+
+function _joinChildText(childNodes: Node[], isFirst: boolean): string {
+  let joined = ""
+  let prevNode: Node | null = null
+  let prevText = ""
+  childNodes.forEach((child, i) => {
+    let text = _plainTextFromNode(child, isFirst && i === 0)
+    if (
+      prevNode &&
+      !prevText.endsWith("\n") &&
+      text.trim() !== "" &&
+      !text.startsWith("\n") &&
+      _lastContentIsBlock(prevNode)
+    )
+      text = "\n" + text
+    joined += text
+    if (text.trim() !== "" || text.includes("\n")) {
+      prevNode = child
+      prevText = text
+    }
+  })
+  return joined
+}
+
 function _plainTextFromNode(node: Node, isFirst = false): string {
   if (node.nodeType === 3) return node.textContent ?? ""
   if (node.nodeType !== 1) return ""
   const el = node as HTMLElement
   if (el.tagName === "BR") return "\n"
-  const inner = Array.from(el.childNodes)
-    .map((child, i) => _plainTextFromNode(child, isFirst && i === 0))
-    .join("")
+  const inner = _joinChildText(Array.from(el.childNodes), isFirst)
   if (_BLOCK_TAGS.has(el.tagName)) {
     const deduped =
       !isFirst && _firstContentIsBlock(el)
@@ -255,9 +290,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleContentInput(e: InputEvent) {
     const el = e.target as HTMLParagraphElement & Pick<HTMLInputElement, 'oninput'>
-    const val = Array.from(el.childNodes)
-      .map((child, i) => _plainTextFromNode(child, i === 0))
-      .join("")
+    const val = _joinChildText(Array.from(el.childNodes), true)
     texts.updateTextProperty(itemKey, 'contents', val)
     _measureAndStoreDimensions()
     updateLocalStorage()
