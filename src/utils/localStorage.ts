@@ -73,6 +73,23 @@ export function clampCardEntryToCanvas(
   )
 }
 
+export function isValidImageContents(contents: string): boolean {
+  if (!contents.startsWith("data:image/")) return false
+  const commaIndex = contents.indexOf(",")
+  if (commaIndex < 0) return false
+  const header = contents.slice(0, commaIndex)
+  if (!header.endsWith(";base64")) return false
+  const subtype = header.slice("data:image/".length, -";base64".length)
+  if (!subtype || subtype.includes(";")) return false
+  const payload = contents.slice(commaIndex + 1).replace(/\s/g, "")
+  if (!payload || !/^[A-Za-z0-9+/]+={0,2}$/.test(payload)) return false
+  try {
+    return atob(payload).length > 0
+  } catch {
+    return false
+  }
+}
+
 export function isValidCardEntry(
   value: unknown,
   needsFontSize: boolean,
@@ -83,7 +100,7 @@ export function isValidCardEntry(
   if (expectedId !== undefined && value.id !== expectedId) return false
   if (typeof value.title !== "string") return false
   if (typeof value.contents !== "string") return false
-  if (isImage && !value.contents.startsWith("data:image/")) return false
+  if (isImage && !isValidImageContents(value.contents)) return false
   if (!isRecord(value.position)) return false
   if (!isFiniteNumber(value.position.x)) return false
   if (!isFiniteNumber(value.position.y)) return false

@@ -6,6 +6,7 @@ import { canvasDimentsion, focusedItem } from "../../signals"
 import { convertBase64ToJson } from "../../utils/convertBase64ToJson"
 import {
   clampCardEntryToCanvas,
+  isValidImageContents,
   updateLocalStorage,
 } from "../../utils/localStorage"
 import { useToast } from "../Toast"
@@ -34,7 +35,7 @@ function isValidEntry(item: unknown): item is ImportEntry {
   if (!isImage && !isNote && !isText) return false
   if (typeof item.title !== "string") return false
   if (typeof item.contents !== "string") return false
-  if (isImage && !item.contents.startsWith("data:image/")) return false
+  if (isImage && !isValidImageContents(item.contents)) return false
   if (!isRecord(item.position)) return false
   if (!isFiniteNumber(item.position.x) || item.position.x < 0) return false
   if (!isFiniteNumber(item.position.y) || item.position.y < 0) return false
