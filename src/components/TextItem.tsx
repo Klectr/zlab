@@ -7,6 +7,7 @@ import { Card, CardTypes } from "../types"
 import { useThemeDetector } from "../utils/useThemeDetector"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
+import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
@@ -189,8 +190,8 @@ export function TextItem(props: TextCardProps) {
     updateLocalStorage()
   }
 
-  function _handleMouseUp(e: MouseEvent) {
-    e.preventDefault()
+  function _handleMouseUp(e?: MouseEvent) {
+    e?.preventDefault()
     pressed.value = false
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
@@ -201,6 +202,7 @@ export function TextItem(props: TextCardProps) {
     if (e.button !== 0) return
     const target = e.target as HTMLElement | null
     if (target && typeof target.closest === "function" && target.closest("button")) return
+    disarmActiveDrags()
     offsetX.current = e.pageX - item.value.position.x
     offsetY.current = e.pageY - item.value.position.y
     pressed.value = true
@@ -240,6 +242,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleResizeMouseDown(e: Kiru.MouseEvent<HTMLButtonElement>) {
     if (e.button !== 0) return
+    disarmActiveDrags()
     e.stopPropagation()
     initialResizeX.current = e.pageX
     initialFontSize.current = item.value.fontSize
@@ -265,6 +268,14 @@ export function TextItem(props: TextCardProps) {
     }
   }
 
+  function _disarmDrag() {
+    if (!pressed.value) return
+    _handleMouseUp()
+    _handleResizeMouseUp()
+  }
+
+  activeDragDisarmers.add(_disarmDrag)
+  window.addEventListener('blur', _disarmDrag)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
 
@@ -275,6 +286,8 @@ export function TextItem(props: TextCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
     window.removeEventListener('beforeunload', flushLocalStorage)
     window.removeEventListener('pagehide', flushLocalStorage)
+    window.removeEventListener('blur', _disarmDrag)
+    activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
   })
 
