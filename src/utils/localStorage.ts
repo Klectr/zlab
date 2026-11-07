@@ -92,7 +92,7 @@ export function isValidImageContents(contents: string): boolean {
   const header = contents.slice(0, commaIndex)
   if (!header.endsWith(";base64")) return false
   const subtype = header.slice("data:image/".length, -";base64".length)
-  if (!subtype || subtype.includes(";")) return false
+  if (!/^[a-zA-Z0-9.+-]+$/.test(subtype)) return false
   const payload = contents.slice(commaIndex + 1).replace(/\s/g, "")
   if (!payload || !/^[A-Za-z0-9+/]+={0,2}$/.test(payload)) return false
   try {
