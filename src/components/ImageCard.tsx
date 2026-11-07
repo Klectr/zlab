@@ -182,7 +182,7 @@ export function ImageCard(props: ImageCardProps) {
         <div
           oncontextmenu={_handleMouseClick}
           onmousedown={_handleMouseDown}
-          className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] absolute"
+          className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] absolute touch-none"
           style={{
             zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
             top: `${it.position.y}px`,
@@ -245,7 +245,7 @@ function ExpandIcon({ cb }: {
         type="button"
         aria-label="Resize image"
         onmousedown={cb}
-        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex"
+        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

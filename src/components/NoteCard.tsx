@@ -276,7 +276,7 @@ export function NoteCard(props: NoteCardProps) {
         >
           <div className="overflow-hidden flex-1 flex flex-col gap-1">
             {/* Header Bar */}
-            <div className="px-2 flex justify-between items-center cursor-move" onmousedown={_handleMouseDown}>
+            <div className="px-2 flex justify-between items-center cursor-move touch-none" onmousedown={_handleMouseDown}>
               <div className={"flex gap-1 items-center"}>
                 <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} />
                 {/* Save indicator*/}
@@ -363,7 +363,7 @@ function ExpandIcon({ cb }: {
         type="button"
         aria-label="Resize note"
         onmousedown={cb}
-        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex"
+        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
