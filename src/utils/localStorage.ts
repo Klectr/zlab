@@ -43,12 +43,23 @@ export function clampCardEntryToCanvas(
     dimensions: { w: number; h: number }
     fontSize?: unknown
   },
-  canvas: { width: number; height: number }
+  canvas: { width: number; height: number },
+  isText = false
 ) {
   const origW = entry.dimensions.w
   const origH = entry.dimensions.h
   entry.dimensions.w = Math.min(entry.dimensions.w, canvas.width)
   entry.dimensions.h = Math.min(entry.dimensions.h, canvas.height)
+  if (!isText) {
+    entry.dimensions.w = Math.max(
+      entry.dimensions.w,
+      Math.min(100, canvas.width)
+    )
+    entry.dimensions.h = Math.max(
+      entry.dimensions.h,
+      Math.min(80, canvas.height)
+    )
+  }
   if (
     typeof entry.fontSize === "number" &&
     Number.isFinite(entry.fontSize) &&
@@ -61,6 +72,7 @@ export function clampCardEntryToCanvas(
     let fontSize = entry.fontSize
     if (scale < 1)
       fontSize = Math.max(1, Math.round(fontSize * scale))
+    if (isText) fontSize = Math.max(fontSize, 10)
     entry.fontSize = Math.min(fontSize, canvas.height * 6)
   }
   entry.position.x = Math.min(
