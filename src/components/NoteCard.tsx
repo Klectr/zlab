@@ -9,6 +9,7 @@ import { MarkDownEditor, type MarkDownEditorChange } from "./MarkDownEditor/Mark
 import { Divider } from "./Divider"
 import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
+import { createImageCardFromFile } from "../utils/createImageCard"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
@@ -194,6 +195,15 @@ export function NoteCard(props: NoteCardProps) {
     focusedItem.value = itemKey
   }
 
+  function _handlePasteImage(files: File[]) {
+    files.forEach((file, i) => {
+      createImageCardFromFile(file, {
+        x: item.value.position.x + i * 24,
+        y: item.value.position.y + i * 24
+      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+    })
+  }
+
   function _exportFile() {
     createFileAndExport("Note", item.value.contents, "text/markdown")
   }
@@ -313,7 +323,7 @@ export function NoteCard(props: NoteCardProps) {
             <hr className="border dark:border-[#2c2c2c] border-[#ddd]" />
 
             {/* Content Body */}
-            <MarkDownEditor initial={it.contents} title={it.title} onChange={_handleMdChange} onFocus={_handleFocusCard} />
+            <MarkDownEditor initial={it.contents} title={it.title} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} />
             <ExpandIcon cb={_handleResizeMouseDown} />
           </div>
 

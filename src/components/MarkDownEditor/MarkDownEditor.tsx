@@ -17,6 +17,7 @@ interface MarkDownEditorProps {
   title?: string
   onChange: (e: MarkDownEditorChange) => void
   onFocus?: () => void
+  onPasteImage?: (files: File[]) => void
 }
 
 const editorThemeSpec = {
@@ -42,7 +43,7 @@ const highlightStyle = HighlightStyle.define([
   { tag: tags.strong, fontWeight: "bold" },
 ])
 
-export function MarkDownEditor({ initial, title, onChange, onFocus }: MarkDownEditorProps) {
+export function MarkDownEditor({ initial, title, onChange, onFocus, onPasteImage }: MarkDownEditorProps) {
   const trimmedTitle = title?.trim()
   const ariaLabel = trimmedTitle ? `Note editor: ${trimmedTitle}` : "Note editor"
   initThemeDetector()
@@ -80,6 +81,22 @@ export function MarkDownEditor({ initial, title, onChange, onFocus }: MarkDownEd
           themeCompartment.of(EditorView.theme(editorThemeSpec, { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
           EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel }),
+          EditorView.domEventHandlers({
+            paste: (event) => {
+              if (!onPasteImage) return false
+              let files = Array.from(event.clipboardData?.files ?? []).filter((f) => f.type.startsWith("image/"))
+              if (!files.length && event.clipboardData) {
+                files = Array.from(event.clipboardData.items)
+                  .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
+                  .map((i) => i.getAsFile())
+                  .filter((f): f is File => !!f)
+              }
+              if (!files.length) return false
+              event.preventDefault()
+              onPasteImage(files)
+              return true
+            },
+          }),
           EditorView.updateListener.of((update) => {
             if (update.focusChanged && update.view.hasFocus) {
               onFocus?.()
