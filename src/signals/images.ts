@@ -24,6 +24,7 @@ function loadLocalStorage() {
         continue
       }
       clampCardEntryToCanvas(entry, canvasDimentsion.value)
+      entry.type = CardTypes.IMAGES
     }
   } catch {
     images.value = {}
