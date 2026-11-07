@@ -253,6 +253,7 @@ export function NoteCard(props: NoteCardProps) {
 
   return () => {
     const it = item.value
+    const menuTitle = `${it.title.slice(0, 40)}${it.title.length > 40 ? "…" : ""}`
 
     const cardPositionStyle = {
       zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
@@ -307,7 +308,7 @@ export function NoteCard(props: NoteCardProps) {
             <div className="bg-[#3c3c3c] flex flex-col rounded">
               <div className="flex justify-between items-center">
                 <div className="text-md text-[#999] px-2 py-1">
-                  {it.title}
+                  {menuTitle}
                 </div>
               </div>
 

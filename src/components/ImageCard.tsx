@@ -176,6 +176,7 @@ export function ImageCard(props: ImageCardProps) {
 
   return () => {
     const it = item.value
+    const menuTitle = `${it.title.slice(0, 40)}${it.title.length > 40 ? "…" : ""}`
 
     return (
       <>
@@ -211,7 +212,7 @@ export function ImageCard(props: ImageCardProps) {
           <div className="bg-[#3c3c3c] flex flex-col rounded">
             <div className="flex justify-between items-center">
               <div className="text-md text-[#999] px-2 py-1">
-                {it.title}
+                {menuTitle}
               </div>
             </div>
 
