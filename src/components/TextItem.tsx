@@ -348,7 +348,7 @@ export function TextItem(props: TextCardProps) {
         ref={elRef}
         onmousedown={_handleMouseDown}
         oncontextmenu={_handleMouseClick}
-        className="text-container dark:text-white transition flex flex-col justify-stretch rounded absolute"
+        className="text-container dark:text-white transition flex flex-col justify-stretch rounded absolute touch-none"
         style={{
           outline: outline,
           fontSize: fontSize,
@@ -456,7 +456,7 @@ function ExpandIcon({ cb, itemId }: ExpandIconProps) {
         type="button"
         aria-label="Resize text"
         onmousedown={cb}
-        className="h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize"
+        className="h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize touch-none"
         style={{
           display: focusedItem.value === itemId ? 'unset' : 'none'
         }}
