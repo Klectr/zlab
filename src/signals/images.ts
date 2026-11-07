@@ -19,7 +19,7 @@ function loadLocalStorage() {
         ? parsed
         : {}
     for (const [key, entry] of Object.entries(images.value)) {
-      if (!isValidCardEntry(entry, false, key)) {
+      if (!isValidCardEntry(entry, false, key, true)) {
         delete images.value[key]
         continue
       }

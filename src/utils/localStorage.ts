@@ -76,12 +76,14 @@ export function clampCardEntryToCanvas(
 export function isValidCardEntry(
   value: unknown,
   needsFontSize: boolean,
-  expectedId?: string
+  expectedId?: string,
+  isImage?: boolean
 ) {
   if (!isRecord(value)) return false
   if (expectedId !== undefined && value.id !== expectedId) return false
   if (typeof value.title !== "string") return false
   if (typeof value.contents !== "string") return false
+  if (isImage && !value.contents.startsWith("data:image/")) return false
   if (!isRecord(value.position)) return false
   if (!isFiniteNumber(value.position.x)) return false
   if (!isFiniteNumber(value.position.y)) return false
