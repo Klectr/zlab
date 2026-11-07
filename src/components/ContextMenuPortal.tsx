@@ -92,7 +92,16 @@ export function ContextMenuPortal({
     function _handleViewportChange() {
       closeAction?.()
     }
+    function _handleFocusIn(e: FocusEvent) {
+      const el = elRef.current
+      if (!el) return
+      const target = e.target as HTMLElement | null
+      if (target && el.contains(target)) return
+      if (target?.closest?.("#context-menu-portal")) return
+      closeAction?.()
+    }
     document.addEventListener("keydown", _handleEscapeKey)
+    document.addEventListener("focusin", _handleFocusIn)
     window.addEventListener("scroll", _handleViewportChange, {
       capture: true,
       passive: true,
@@ -113,6 +122,7 @@ export function ContextMenuPortal({
     })
     return () => {
       document.removeEventListener("keydown", _handleEscapeKey)
+      document.removeEventListener("focusin", _handleFocusIn)
       window.removeEventListener("scroll", _handleViewportChange, {
         capture: true,
       })
