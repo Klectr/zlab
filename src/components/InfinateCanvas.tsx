@@ -9,6 +9,7 @@ import { CardSelector } from "./cardSelector/CardSelector"
 import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
 import { createImageCardFromFile } from "../utils/createImageCard"
+import { disarmActiveDrags } from "../utils/activeDrag"
 import { useToast } from "./Toast"
 import { TextItem } from "./TextItem"
 import texts from "../signals/texts"
@@ -74,6 +75,7 @@ export default function InfiniteCanvas() {
     }
 
     _updateDimensions()
+    window.addEventListener("mousedown", disarmActiveDrags, true)
     window.addEventListener("resize", _updateDimensions)
     window.addEventListener("scroll", _updatePosition)
     window.addEventListener("dragover", _preventFileDropNavigation)
@@ -85,6 +87,7 @@ export default function InfiniteCanvas() {
     texts.loadLocalStorage()
 
     return () => {
+      window.removeEventListener("mousedown", disarmActiveDrags, true)
       window.removeEventListener("resize", _updateDimensions)
       window.removeEventListener("scroll", _updatePosition)
       window.removeEventListener("dragover", _preventFileDropNavigation)
