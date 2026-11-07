@@ -56,6 +56,12 @@ body {
   @apply transition-all duration-300 rounded z-50;
 }
 
+@media (max-width: 640px) {
+  .toast {
+    top: 52px;
+  }
+}
+
 .toast-message {
   color: #e5e5e5;
 }
