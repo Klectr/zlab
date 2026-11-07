@@ -35,6 +35,10 @@ export function MiniMap() {
     const height = canvasDimentsion.value.height / scaleFactor
     const xPos = Math.max(0, viewportWidth - width - _MAP_OFFSET)
     const yPos = Math.max(0, viewportHeight - height - _MAP_OFFSET)
+    const indicatorWidth = viewportWidth / scaleFactor
+    const indicatorHeight = viewportHeight / scaleFactor
+    const indicatorTop = Math.max(0, Math.min(scrollY.value / scaleFactor, height - indicatorHeight))
+    const indicatorLeft = Math.max(0, Math.min(scrollX.value / scaleFactor, width - indicatorWidth))
 
     return (
       <div
@@ -151,10 +155,10 @@ export function MiniMap() {
         <div
           className={'pointer-events-none absolute bg-blue-500/10 border dark:border-blue-800 border-blue-500 rounded'}
           style={{
-            width: `${viewportWidth / scaleFactor}px`,
-            height: `${viewportHeight / scaleFactor}px`,
-            top: `${scrollY.value / scaleFactor}px`,
-            left: `${scrollX.value / scaleFactor}px`,
+            width: `${indicatorWidth}px`,
+            height: `${indicatorHeight}px`,
+            top: `${indicatorTop}px`,
+            left: `${indicatorLeft}px`,
             zIndex: `${LayerEnum.MINIMAP * 1000}`,
           }}></div>
       </div >
