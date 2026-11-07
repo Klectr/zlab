@@ -5,6 +5,8 @@ import texts, { TextCardType } from "../signals/texts"
 import { LayerEnum } from "../utils/enums"
 import { Card, CardTypes } from "../types"
 import { useThemeDetector } from "../utils/useThemeDetector"
+import { ContextMenuPortal } from "./ContextMenuPortal"
+import { mouse } from "../utils/mouse"
 import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
@@ -106,6 +108,7 @@ export function TextItem(props: TextCardProps) {
   const initialResizeH = ref(0)
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
+  const openContextMenu = signal(false)
 
   let lastMeasuredFontSize: number | null = null
 
@@ -288,6 +291,16 @@ export function TextItem(props: TextCardProps) {
     }
   }
 
+  function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
+    e.preventDefault()
+    mouse.value = { x: e.clientX, y: e.clientY }
+    openContextMenu.value = !openContextMenu.value
+  }
+
+  function _handleContextClose() {
+    openContextMenu.value = false
+  }
+
   function _handleContentInput(e: InputEvent) {
     const el = e.target as HTMLParagraphElement & Pick<HTMLInputElement, 'oninput'>
     const val = _joinChildText(Array.from(el.childNodes), true)
@@ -326,11 +339,15 @@ export function TextItem(props: TextCardProps) {
     const outline = `${focusedItem.value === it.id ? '1px solid' : ''}`
     const fontSize = `${it.fontSize / 6}px`
     const zIndex = `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`
+    const snippet = it.contents.replace(/\s+/g, " ").trim()
+    const menuTitle = snippet ? `${snippet.slice(0, 40)}${snippet.length > 40 ? "…" : ""}` : it.title
 
     return (
+      <>
       <div
         ref={elRef}
         onmousedown={_handleMouseDown}
+        oncontextmenu={_handleMouseClick}
         className="text-container dark:text-white transition flex flex-col justify-stretch rounded absolute"
         style={{
           outline: outline,
@@ -361,6 +378,28 @@ export function TextItem(props: TextCardProps) {
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} />
       </div >
 
+        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
+          <div className="bg-[#3c3c3c] flex flex-col rounded">
+            <div className="flex justify-between items-center">
+              <div className="text-md text-[#999] px-2 py-1">
+                {menuTitle}
+              </div>
+            </div>
+
+            <hr className="border dark:border-[#2c2c2c] border-[#ddd] m-0 p-0" />
+
+            <div>
+              <ul>
+                <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
+                  <button type="button" aria-label="Delete text" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    Delete
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ContextMenuPortal>
+      </>
     )
   }
 }
