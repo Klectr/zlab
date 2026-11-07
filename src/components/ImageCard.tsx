@@ -99,8 +99,8 @@ export function ImageCard(props: ImageCardProps) {
       return
     }
     const newDim = {
-      w: Math.max(100, Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x)),
-      h: Math.max(80, Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y)),
+      w: Math.max(Math.min(100, canvasDimentsion.value.width - item.value.position.x), Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x)),
+      h: Math.max(Math.min(80, canvasDimentsion.value.height - item.value.position.y), Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y)),
     }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
