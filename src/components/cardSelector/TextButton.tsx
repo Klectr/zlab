@@ -3,7 +3,7 @@ import { TextSignal, canvasDimentsion } from "../../signals";
 import texts from "../../signals/texts";
 import { updateLocalStorage } from "../../utils/localStorage";
 import { useToast } from "../Toast";
-import { clickSpawnPoint, defaultClassName } from "./utils";
+import { allCardPositions, cascadeSpawnPosition, clickSpawnPoint, defaultClassName } from "./utils";
 import { CardTypes } from "../../types";
 
 export function TextButton() {
@@ -11,14 +11,21 @@ export function TextButton() {
 
   function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     const { pageX, pageY } = clickSpawnPoint(e)
+    const spawn = cascadeSpawnPosition(
+      {
+        x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
+        y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 100))
+      },
+      allCardPositions()
+    )
     const textId = TextSignal.default.addText({
       fontSize: 84,
       type: CardTypes.TEXTS,
       title: "New Note",
       contents: "todo: fill me",
       position: {
-        x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
-        y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 100))
+        x: Math.min(spawn.x, Math.max(0, canvasDimentsion.value.width - 200)),
+        y: Math.min(spawn.y, Math.max(0, canvasDimentsion.value.height - 100))
       },
       dimensions: {
         w: 200,
