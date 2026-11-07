@@ -1,12 +1,19 @@
 import { createImageCardFromFile } from "../../utils/createImageCard"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
-import { clickSpawnPoint, defaultClassName } from "./utils"
+import { allCardPositions, cascadeSpawnPosition, clickSpawnPoint, defaultClassName } from "./utils"
 
 export function ImageCardButton() {
   const toast = useToast()
   function _handleClick(mouseEvent: Kiru.MouseEvent<HTMLButtonElement>) {
     const { pageX, pageY } = clickSpawnPoint(mouseEvent)
+    const spawn = cascadeSpawnPosition(
+      {
+        x: Math.max(0, pageX - 100),
+        y: Math.max(0, pageY + (window.innerHeight / 2) - 100)
+      },
+      allCardPositions()
+    )
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = "image/*"
@@ -15,10 +22,7 @@ export function ImageCardButton() {
     input.onchange = (e: Event) => {
       const el = e.target as HTMLInputElement
       if (!el.files?.length) return
-      createImageCardFromFile(el.files[0], {
-        x: Math.max(0, pageX - 100),
-        y: Math.max(0, pageY + (window.innerHeight / 2) - 100)
-      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+      createImageCardFromFile(el.files[0], spawn, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
     }
     input.click()
   }

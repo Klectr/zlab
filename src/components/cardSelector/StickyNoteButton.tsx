@@ -4,19 +4,26 @@ import { CardTypes } from "../../types"
 import { updateLocalStorage } from "../../utils/localStorage"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
-import { clickSpawnPoint, defaultClassName } from "./utils"
+import { allCardPositions, cascadeSpawnPosition, clickSpawnPoint, defaultClassName } from "./utils"
 
 export function StickyNoteButton() {
   const toast = useToast()
   function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     const { pageX, pageY } = clickSpawnPoint(e)
+    const spawn = cascadeSpawnPosition(
+      {
+        x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
+        y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 200))
+      },
+      allCardPositions()
+    )
     const noteId = NotesSigal.default.addNote({
       type: CardTypes.NOTES,
       title: "New Note",
       contents: "",
       position: {
-        x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
-        y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 200))
+        x: Math.min(spawn.x, Math.max(0, canvasDimentsion.value.width - 200)),
+        y: Math.min(spawn.y, Math.max(0, canvasDimentsion.value.height - 200))
       },
       dimensions: {
         w: 200,
