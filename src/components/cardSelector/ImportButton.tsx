@@ -116,7 +116,6 @@ export function ImportButton() {
         images.images.notify()
         texts.texts.value = {}
         texts.texts.notify()
-        focusedItem.value = null
         for (const item of entries) {
           if (item.type === CardTypes.IMAGES || item.type == 'image') {
             images.addImage(item as unknown as Omit<ImageCardType, "id">)
@@ -128,6 +127,7 @@ export function ImportButton() {
             texts.addText(item as unknown as Omit<TextCardType, "id">)
           }
         }
+        focusedItem.value = null
 
         try {
           updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
