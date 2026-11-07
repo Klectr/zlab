@@ -227,7 +227,7 @@ export function TextItem(props: TextCardProps) {
         : Infinity
     )
     const fontCap = Math.floor(initialFontSize.current * scaleCap)
-    const newFontSize = Math.max(10, Math.min(candidate, fontCap))
+    const newFontSize = Math.max(fontCap >= 10 ? 10 : Math.max(1, fontCap), Math.min(candidate, fontCap))
 
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
     TextSignal.default.texts.notify()

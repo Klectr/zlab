@@ -110,8 +110,8 @@ export function NoteCard(props: NoteCardProps) {
       _handleResizeMouseUp()
       return
     }
-    const newW = Math.max(100, Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x))
-    const newH = Math.max(80, Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y))
+    const newW = Math.max(Math.min(100, canvasDimentsion.value.width - item.value.position.x), Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x))
+    const newH = Math.max(Math.min(80, canvasDimentsion.value.height - item.value.position.y), Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y))
     const newDim = { w: newW, h: newH }
 
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
