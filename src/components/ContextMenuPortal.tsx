@@ -39,7 +39,10 @@ export function ContextMenuPortal({
     }
     function _handleContextMenuOutside(e: MouseEvent) {
       const el = elRef.current
-      if (el && e.composedPath().includes(el)) return
+      if (el && e.composedPath().includes(el)) {
+        e.preventDefault()
+        return
+      }
       closeAction?.()
     }
     document.addEventListener("click", _handleClickOutside, {
@@ -48,7 +51,7 @@ export function ContextMenuPortal({
     })
     document.addEventListener("contextmenu", _handleContextMenuOutside, {
       capture: true,
-      passive: true,
+      passive: false,
     })
     document.addEventListener("pointerdown", _handlePointerDown, {
       passive: true,
