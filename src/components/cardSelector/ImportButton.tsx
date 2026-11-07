@@ -71,6 +71,7 @@ function parseImportData(data: unknown): ImportEntry[] | null {
     )
     entries.push(rest as ImportEntry)
   }
+  if (entries.length === 0) return null
   return entries
 }
 
