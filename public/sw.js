@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v4"
+const CACHE_NAME = "zlab-v5"
 const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest"]
 
 self.addEventListener("install", (event) => {
@@ -6,7 +6,7 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE_NAME)
       .then(async (cache) => {
-        await cache.addAll(APP_SHELL)
+        await Promise.all(APP_SHELL.map((u) => cache.add(u).catch(() => {})))
         try {
           const shell = await cache.match("/index.html")
           const html = shell ? await shell.text() : ""
