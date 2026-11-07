@@ -11,6 +11,7 @@ import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
+import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { HelpIcon } from "./icons/HelpIcon"
 import { useToast } from "./Toast"
 import {
@@ -86,8 +87,8 @@ export function NoteCard(props: NoteCardProps) {
     updateLocalStorage()
   }
 
-  function _handleMouseUp(e: MouseEvent) {
-    e.preventDefault()
+  function _handleMouseUp(e?: MouseEvent) {
+    e?.preventDefault()
     pressed.value = false
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
@@ -97,6 +98,7 @@ export function NoteCard(props: NoteCardProps) {
     if (e.button !== 0) return
     const target = e.target as HTMLElement | null
     if (target && typeof target.closest === "function" && target.closest("button")) return
+    disarmActiveDrags()
     e.preventDefault()
     offsetX.current = e.pageX - item.value.position.x
     offsetY.current = e.pageY - item.value.position.y
@@ -121,6 +123,7 @@ export function NoteCard(props: NoteCardProps) {
 
   function _handleResizeMouseDown(e: Kiru.MouseEvent<HTMLButtonElement>) {
     if (e.button !== 0) return
+    disarmActiveDrags()
     initialResizeX.current = e.pageX
     initialResizeY.current = e.pageY
     initialResizeW.current = item.value.dimensions.w
@@ -145,6 +148,14 @@ export function NoteCard(props: NoteCardProps) {
     }
   }
 
+  function _disarmDrag() {
+    if (!pressed.value) return
+    _handleMouseUp()
+    _handleResizeMouseUp()
+  }
+
+  activeDragDisarmers.add(_disarmDrag)
+  window.addEventListener('blur', _disarmDrag)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
 
@@ -155,6 +166,8 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
     window.removeEventListener('beforeunload', flushLocalStorage)
     window.removeEventListener('pagehide', flushLocalStorage)
+    window.removeEventListener('blur', _disarmDrag)
+    activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
   })
 
