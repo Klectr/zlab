@@ -96,6 +96,11 @@ export function ImportButton() {
       if (!el.files?.length) return
       const file = el.files[0]
 
+      if (file.size > 32 * 1024 * 1024) {
+        toast.showToast("error", "Could not import that file.")
+        return
+      }
+
       const reader = new FileReader()
       reader.onerror = function() {
         toast.showToast("error", "Could not import that file.")
