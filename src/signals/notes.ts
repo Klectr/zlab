@@ -45,6 +45,7 @@ function addNote(data: Omit<NoteCardType, "id">) {
 function removeNote(id: NoteCardType["id"]) {
   delete notes.value[id]
   notes.notify()
+  if (focusedItem.value === id) focusedItem.value = null
 }
 function updateNoteProperty<K extends keyof NoteCardType>(
   id: NoteCardType["id"],

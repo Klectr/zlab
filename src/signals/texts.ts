@@ -47,6 +47,7 @@ function addText(data: Omit<TextCardType, "id">) {
 function removeText(id: TextCardType["id"]) {
   delete texts.value[id]
   texts.notify()
+  if (focusedItem.value === id) focusedItem.value = null
 }
 function updateTextProperty<K extends keyof TextCardType>(
   id: TextCardType["id"],
