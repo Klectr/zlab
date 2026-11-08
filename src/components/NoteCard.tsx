@@ -309,13 +309,13 @@ export function NoteCard(props: NoteCardProps) {
               <div className="flex gap-2">
                 <button type="button" aria-label="Export note" onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
-                    className="dark:text-[#5c5c5c] cursor-pointer w-4 h-4 text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
+                    className="cursor-pointer w-4 h-4 text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
                   />
                 </button>
 
                 <Divider />
 
-                <button type="button" aria-label="Delete note" className="text-md dark:text-[#777] text-black cursor-pointer" onclick={_handleClose}>x</button>
+                <button type="button" aria-label="Delete note" className="text-md dark:text-white text-black cursor-pointer" onclick={_handleClose}>x</button>
 
               </div>
             </div>
