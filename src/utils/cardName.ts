@@ -6,12 +6,12 @@ export function cardSnippet(text: string): string {
 
 export function noteCardName(title: string, contents: string): string {
   const trimmed = title.trim()
-  if (trimmed && trimmed !== "New Note") return trimmed
+  if (trimmed && trimmed !== "New Note") return cardSnippet(trimmed)
   return cardSnippet(contents) || trimmed
 }
 
 export function imageCardName(title: string): string {
-  return title.trim()
+  return cardSnippet(title)
 }
 
 export function textCardName(contents: string): string {
