@@ -24,8 +24,8 @@ export function MiniMap() {
   })
 
   return () => {
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth
+    const viewportHeight = document.documentElement.clientHeight || window.innerHeight
     const scaleFactor = Math.max(
       _MAP_SCALE_FACTOR,
       canvasDimentsion.value.width / (viewportWidth / 2),
