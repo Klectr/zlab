@@ -28,7 +28,7 @@ export function arrowKeyMovePosition(
   if (!target || typeof target.closest !== "function") return null
   if (
     target.closest(
-      "input, textarea, select, [contenteditable], #context-menu-portal"
+      "input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal"
     )
   )
     return null
