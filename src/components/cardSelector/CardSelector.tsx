@@ -22,6 +22,7 @@ export function CardSelector() {
 
   return () => (
     <div
+      id="card-selector"
       ref={containerRef}
       className="z-50 flex gap-1 border dark:border-[#3c3c3c] border-[#ddd] rounded-full fixed px-4 dark:bg-[#222] bg-[#eee] top-2 py-1 shadow-md"
       style={{

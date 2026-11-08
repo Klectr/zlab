@@ -13,6 +13,7 @@ import { useToast } from "./Toast"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
+import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { CardTypes } from "../types"
 
 interface ImageCardProps {
@@ -26,6 +27,7 @@ export function ImageCard(props: ImageCardProps) {
   const item = $.derive((p) => p.data)
   const { debounce } = createDebounce()
   const pressed = signal(false)
+  const cardRef = ref<HTMLDivElement>(null)
   const newX = ref(0)
   const newY = ref(0)
   const offsetX = ref(0)
@@ -165,7 +167,8 @@ export function ImageCard(props: ImageCardProps) {
     flushLocalStorage()
   })
 
-  function _handleClose() {
+  function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
+    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null)
     ImagesSignal.default.removeImage(item.value.id)
     ImagesSignal.default.images.notify()
     try {
@@ -194,6 +197,7 @@ export function ImageCard(props: ImageCardProps) {
     return (
       <>
         <div
+          ref={cardRef}
           oncontextmenu={_handleMouseClick}
           onmousedown={_handleMouseDown}
           className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] absolute touch-none"

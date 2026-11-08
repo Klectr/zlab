@@ -10,6 +10,7 @@ import { Divider } from "./Divider"
 import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { createImageCardFromFile } from "../utils/createImageCard"
+import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
@@ -189,7 +190,8 @@ export function NoteCard(props: NoteCardProps) {
     saved.value = false
   }
 
-  function _handleClose() {
+  function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
+    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null)
     NotesSigal.default.removeNote(item.value.id)
     NotesSigal.default.notes.notify()
     try {

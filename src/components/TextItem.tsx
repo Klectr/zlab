@@ -8,6 +8,7 @@ import { useThemeDetector } from "../utils/useThemeDetector"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
+import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
@@ -293,6 +294,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleClose(e: Kiru.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
+    moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null)
     TextSignal.default.removeText(item.value.id)
     TextSignal.default.texts.notify()
     try {

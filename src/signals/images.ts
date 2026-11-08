@@ -45,6 +45,7 @@ function addImage(data: Omit<ImageCardType, "id">) {
 function removeImage(id: ImageCardType["id"]) {
   delete images.value[id]
   images.notify()
+  if (focusedItem.value === id) focusedItem.value = null
 }
 function updateImageProperty<K extends keyof ImageCardType>(
   id: ImageCardType["id"],
