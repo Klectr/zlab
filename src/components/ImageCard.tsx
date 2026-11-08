@@ -239,7 +239,7 @@ export function ImageCard(props: ImageCardProps) {
             <hr className="border border-[#ddd] m-0 p-0" />
 
             <div>
-              <ul>
+              <ul role="none">
                 <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
                   <button type="button" role="menuitem" aria-label="Delete image" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                     Delete
