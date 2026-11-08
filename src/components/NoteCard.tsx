@@ -162,7 +162,13 @@ export function NoteCard(props: NoteCardProps) {
     const el = cardRef.current
     if (!el) return
     const target = e.target as HTMLElement | null
-    if (target && el.contains(target)) _handleFocusCard()
+    if (target && el.contains(target)) {
+      _handleFocusCard()
+      return
+    }
+    if (focusedItem.value !== itemKey) return
+    if (target?.closest?.("#context-menu-portal")) return
+    focusedItem.value = null
   }
 
   activeDragDisarmers.add(_disarmDrag)
