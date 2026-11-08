@@ -14,7 +14,7 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
-import { arrowKeyMovePosition } from "../utils/keyboardMove"
+import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { CardTypes } from "../types"
 
 interface ImageCardProps {
@@ -207,11 +207,22 @@ export function ImageCard(props: ImageCardProps) {
     debounceLSUpdate()
   }
 
+  function _handleResizeKeyDown(e: KeyboardEvent) {
+    const newDim = arrowKeyResizeDimensions(e, item.value.dimensions, item.value.position, canvasDimentsion.value)
+    if (!newDim) return
+    e.preventDefault()
+    ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
+    ImagesSignal.default.images.notify()
+    debounceLSUpdate()
+  }
+
   effect(() => {
     if (focusedItem.value !== itemKey) return
     window.addEventListener('keydown', _handleMoveKeyDown)
+    window.addEventListener('keydown', _handleResizeKeyDown)
     return () => {
       window.removeEventListener('keydown', _handleMoveKeyDown)
+      window.removeEventListener('keydown', _handleResizeKeyDown)
     }
   })
 

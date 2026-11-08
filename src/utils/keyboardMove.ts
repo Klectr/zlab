@@ -43,3 +43,70 @@ export function arrowKeyMovePosition(
     ),
   }
 }
+
+function _arrowResizeDelta(e: KeyboardEvent): { dw: number; dh: number } | null {
+  if (!e.altKey || e.ctrlKey || e.metaKey) return null
+  const step = e.shiftKey ? 50 : 10
+  let dw = 0
+  let dh = 0
+  switch (e.key) {
+    case "ArrowLeft":
+      dw = -step
+      break
+    case "ArrowRight":
+      dw = step
+      break
+    case "ArrowUp":
+      dh = -step
+      break
+    case "ArrowDown":
+      dh = step
+      break
+    default:
+      return null
+  }
+  const target = e.target as HTMLElement | null
+  if (!target || typeof target.closest !== "function") return null
+  if (
+    target.closest(
+      "input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal"
+    )
+  )
+    return null
+  return { dw, dh }
+}
+
+export function arrowKeyResizeDimensions(
+  e: KeyboardEvent,
+  dimensions: { w: number; h: number },
+  position: { x: number; y: number },
+  canvas: { width: number; height: number }
+): { w: number; h: number } | null {
+  const delta = _arrowResizeDelta(e)
+  if (!delta) return null
+  const availW = canvas.width - position.x
+  const availH = canvas.height - position.y
+  return {
+    w: Math.max(Math.min(100, availW), Math.min(dimensions.w + delta.dw, availW)),
+    h: Math.max(Math.min(80, availH), Math.min(dimensions.h + delta.dh, availH)),
+  }
+}
+
+export function arrowKeyResizeFontSize(
+  e: KeyboardEvent,
+  fontSize: number,
+  dimensions: { w: number; h: number },
+  position: { x: number; y: number },
+  canvas: { width: number; height: number }
+): number | null {
+  const delta = _arrowResizeDelta(e)
+  if (!delta) return null
+  const step = delta.dw !== 0 ? delta.dw : delta.dh
+  const scaleCap = Math.min(
+    dimensions.w > 0 ? (canvas.width - position.x) / dimensions.w : Infinity,
+    dimensions.h > 0 ? (canvas.height - position.y) / dimensions.h : Infinity
+  )
+  const fontCap = Math.floor(fontSize * scaleCap)
+  const candidate = Math.floor(fontSize + step)
+  return Math.max(fontCap >= 10 ? 10 : Math.max(1, fontCap), Math.min(candidate, fontCap))
+}

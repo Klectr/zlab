@@ -9,7 +9,7 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
-import { arrowKeyMovePosition } from "../utils/keyboardMove"
+import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardMove"
 import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
@@ -336,11 +336,22 @@ export function TextItem(props: TextCardProps) {
     updateLocalStorage()
   }
 
+  function _handleResizeKeyDown(e: KeyboardEvent) {
+    const newFontSize = arrowKeyResizeFontSize(e, item.value.fontSize, item.value.dimensions, item.value.position, canvasDimentsion.value)
+    if (newFontSize === null) return
+    e.preventDefault()
+    TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
+    TextSignal.default.texts.notify()
+    updateLocalStorage()
+  }
+
   effect(() => {
     if (focusedItem.value !== itemKey) return
     window.addEventListener('keydown', _handleMoveKeyDown)
+    window.addEventListener('keydown', _handleResizeKeyDown)
     return () => {
       window.removeEventListener('keydown', _handleMoveKeyDown)
+      window.removeEventListener('keydown', _handleResizeKeyDown)
     }
   })
 
