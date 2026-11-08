@@ -85,9 +85,33 @@ export function ContextMenuPortal({
     }
     pos.value = untrack(() => ({ x: mouse.value.x, y: mouse.value.y }))
     const previouslyFocused = document.activeElement as HTMLElement | null
-    function _handleEscapeKey(e: KeyboardEvent) {
-      if (e.key !== "Escape") return
-      closeAction?.()
+    function _handleMenuKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        closeAction?.()
+        return
+      }
+      if (
+        e.key !== "ArrowDown" &&
+        e.key !== "ArrowUp" &&
+        e.key !== "Home" &&
+        e.key !== "End"
+      )
+        return
+      const el = elRef.current
+      if (!el) return
+      const active = document.activeElement as HTMLElement | null
+      if (!active || !el.contains(active)) return
+      const items = Array.from(el.querySelectorAll("button"))
+      if (items.length === 0) return
+      e.preventDefault()
+      const idx = items.indexOf(active as HTMLButtonElement)
+      let next: number
+      if (e.key === "Home") next = 0
+      else if (e.key === "End") next = items.length - 1
+      else if (e.key === "ArrowDown")
+        next = idx < 0 ? 0 : (idx + 1) % items.length
+      else next = idx < 0 ? items.length - 1 : (idx - 1 + items.length) % items.length
+      items[next].focus({ preventScroll: true })
     }
     function _handleViewportChange() {
       closeAction?.()
@@ -100,7 +124,7 @@ export function ContextMenuPortal({
       if (target?.closest?.("#context-menu-portal")) return
       closeAction?.()
     }
-    document.addEventListener("keydown", _handleEscapeKey)
+    document.addEventListener("keydown", _handleMenuKey)
     document.addEventListener("focusin", _handleFocusIn)
     window.addEventListener("scroll", _handleViewportChange, {
       capture: true,
@@ -111,7 +135,7 @@ export function ContextMenuPortal({
     const frame = requestAnimationFrame(() => {
       const el = elRef.current
       if (!el || !open.value) return
-      el.querySelector("button")?.focus({ preventScroll: true })
+      el.focus({ preventScroll: true })
       const rect = el.getBoundingClientRect()
       if (rect.width === 0 && rect.height === 0) return
       untrack(() => {
@@ -121,7 +145,7 @@ export function ContextMenuPortal({
       })
     })
     return () => {
-      document.removeEventListener("keydown", _handleEscapeKey)
+      document.removeEventListener("keydown", _handleMenuKey)
       document.removeEventListener("focusin", _handleFocusIn)
       window.removeEventListener("scroll", _handleViewportChange, {
         capture: true,
@@ -156,6 +180,8 @@ export function ContextMenuPortal({
       >
         <div
           ref={elRef}
+          role="menu"
+          tabIndex={-1}
           className="fixed z-10 select-none shadow-md rounded min-w-[150px]"
           style={{
             left: `${pos.value.x}px`,

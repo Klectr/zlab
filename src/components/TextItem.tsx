@@ -294,7 +294,10 @@ export function TextItem(props: TextCardProps) {
 
   function _handleClose(e: Kiru.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
-    moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null)
+    const ownMenu = openContextMenu.value
+      ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
+      : null
+    moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null, ownMenu)
     TextSignal.default.removeText(item.value.id)
     TextSignal.default.texts.notify()
     try {
@@ -417,9 +420,9 @@ export function TextItem(props: TextCardProps) {
             <hr className="border border-[#ddd] m-0 p-0" />
 
             <div>
-              <ul>
-                <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                  <button type="button" aria-label="Delete text" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+              <ul role="none">
+                <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
+                  <button type="button" role="menuitem" aria-label="Delete text" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                     Delete
                   </button>
                 </li>
