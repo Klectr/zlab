@@ -399,7 +399,7 @@ export function TextItem(props: TextCardProps) {
               </div>
             </div>
 
-            <hr className="border dark:border-[#2c2c2c] border-[#ddd] m-0 p-0" />
+            <hr className="border border-[#ddd] m-0 p-0" />
 
             <div>
               <ul>
