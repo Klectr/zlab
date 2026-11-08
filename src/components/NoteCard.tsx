@@ -250,6 +250,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
+    if (e.repeat) return
     if (!e.ctrlKey && !e.metaKey) return
 
     const target = e.target as HTMLElement | null
