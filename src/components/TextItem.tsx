@@ -11,6 +11,7 @@ import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardMove"
 import { useToast } from "./Toast"
+import { textCardName } from "../utils/cardName"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
@@ -398,8 +399,9 @@ export function TextItem(props: TextCardProps) {
     const outline = `${focusedItem.value === it.id ? '1px solid' : ''}`
     const fontSize = `${it.fontSize / 6}px`
     const zIndex = `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`
-    const snippet = it.contents.replace(/\s+/g, " ").trim()
-    const menuTitle = snippet ? `${snippet.slice(0, 40)}${snippet.length > 40 ? "…" : ""}` : it.title
+    const cardName = textCardName(it.contents)
+    const nameSuffix = cardName ? `: ${cardName}` : ""
+    const menuTitle = cardName || it.title
 
     return (
       <>
@@ -427,14 +429,14 @@ export function TextItem(props: TextCardProps) {
             onfocus={_handleFocus}
             contentEditable
             role="textbox"
-            aria-label="Text editor"
+            aria-label={cardName ? `Text editor: ${cardName}` : "Text editor"}
             aria-multiline="true"
             className={'text-p inline-block px-2 w-full select-none drop-shadow relative'}>
           </p>
         </pre>
 
-        <CloseIcon cb={_handleClose} itemId={it.id} />
-        <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} />
+        <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
+        <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />
       </div >
 
         <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
@@ -450,7 +452,7 @@ export function TextItem(props: TextCardProps) {
             <div>
               <ul role="none">
                 <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                  <button type="button" role="menuitem" aria-label="Delete text" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                  <button type="button" role="menuitem" aria-label={`Delete text${nameSuffix}`} onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                     Delete
                   </button>
                 </li>
@@ -465,16 +467,17 @@ export function TextItem(props: TextCardProps) {
 
 interface CloseIconProps {
   cb: Kiru.MouseEventHandler<HTMLButtonElement>,
-  itemId: TextCardType['id']
+  itemId: TextCardType['id'],
+  label: string
 }
 
-function CloseIcon({ cb, itemId }: CloseIconProps) {
+function CloseIcon({ cb, itemId, label }: CloseIconProps) {
   return () => {
     const isDark = useThemeDetector()
     return (
       <button
         type="button"
-        aria-label="Delete text"
+        aria-label={label}
         onclick={cb}
         className="text-close cursor-pointer w-4 h-4 absolute top-[-8px] right-[-8px]"
         style={{
@@ -504,16 +507,17 @@ function CloseIcon({ cb, itemId }: CloseIconProps) {
 
 interface ExpandIconProps {
   cb: Kiru.MouseEventHandler<HTMLButtonElement>,
-  itemId: TextCardType['id']
+  itemId: TextCardType['id'],
+  label: string
 }
 
-function ExpandIcon({ cb, itemId }: ExpandIconProps) {
+function ExpandIcon({ cb, itemId, label }: ExpandIconProps) {
   return () => {
     const isDark = useThemeDetector()
     return (
       <button
         type="button"
-        aria-label="Resize text"
+        aria-label={label}
         onmousedown={cb}
         className="h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize touch-none"
         style={{

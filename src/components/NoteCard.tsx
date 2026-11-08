@@ -16,6 +16,7 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { HelpIcon } from "./icons/HelpIcon"
+import { cardSnippet, noteCardName } from "../utils/cardName"
 import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
@@ -329,7 +330,9 @@ export function NoteCard(props: NoteCardProps) {
 
   return () => {
     const it = item.value
-    const menuTitle = `${it.title.slice(0, 40)}${it.title.length > 40 ? "…" : ""}`
+    const cardName = noteCardName(it.title, it.contents)
+    const nameSuffix = cardName ? `: ${cardName}` : ""
+    const menuTitle = cardSnippet(cardName) || cardName
 
     const cardPositionStyle = {
       zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
@@ -356,12 +359,12 @@ export function NoteCard(props: NoteCardProps) {
             {/* Header Bar */}
             <div className="px-2 flex justify-between items-center cursor-move touch-none" onmousedown={_handleMouseDown}>
               <div className={"flex gap-1 items-center"}>
-                <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`note-shortcuts-${itemKey}`} />
+                <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`note-shortcuts-${itemKey}`} label={`Show note shortcuts${nameSuffix}`} />
                 {/* Save indicator*/}
                 <div style={saveIndicatorStyle} className="rounded-full w-1 h-1 dark:bg-white bg-green-500"></div>
               </div>
               <div className="flex gap-2">
-                <button type="button" aria-label="Export note" onclick={_handleExportClick} className="flex items-center">
+                <button type="button" aria-label={`Export note${nameSuffix}`} onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
                     className="cursor-pointer w-4 h-4 text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
                   />
@@ -369,7 +372,7 @@ export function NoteCard(props: NoteCardProps) {
 
                 <Divider />
 
-                <button type="button" aria-label="Delete note" className="text-md dark:text-white text-black cursor-pointer" onclick={_handleClose}>x</button>
+                <button type="button" aria-label={`Delete note${nameSuffix}`} className="text-md dark:text-white text-black cursor-pointer" onclick={_handleClose}>x</button>
 
               </div>
             </div>
@@ -377,8 +380,8 @@ export function NoteCard(props: NoteCardProps) {
             <hr className="border dark:border-[#2c2c2c] border-[#ddd]" />
 
             {/* Content Body */}
-            <MarkDownEditor initial={it.contents} title={it.title} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} />
-            <ExpandIcon cb={_handleResizeMouseDown} />
+            <MarkDownEditor initial={it.contents} title={cardName || undefined} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} />
+            <ExpandIcon cb={_handleResizeMouseDown} label={`Resize note${nameSuffix}`} />
           </div>
 
           <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
@@ -394,12 +397,12 @@ export function NoteCard(props: NoteCardProps) {
               <div>
                 <ul role="none">
                   <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button type="button" role="menuitem" aria-label="Delete note" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button type="button" role="menuitem" aria-label={`Delete note${nameSuffix}`} onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       Delete
                     </button>
                   </li>
                   <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button type="button" role="menuitem" aria-label="Export note" onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button type="button" role="menuitem" aria-label={`Export note${nameSuffix}`} onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       export
                     </button>
                   </li>
@@ -433,8 +436,9 @@ export function NoteCard(props: NoteCardProps) {
   }
 }
 
-function ExpandIcon({ cb }: {
+function ExpandIcon({ cb, label }: {
   cb: Kiru.MouseEventHandler<HTMLButtonElement>
+  label: string
 }) {
   return () => {
     const isDarkTheme = useThemeDetector()
@@ -442,7 +446,7 @@ function ExpandIcon({ cb }: {
     return (
       <button
         type="button"
-        aria-label="Resize note"
+        aria-label={label}
         onmousedown={cb}
         className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none"
       >

@@ -4,6 +4,7 @@ import { canvasDimentsion } from "../signals"
 import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
 import texts, { TextCardType } from "../signals/texts"
+import { imageCardName, noteCardName } from "../utils/cardName"
 
 const _MAP_OFFSET = 20
 const _MAP_SCALE_FACTOR = 10
@@ -71,7 +72,7 @@ export function MiniMap() {
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
-            <button type="button" aria-label={image.title.trim() ? `Scroll to image: ${image.title.trim()}` : "Scroll to image"} key={imageKey} className={"absolute dark:bg-green-500 bg-green-300 dark:hover:bg-blue-500 hover:bg-blue-300 cursor-pointer border dark:border-[#222] border-green-500 rounded"}
+            <button type="button" aria-label={imageCardName(image.title) ? `Scroll to image: ${imageCardName(image.title)}` : "Scroll to image"} key={imageKey} className={"absolute dark:bg-green-500 bg-green-300 dark:hover:bg-blue-500 hover:bg-blue-300 cursor-pointer border dark:border-[#222] border-green-500 rounded"}
               onclick={_handleItemClick}
               style={{
                 width: `${newWidth}px`,
@@ -105,7 +106,7 @@ export function MiniMap() {
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
-            <button type="button" aria-label={note.title.trim() ? `Scroll to note: ${note.title.trim()}` : "Scroll to note"} key={noteKey} className={"absolute dark:bg-gray-500 bg-gray-300 hover:bg-blue-500 cursor-pointer border dark:border-[#222] border-gray-400 rounded"}
+            <button type="button" aria-label={noteCardName(note.title, note.contents) ? `Scroll to note: ${noteCardName(note.title, note.contents)}` : "Scroll to note"} key={noteKey} className={"absolute dark:bg-gray-500 bg-gray-300 hover:bg-blue-500 cursor-pointer border dark:border-[#222] border-gray-400 rounded"}
               onclick={_handleItemClick}
               style={{
                 width: `${newWidth}px`,

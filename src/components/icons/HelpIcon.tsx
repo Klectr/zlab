@@ -2,14 +2,15 @@ interface HelpIconProps {
   onMouseOver?: () => void
   onMouseOut?: () => void
   describedBy?: string
+  label?: string
 }
 
-export function HelpIcon({ onMouseOver, onMouseOut, describedBy }: HelpIconProps) {
+export function HelpIcon({ onMouseOver, onMouseOut, describedBy, label }: HelpIconProps) {
 
   return (
     <button
       type="button"
-      aria-label="Show note shortcuts"
+      aria-label={label ?? "Show note shortcuts"}
       aria-describedby={describedBy}
       onmouseout={onMouseOut}
       onmouseover={onMouseOver}

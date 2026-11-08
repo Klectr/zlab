@@ -16,6 +16,7 @@ import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { CardTypes } from "../types"
+import { cardSnippet, imageCardName } from "../utils/cardName"
 
 interface ImageCardProps {
   itemKey: ImageCardType['id']
@@ -238,7 +239,9 @@ export function ImageCard(props: ImageCardProps) {
 
   return () => {
     const it = item.value
-    const menuTitle = `${it.title.slice(0, 40)}${it.title.length > 40 ? "…" : ""}`
+    const cardName = imageCardName(it.title)
+    const nameSuffix = cardName ? `: ${cardName}` : ""
+    const menuTitle = cardSnippet(cardName) || cardName
 
     return (
       <>
@@ -260,15 +263,15 @@ export function ImageCard(props: ImageCardProps) {
             backgroundPosition: 'center'
           }}
         >
-          <span role="img" aria-label={it.title.trim() ? it.title : "Image"} className="sr-only"></span>
+          <span role="img" aria-label={cardName || "Image"} className="sr-only"></span>
 
           <button
             type="button"
-            aria-label="Delete image"
+            aria-label={`Delete image${nameSuffix}`}
             className="flex justify-center items-center hover:bg-blue-500 rounded w-5 h-5 text-white text-md absolute right-0 top-0 cursor-pointer"
             onclick={_handleClose}>x</button>
 
-          <ExpandIcon cb={_handleResizeMouseDown} />
+          <ExpandIcon cb={_handleResizeMouseDown} label={`Resize image${nameSuffix}`} />
         </div >
 
         <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
@@ -284,7 +287,7 @@ export function ImageCard(props: ImageCardProps) {
             <div>
               <ul role="none">
                 <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                  <button type="button" role="menuitem" aria-label="Delete image" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                  <button type="button" role="menuitem" aria-label={`Delete image${nameSuffix}`} onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                     Delete
                   </button>
                 </li>
@@ -299,15 +302,16 @@ export function ImageCard(props: ImageCardProps) {
 }
 
 
-function ExpandIcon({ cb }: {
+function ExpandIcon({ cb, label }: {
   cb: Kiru.MouseEventHandler<HTMLButtonElement>
+  label: string
 }) {
   return () => {
     const isDarkTheme = useThemeDetector()
     return (
       <button
         type="button"
-        aria-label="Resize image"
+        aria-label={label}
         onmousedown={cb}
         className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none"
       >
