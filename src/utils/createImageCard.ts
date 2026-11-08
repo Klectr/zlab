@@ -1,7 +1,7 @@
 import { ImagesSignal, canvasDimentsion } from "../signals"
 import images from "../signals/images"
 import { CardTypes } from "../types"
-import { updateLocalStorage } from "./localStorage"
+import { isValidImageContents, updateLocalStorage } from "./localStorage"
 
 export function createImageCardFromFile(
   file: File,
@@ -31,9 +31,10 @@ export function createImageCardFromFile(
       const normalizedH = (height / len) * 300
 
       const content = readerEvent.target?.result
-      let img: string = ""
-      if (typeof content == "string") img = content?.split(":")[1]
-      if (!img) return
+      if (typeof content !== "string" || !isValidImageContents(content)) {
+        onLoadError()
+        return
+      }
 
       const clampedPosition = {
         x: Math.min(
