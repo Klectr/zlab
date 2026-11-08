@@ -11,7 +11,7 @@ import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { createImageCardFromFile } from "../utils/createImageCard"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
-import { arrowKeyMovePosition } from "../utils/keyboardMove"
+import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
@@ -306,13 +306,24 @@ export function NoteCard(props: NoteCardProps) {
     updateLocalStorage()
   }
 
+  function _handleResizeKeyDown(e: KeyboardEvent) {
+    const newDim = arrowKeyResizeDimensions(e, item.value.dimensions, item.value.position, canvasDimentsion.value)
+    if (!newDim) return
+    e.preventDefault()
+    NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
+    NotesSigal.default.notes.notify()
+    updateLocalStorage()
+  }
+
   effect(() => {
     if (focusedItem.value !== itemKey) return
     window.addEventListener('keydown', _handleKeyDown)
     window.addEventListener('keydown', _handleMoveKeyDown)
+    window.addEventListener('keydown', _handleResizeKeyDown)
     return () => {
       window.removeEventListener('keydown', _handleKeyDown)
       window.removeEventListener('keydown', _handleMoveKeyDown)
+      window.removeEventListener('keydown', _handleResizeKeyDown)
     }
   })
 
@@ -413,6 +424,7 @@ export function NoteCard(props: NoteCardProps) {
               <small>ctrl/cmd + back = delete</small>
               <small>ctrl/cmd + e = export</small>
               <small>arrow keys = move card (shift = 50px)</small>
+              <small>alt + arrow keys = resize card (shift = 50px)</small>
             </div>
           </div>
         }
