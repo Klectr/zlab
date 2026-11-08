@@ -342,9 +342,22 @@ export function TextItem(props: TextCardProps) {
       document.removeEventListener('mousedown', _handleClick)
     }
 
+    function _handleFocusIn(e: FocusEvent) {
+      if (focusedItem.value !== itemKey) return
+      const target = e.target as HTMLElement | null
+      if (!target) return
+      if (target === elRef.current) return
+      if (elRef.current?.contains(target)) return
+      if (target.closest?.('#context-menu-portal')) return
+
+      focusedItem.value = null
+    }
+
     document.addEventListener('mousedown', _handleClick)
+    document.addEventListener('focusin', _handleFocusIn)
     return () => {
       document.removeEventListener('mousedown', _handleClick)
+      document.removeEventListener('focusin', _handleFocusIn)
     }
   })
 
