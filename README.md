@@ -49,7 +49,7 @@ For production, `bun run build` emits a static `dist/` you can serve from any st
 
 * **Create cards:** Use the toolbar to create a sticky note, add an image, or create a text item.
 * **Edit:** Click into a note or text item and type; notes are written in Markdown.
-* **Move and resize:** Drag a card to reposition it on the canvas, and drag its corner handle to resize it.
+* **Move and resize:** Drag a card to reposition it on the canvas, and drag its corner handle to resize it. With a card selected, the arrow keys move it (Shift for a bigger step).
 * **Delete:** Use a card's close button, or right-click any card for its context menu.
 * **Save and share a board:** Use the toolbar to export the board as a JSON file, and import a JSON file to replace the current board.
 * **Find a card:** Click a card's marker on the minimap to scroll to it.

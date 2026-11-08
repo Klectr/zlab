@@ -9,6 +9,7 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { arrowKeyMovePosition } from "../utils/keyboardMove"
 import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
@@ -326,6 +327,22 @@ export function TextItem(props: TextCardProps) {
     _measureAndStoreDimensions()
     updateLocalStorage()
   }
+
+  function _handleMoveKeyDown(e: KeyboardEvent) {
+    const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
+    if (!newPos) return
+    e.preventDefault()
+    TextSignal.default.updateTextProperty(itemKey, 'position', newPos)
+    updateLocalStorage()
+  }
+
+  effect(() => {
+    if (focusedItem.value !== itemKey) return
+    window.addEventListener('keydown', _handleMoveKeyDown)
+    return () => {
+      window.removeEventListener('keydown', _handleMoveKeyDown)
+    }
+  })
 
   effect(() => {
     if (focusedItem.value !== itemKey) return
