@@ -115,6 +115,7 @@ export function ImageCard(props: ImageCardProps) {
 
 
   function _handleResizeMouseDown(e: Kiru.MouseEvent<HTMLButtonElement>) {
+    focusedItem.value = itemKey
     if (e.button !== 0) return
     disarmActiveDrags()
     e.stopPropagation()
