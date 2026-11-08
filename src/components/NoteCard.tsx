@@ -253,6 +253,15 @@ export function NoteCard(props: NoteCardProps) {
     showHelp.value = false
   }
 
+  effect(() => {
+    if (!showHelp.value) return
+    function _handleHelpEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") showHelp.value = false
+    }
+    document.addEventListener("keydown", _handleHelpEscape)
+    return () => document.removeEventListener("keydown", _handleHelpEscape)
+  })
+
   function _handleKeyDown(e: KeyboardEvent) {
     if (e.repeat) return
     if (!e.ctrlKey && !e.metaKey) return
