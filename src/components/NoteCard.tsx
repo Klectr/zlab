@@ -41,6 +41,7 @@ export function NoteCard(props: NoteCardProps) {
   const initialResizeH = ref(0)
   const openContextMenu = signal(false)
   const showHelp = signal(false)
+  const cardRef = ref<HTMLDivElement>(null)
 
   const { debounce } = createDebounce()
   const toast = useToast()
@@ -155,10 +156,18 @@ export function NoteCard(props: NoteCardProps) {
     _handleResizeMouseUp()
   }
 
+  function _handleFocusIn(e: FocusEvent) {
+    const el = cardRef.current
+    if (!el) return
+    const target = e.target as HTMLElement | null
+    if (target && el.contains(target)) _handleFocusCard()
+  }
+
   activeDragDisarmers.add(_disarmDrag)
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
+  document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
     window.removeEventListener('mousemove', _handleMouseMove)
@@ -167,6 +176,7 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
     window.removeEventListener('beforeunload', flushLocalStorage)
     window.removeEventListener('pagehide', flushLocalStorage)
+    document.removeEventListener('focusin', _handleFocusIn)
     window.removeEventListener('blur', _disarmDrag)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
@@ -293,6 +303,7 @@ export function NoteCard(props: NoteCardProps) {
     return (
       <>
         <div
+          ref={cardRef}
           oncontextmenu={_handleMouseClick}
           onmousedown={_handleFocusCard}
           style={cardPositionStyle}
