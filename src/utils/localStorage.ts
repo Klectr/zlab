@@ -1,5 +1,15 @@
 import { Signal } from "kiru"
 import { Card, CardTypes } from "../types"
+import { createId } from "./createId"
+
+const loadedCardIds = new Set<string>()
+
+export function claimLoadedCardId(id: string): string {
+  let claimed = id
+  while (loadedCardIds.has(claimed)) claimed = createId()
+  loadedCardIds.add(claimed)
+  return claimed
+}
 
 export function updateLocalStorage(
   location: CardTypes,

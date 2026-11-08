@@ -2,6 +2,7 @@ import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
 import { canvasDimentsion, focusedItem } from "."
 import {
+  claimLoadedCardId,
   clampCardEntryToCanvas,
   isValidCardEntry,
 } from "../utils/localStorage"
@@ -27,6 +28,12 @@ function loadLocalStorage() {
       }
       clampCardEntryToCanvas(entry, canvasDimentsion.value, true)
       entry.type = CardTypes.TEXTS
+      const claimedId = claimLoadedCardId(key)
+      if (claimedId !== key) {
+        entry.id = claimedId
+        texts.value[claimedId] = entry
+        delete texts.value[key]
+      }
     }
   } catch {
     texts.value = {}
