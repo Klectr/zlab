@@ -5,7 +5,7 @@ import { markdown } from "@codemirror/lang-markdown"
 import { search, searchKeymap } from "@codemirror/search"
 import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } from "@codemirror/language"
 import { tags } from "@lezer/highlight"
-import { effect, onCleanup, onMount, ref } from "kiru"
+import { effect, onCleanup, onMount, ref, setup } from "kiru"
 import { initThemeDetector, isDarkTheme } from "../../utils/useThemeDetector"
 
 export interface MarkDownEditorChange {
@@ -43,13 +43,29 @@ const highlightStyle = HighlightStyle.define([
   { tag: tags.strong, fontWeight: "bold" },
 ])
 
-export function MarkDownEditor({ initial, title, onChange, onFocus, onPasteImage }: MarkDownEditorProps) {
-  const trimmedTitle = title?.trim()
-  const ariaLabel = trimmedTitle ? `Note editor: ${trimmedTitle}` : "Note editor"
+export function MarkDownEditor(props: MarkDownEditorProps) {
+  const { initial, onChange, onFocus, onPasteImage } = props
+  const $ = setup<MarkDownEditorProps>()
+  const titleProp = $.derive((p) => p.title)
+  const labelFor = (t?: string) => {
+    const trimmed = t?.trim()
+    return trimmed ? `Note editor: ${trimmed}` : "Note editor"
+  }
+  const ariaLabel = labelFor(props.title)
   initThemeDetector()
   const elRef = ref<HTMLDivElement>(null)
   const themeCompartment = new Compartment()
+  const labelCompartment = new Compartment()
   let view: EditorView | undefined
+
+  effect(() => {
+    const label = labelFor(titleProp.value)
+    view?.dispatch({
+      effects: labelCompartment.reconfigure(
+        EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": label })
+      ),
+    })
+  })
 
   effect(() => {
     const dark = isDarkTheme.value
@@ -80,7 +96,7 @@ export function MarkDownEditor({ initial, title, onChange, onFocus, onPasteImage
           syntaxHighlighting(highlightStyle),
           themeCompartment.of(EditorView.theme(editorThemeSpec, { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
-          EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel }),
+          labelCompartment.of(EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel })),
           EditorView.domEventHandlers({
             paste: (event) => {
               if (!onPasteImage) return false

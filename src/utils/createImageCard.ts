@@ -49,7 +49,7 @@ export function createImageCardFromFile(
 
       const imgId = ImagesSignal.default.addImage({
         type: CardTypes.IMAGES,
-        title: "New Image",
+        title: file.name.trim() ? file.name.trim() : "New Image",
         contents: content as string,
         position: clampedPosition,
         dimensions: {
