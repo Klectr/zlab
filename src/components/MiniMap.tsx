@@ -153,7 +153,7 @@ export function MiniMap() {
         })}
 
         <div
-          className={'pointer-events-none absolute bg-blue-500/10 border dark:border-blue-800 border-blue-500 rounded'}
+          className={'pointer-events-none absolute bg-blue-500/10 border border-blue-500 rounded'}
           style={{
             width: `${indicatorWidth}px`,
             height: `${indicatorHeight}px`,
