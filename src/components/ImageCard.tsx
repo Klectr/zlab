@@ -168,7 +168,10 @@ export function ImageCard(props: ImageCardProps) {
   })
 
   function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
-    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null)
+    const ownMenu = openContextMenu.value
+      ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
+      : null
+    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu)
     ImagesSignal.default.removeImage(item.value.id)
     ImagesSignal.default.images.notify()
     try {
@@ -237,8 +240,8 @@ export function ImageCard(props: ImageCardProps) {
 
             <div>
               <ul>
-                <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                  <button type="button" aria-label="Delete image" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
+                  <button type="button" role="menuitem" aria-label="Delete image" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                     Delete
                   </button>
                 </li>

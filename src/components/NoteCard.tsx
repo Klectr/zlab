@@ -191,7 +191,10 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
-    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null)
+    const ownMenu = openContextMenu.value
+      ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
+      : null
+    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu)
     NotesSigal.default.removeNote(item.value.id)
     NotesSigal.default.notes.notify()
     try {
@@ -353,13 +356,13 @@ export function NoteCard(props: NoteCardProps) {
 
               <div>
                 <ul>
-                  <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button type="button" aria-label="Delete note" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                  <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
+                    <button type="button" role="menuitem" aria-label="Delete note" onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       Delete
                     </button>
                   </li>
-                  <li className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button type="button" aria-label="Export note" onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                  <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
+                    <button type="button" role="menuitem" aria-label="Export note" onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
                       export
                     </button>
                   </li>
