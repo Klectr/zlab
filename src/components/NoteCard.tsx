@@ -300,6 +300,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMoveKeyDown(e: KeyboardEvent) {
+    if (pressed.value) return
     const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
     if (!newPos) return
     e.preventDefault()
@@ -308,6 +309,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
+    if (pressed.value) return
     const newDim = arrowKeyResizeDimensions(e, item.value.dimensions, item.value.position, canvasDimentsion.value)
     if (!newDim) return
     e.preventDefault()
