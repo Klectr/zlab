@@ -1,4 +1,4 @@
-import { onCleanup, ref, setup, signal } from "kiru"
+import { effect, onCleanup, ref, setup, signal } from "kiru"
 import { ImagesSignal, canvasDimentsion, focusedItem } from "../signals"
 import { createDebounce } from "../utils/useDebounce"
 import { LayerEnum } from "../utils/enums"
@@ -14,6 +14,7 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { arrowKeyMovePosition } from "../utils/keyboardMove"
 import { CardTypes } from "../types"
 
 interface ImageCardProps {
@@ -150,10 +151,18 @@ export function ImageCard(props: ImageCardProps) {
     _handleResizeMouseUp()
   }
 
+  function _handleFocusIn(e: FocusEvent) {
+    const el = cardRef.current
+    if (!el) return
+    const target = e.target as HTMLElement | null
+    if (target && el.contains(target)) focusedItem.value = itemKey
+  }
+
   activeDragDisarmers.add(_disarmDrag)
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
+  document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
     window.removeEventListener('mousemove', _handleMouseMove)
@@ -163,6 +172,7 @@ export function ImageCard(props: ImageCardProps) {
     window.removeEventListener('beforeunload', flushLocalStorage)
     window.removeEventListener('pagehide', flushLocalStorage)
     window.removeEventListener('blur', _disarmDrag)
+    document.removeEventListener('focusin', _handleFocusIn)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
   })
@@ -182,6 +192,22 @@ export function ImageCard(props: ImageCardProps) {
       }
     }
   }
+
+  function _handleMoveKeyDown(e: KeyboardEvent) {
+    const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
+    if (!newPos) return
+    e.preventDefault()
+    ImagesSignal.default.updateImageProperty(itemKey, 'position', newPos)
+    debounceLSUpdate()
+  }
+
+  effect(() => {
+    if (focusedItem.value !== itemKey) return
+    window.addEventListener('keydown', _handleMoveKeyDown)
+    return () => {
+      window.removeEventListener('keydown', _handleMoveKeyDown)
+    }
+  })
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()

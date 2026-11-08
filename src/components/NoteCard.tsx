@@ -11,6 +11,7 @@ import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { createImageCardFromFile } from "../utils/createImageCard"
 import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { arrowKeyMovePosition } from "../utils/keyboardMove"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
@@ -282,11 +283,21 @@ export function NoteCard(props: NoteCardProps) {
     }
   }
 
+  function _handleMoveKeyDown(e: KeyboardEvent) {
+    const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
+    if (!newPos) return
+    e.preventDefault()
+    NotesSigal.default.updateNoteProperty(itemKey, 'position', newPos)
+    updateLocalStorage()
+  }
+
   effect(() => {
     if (focusedItem.value !== itemKey) return
     window.addEventListener('keydown', _handleKeyDown)
+    window.addEventListener('keydown', _handleMoveKeyDown)
     return () => {
       window.removeEventListener('keydown', _handleKeyDown)
+      window.removeEventListener('keydown', _handleMoveKeyDown)
     }
   })
 
@@ -386,6 +397,7 @@ export function NoteCard(props: NoteCardProps) {
               <small>ctrl/cmd + del = delete</small>
               <small>ctrl/cmd + back = delete</small>
               <small>ctrl/cmd + e = export</small>
+              <small>arrow keys = move card (shift = 50px)</small>
             </div>
           </div>
         }
