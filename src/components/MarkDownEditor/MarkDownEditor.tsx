@@ -108,8 +108,11 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   .filter((f): f is File => !!f)
               }
               if (!files.length) return false
-              event.preventDefault()
               onPasteImage(files)
+              const dt = event.clipboardData
+              const text = typeof dt?.getData === "function" ? dt.getData("text/plain") || dt.getData("text/uri-list") : ""
+              if (text) return false
+              event.preventDefault()
               return true
             },
             drop: (event) => {
