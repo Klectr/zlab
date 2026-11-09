@@ -1,3 +1,4 @@
+import { canvasDimentsion } from "../../signals"
 import { createImageCardFromFile } from "../../utils/createImageCard"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
@@ -12,7 +13,11 @@ export function ImageCardButton() {
         x: Math.max(0, pageX - 100),
         y: Math.max(0, pageY + (window.innerHeight / 2) - 100)
       },
-      allCardPositions()
+      allCardPositions(),
+      {
+        x: Math.max(0, canvasDimentsion.value.width),
+        y: Math.max(0, canvasDimentsion.value.height)
+      }
     )
     const input = document.createElement('input')
     input.type = 'file'
