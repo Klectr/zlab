@@ -73,7 +73,7 @@ export function MiniMap() {
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
-            <button type="button" aria-label={imageCardName(image.title) ? `Scroll to image: ${imageCardName(image.title)}` : "Scroll to image"} key={imageKey} className={"absolute dark:bg-green-500 bg-green-300 dark:hover:bg-blue-500 hover:bg-blue-300 cursor-pointer border dark:border-[#222] border-green-500 rounded"}
+            <button type="button" data-minimap-card={imageKey} aria-label={imageCardName(image.title) ? `Scroll to image: ${imageCardName(image.title)}` : "Scroll to image"} key={imageKey} className={"absolute dark:bg-green-500 bg-green-300 dark:hover:bg-blue-500 hover:bg-blue-300 cursor-pointer border dark:border-[#222] border-green-500 rounded"}
               onclick={_handleItemClick}
               style={{
                 width: `${newWidth}px`,
@@ -108,7 +108,7 @@ export function MiniMap() {
           const newZIndex = LayerEnum.MINIMAP + 1
 
           return (
-            <button type="button" aria-label={noteCardName(note.title, note.contents) ? `Scroll to note: ${noteCardName(note.title, note.contents)}` : "Scroll to note"} key={noteKey} className={"absolute dark:bg-gray-500 bg-gray-300 hover:bg-blue-500 cursor-pointer border dark:border-[#222] border-gray-400 rounded"}
+            <button type="button" data-minimap-card={noteKey} aria-label={noteCardName(note.title, note.contents) ? `Scroll to note: ${noteCardName(note.title, note.contents)}` : "Scroll to note"} key={noteKey} className={"absolute dark:bg-gray-500 bg-gray-300 hover:bg-blue-500 cursor-pointer border dark:border-[#222] border-gray-400 rounded"}
               onclick={_handleItemClick}
               style={{
                 width: `${newWidth}px`,
@@ -141,7 +141,7 @@ export function MiniMap() {
           const textLabel = snippet ? `Scroll to text item: ${snippet.slice(0, 40)}${snippet.length > 40 ? "…" : ""}` : "Scroll to text item"
 
           return (
-            <button type="button" aria-label={textLabel} key={textKey} className={"bg-indigo-500 hover:bg-blue-500 cursor-pointer rounded"}
+            <button type="button" data-minimap-card={textKey} aria-label={textLabel} key={textKey} className={"bg-indigo-500 hover:bg-blue-500 cursor-pointer rounded"}
               onclick={_handleItemClick}
               style={{
                 position: 'absolute',

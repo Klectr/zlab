@@ -190,7 +190,8 @@ export function ImageCard(props: ImageCardProps) {
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
-    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu)
+    const ownMarker = document.querySelector(`[data-minimap-card="${itemKey}"]`) as HTMLElement | null
+    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
     ImagesSignal.default.removeImage(item.value.id)
     try {
       updateLocalStorage(CardTypes.IMAGES, images.images).notify()

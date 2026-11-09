@@ -202,7 +202,8 @@ export function NoteCard(props: NoteCardProps) {
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
-    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu)
+    const ownMarker = document.querySelector(`[data-minimap-card="${itemKey}"]`) as HTMLElement | null
+    moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
     NotesSigal.default.removeNote(item.value.id)
     try {
       persistLocalStorage()
