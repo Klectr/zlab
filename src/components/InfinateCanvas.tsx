@@ -65,8 +65,9 @@ export default function InfiniteCanvas() {
     }
 
     function _handleFileDrop(e: DragEvent) {
-      e.preventDefault()
       const target = e.target as HTMLElement | null
+      if (!e.dataTransfer?.files?.length && target?.closest?.(".text-p")) return
+      e.preventDefault()
       if (target?.closest?.(".cm-editor")) return
       const files = Array.from(e.dataTransfer?.files ?? []).filter((f) =>
         f.type.startsWith("image/")
