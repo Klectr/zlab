@@ -131,7 +131,6 @@ export function TextItem(props: TextCardProps) {
       TextSignal.default.updateTextProperty(itemKey, 'position', clampedPos)
     }
     TextSignal.default.updateTextProperty(itemKey, 'dimensions', newDems)
-    TextSignal.default.texts.notify()
   }
 
   onMount(() => {
@@ -236,7 +235,6 @@ export function TextItem(props: TextCardProps) {
     const newFontSize = Math.max(fontCap >= 10 ? 10 : Math.max(1, fontCap), Math.min(candidate, fontCap))
 
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
-    TextSignal.default.texts.notify()
     updateLocalStorage()
   }
 
@@ -303,7 +301,6 @@ export function TextItem(props: TextCardProps) {
       : null
     moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null, ownMenu)
     TextSignal.default.removeText(item.value.id)
-    TextSignal.default.texts.notify()
     try {
       persistLocalStorage()
     } catch {
@@ -346,7 +343,6 @@ export function TextItem(props: TextCardProps) {
     if (newFontSize === null) return
     e.preventDefault()
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
-    TextSignal.default.texts.notify()
     updateLocalStorage()
   }
 
