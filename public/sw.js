@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v6"
+const CACHE_NAME = "zlab-v7"
 const APP_SHELL = ["/", "/index.html"]
 const OPTIONAL_SHELL = ["/manifest.webmanifest"]
 
@@ -124,6 +124,7 @@ self.addEventListener("fetch", (event) => {
           const contentType = response.headers.get("content-type") ?? ""
           if (response.ok && contentType.includes("text/html")) {
             const copy = response.clone()
+            const rootCopy = response.clone()
             const textCopy = response.clone()
             const lifetime = (async () => {
               let previousHtml = ""
@@ -134,18 +135,53 @@ self.addEventListener("fetch", (event) => {
                 const previous = await cache.match("/index.html")
                 previousHtml = previous ? await previous.text() : ""
               } catch {}
+              if (!newHtml) {
+                try {
+                  const cache = await caches.open(CACHE_NAME)
+                  await cache.put("/index.html", copy)
+                } catch {}
+                return
+              }
+              const newRefs = assetRefs(newHtml)
+              let assetsOk = true
+              try {
+                const cache = await caches.open(CACHE_NAME)
+                for (const ref of newRefs) {
+                  if (await cache.match(ref)) continue
+                  try {
+                    await cache.add(ref)
+                  } catch {
+                    assetsOk = false
+                  }
+                }
+              } catch {
+                assetsOk = false
+              }
+              if (assetsOk) {
+                try {
+                  const cache = await caches.open(CACHE_NAME)
+                  const { refs: derived } = await cssRefs(cache, newRefs)
+                  await Promise.all(
+                    [...derived].map(async (ref) => {
+                      if (await cache.match(ref)) return
+                      await cache.add(ref).catch(() => {})
+                    })
+                  )
+                } catch {}
+              }
+              if (!assetsOk) return
+              let shellOk = false
               try {
                 const cache = await caches.open(CACHE_NAME)
                 await cache.put("/index.html", copy)
+                await cache.put("/", rootCopy)
+                shellOk = true
               } catch {}
-              if (newHtml) {
-                const previousRefs = assetRefs(previousHtml)
-                const newRefs = assetRefs(newHtml)
-                const changed =
-                  previousRefs.size !== newRefs.size ||
-                  [...newRefs].some((ref) => !previousRefs.has(ref))
-                if (changed) await pruneSupersededAssets(previousHtml, newHtml)
-              }
+              const previousRefs = assetRefs(previousHtml)
+              const changed =
+                previousRefs.size !== newRefs.size ||
+                [...newRefs].some((ref) => !previousRefs.has(ref))
+              if (changed && shellOk) await pruneSupersededAssets(previousHtml, newHtml)
             })()
             try {
               event.waitUntil(lifetime)
