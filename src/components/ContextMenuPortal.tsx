@@ -121,6 +121,11 @@ export function ContextMenuPortal({
     function _handleViewportChange() {
       closeAction?.()
     }
+    function _handleScroll(e: Event) {
+      const el = elRef.current
+      if (el && e.target instanceof Node && el.contains(e.target)) return
+      closeAction?.()
+    }
     function _handleFocusIn(e: FocusEvent) {
       const el = elRef.current
       if (!el) return
@@ -131,7 +136,7 @@ export function ContextMenuPortal({
     }
     document.addEventListener("keydown", _handleMenuKey)
     document.addEventListener("focusin", _handleFocusIn)
-    window.addEventListener("scroll", _handleViewportChange, {
+    window.addEventListener("scroll", _handleScroll, {
       capture: true,
       passive: true,
     })
@@ -156,7 +161,7 @@ export function ContextMenuPortal({
     return () => {
       document.removeEventListener("keydown", _handleMenuKey)
       document.removeEventListener("focusin", _handleFocusIn)
-      window.removeEventListener("scroll", _handleViewportChange, {
+      window.removeEventListener("scroll", _handleScroll, {
         capture: true,
       })
       window.removeEventListener("resize", _handleViewportChange)
@@ -196,6 +201,11 @@ export function ContextMenuPortal({
             left: `${pos.value.x}px`,
             top: `${pos.value.y}px`,
             zIndex: `1000`,
+            minWidth: "min(150px, 100vw)",
+            maxWidth: "100vw",
+            maxHeight: "100vh",
+            overflowX: "auto",
+            overflowY: "auto",
             opacity: ready.value ? "1" : "0",
             pointerEvents: ready.value ? "auto" : "none",
           }}
