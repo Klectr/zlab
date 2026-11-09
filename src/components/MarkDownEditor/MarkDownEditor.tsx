@@ -110,7 +110,15 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (!files.length) return false
               onPasteImage(files)
               const dt = event.clipboardData
-              const text = typeof dt?.getData === "function" ? dt.getData("text/plain") || dt.getData("text/uri-list") : ""
+              const plainText = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
+              const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+              let text = plainText || uriList
+              if (text) {
+                const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
+                if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) {
+                  text = ""
+                }
+              }
               if (text) return false
               event.preventDefault()
               return true
