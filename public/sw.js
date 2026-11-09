@@ -202,7 +202,13 @@ self.addEventListener("fetch", (event) => {
           fetch(request).then((response) => {
             if (response.ok) {
               const copy = response.clone()
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
+              const put = caches
+                .open(CACHE_NAME)
+                .then((cache) => cache.put(request, copy))
+                .catch(() => {})
+              try {
+                event.waitUntil(put)
+              } catch {}
             }
             return response
           })
@@ -216,7 +222,13 @@ self.addEventListener("fetch", (event) => {
       .then((response) => {
         if (response.ok) {
           const copy = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
+          const put = caches
+            .open(CACHE_NAME)
+            .then((cache) => cache.put(request, copy))
+            .catch(() => {})
+          try {
+            event.waitUntil(put)
+          } catch {}
         }
         return response
       })
