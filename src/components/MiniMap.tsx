@@ -1,6 +1,6 @@
 import { onMount, signal } from "kiru"
 import notes, { NoteCardType } from "../signals/notes"
-import { canvasDimentsion } from "../signals"
+import { canvasDimentsion, focusedItem } from "../signals"
 import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
 import texts, { TextCardType } from "../signals/texts"
@@ -55,6 +55,7 @@ export function MiniMap() {
           const image = images.images.value[imageKey]
 
           function _handleItemClick() {
+            focusedItem.value = imageKey
             const newLeft = image.position.x - ((viewportWidth / 2) - (image.dimensions.w / 2))
             const newTop = image.position.y - ((viewportHeight / 2) - (image.dimensions.h / 2))
 
@@ -90,6 +91,7 @@ export function MiniMap() {
           const note = notes.notes.value[noteKey]
 
           function _handleItemClick() {
+            focusedItem.value = noteKey
             const newLeft = note.position.x - ((viewportWidth / 2) - (note.dimensions.w / 2))
             const newTop = note.position.y - ((viewportHeight / 2) - (note.dimensions.h / 2))
             window.scrollTo({
@@ -123,6 +125,7 @@ export function MiniMap() {
           const text = texts.texts.value[textKey]
 
           function _handleItemClick() {
+            focusedItem.value = textKey
             window.scrollTo({
               left: text.position.x - ((viewportWidth / 2) - (text.dimensions.w / 2)),
               top: text.position.y - ((viewportHeight / 2) - (text.dimensions.h / 2)),
