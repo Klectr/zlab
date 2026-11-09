@@ -299,7 +299,8 @@ export function TextItem(props: TextCardProps) {
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
-    moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null, ownMenu)
+    const ownMarker = document.querySelector(`[data-minimap-card="${itemKey}"]`) as HTMLElement | null
+    moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
     TextSignal.default.removeText(item.value.id)
     try {
       persistLocalStorage()
