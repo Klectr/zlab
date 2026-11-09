@@ -112,6 +112,20 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               onPasteImage(files)
               return true
             },
+            drop: (event) => {
+              if (!onPasteImage) return false
+              let files = Array.from(event.dataTransfer?.files ?? []).filter((f) => f.type.startsWith("image/"))
+              if (!files.length && event.dataTransfer) {
+                files = Array.from(event.dataTransfer.items)
+                  .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
+                  .map((i) => i.getAsFile())
+                  .filter((f): f is File => !!f)
+              }
+              if (!files.length) return false
+              event.preventDefault()
+              onPasteImage(files)
+              return true
+            },
           }),
           EditorView.updateListener.of((update) => {
             if (update.focusChanged && update.view.hasFocus) {
