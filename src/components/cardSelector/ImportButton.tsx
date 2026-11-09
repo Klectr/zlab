@@ -49,8 +49,11 @@ function isValidEntry(item: unknown): item is ImportEntry {
   return true
 }
 
+const MAX_IMPORT_ENTRIES = 1000
+
 function parseImportData(data: unknown): ImportEntry[] | null {
   if (!isRecord(data)) return null
+  if (Object.keys(data).length > MAX_IMPORT_ENTRIES) return null
   const entries: ImportEntry[] = []
   for (const key in data) {
     const item: unknown = data[key]
