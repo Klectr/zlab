@@ -195,7 +195,6 @@ export function NoteCard(props: NoteCardProps) {
 
   function _handleMdChange(e: MarkDownEditorChange) {
     NotesSigal.default.updateNoteProperty(itemKey, 'contents', e.content)
-    NotesSigal.default.notes.notify()
     updateLocalStorage()
     saved.value = false
   }
