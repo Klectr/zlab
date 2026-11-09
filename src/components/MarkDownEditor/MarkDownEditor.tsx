@@ -115,7 +115,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               event.preventDefault()
               return true
             },
-            drop: (event) => {
+            drop: (event, editorView) => {
               if (!onPasteImage) return false
               let files = Array.from(event.dataTransfer?.files ?? []).filter((f) => f.type.startsWith("image/"))
               if (!files.length && event.dataTransfer) {
@@ -126,7 +126,30 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               }
               if (!files.length) return false
               event.preventDefault()
+              const dt = event.dataTransfer
+              let text = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
+              if (text) {
+                const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+                if ((lines.length > 0 && lines.every((l) => l.startsWith("file://"))) || (!!uriList && text.trim() === uriList.trim())) {
+                  text = ""
+                }
+              }
+              let pos = editorView.state.selection.main.head
+              if (text && typeof event.clientX === "number" && typeof event.clientY === "number") {
+                try {
+                  pos = editorView.posAtCoords({ x: event.clientX, y: event.clientY }) ?? pos
+                } catch {
+                  pos = editorView.state.selection.main.head
+                }
+              }
               onPasteImage(files)
+              if (text) {
+                editorView.dispatch({
+                  changes: { from: pos, insert: text },
+                  selection: { anchor: pos + text.length },
+                })
+              }
               return true
             },
           }),
