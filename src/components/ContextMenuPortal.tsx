@@ -26,6 +26,7 @@ export function ContextMenuPortal({
     function _handlePointerDown(e: PointerEvent) {
       const el = elRef.current
       pointerStartedOutside = !!el && !e.composedPath().includes(el)
+      if (el && pointerStartedOutside) closeAction?.()
     }
     function _handleClickOutside(e: MouseEvent) {
       const el = elRef.current
