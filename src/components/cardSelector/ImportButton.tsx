@@ -150,6 +150,9 @@ export function ImportButton() {
           texts.texts.value = prevTexts
           texts.texts.notify()
           try {
+            localStorage.removeItem(CardTypes.NOTES)
+            localStorage.removeItem(CardTypes.IMAGES)
+            localStorage.removeItem(CardTypes.TEXTS)
             updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
             updateLocalStorage(CardTypes.IMAGES, images.images).notify()
             updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
