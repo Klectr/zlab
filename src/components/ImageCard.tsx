@@ -111,7 +111,6 @@ export function ImageCard(props: ImageCardProps) {
     }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
-    ImagesSignal.default.images.notify()
   }
 
 
@@ -193,7 +192,6 @@ export function ImageCard(props: ImageCardProps) {
       : null
     moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu)
     ImagesSignal.default.removeImage(item.value.id)
-    ImagesSignal.default.images.notify()
     try {
       updateLocalStorage(CardTypes.IMAGES, images.images).notify()
     } catch {
@@ -218,7 +216,6 @@ export function ImageCard(props: ImageCardProps) {
     if (!newDim) return
     e.preventDefault()
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
-    ImagesSignal.default.images.notify()
     debounceLSUpdate()
   }
 

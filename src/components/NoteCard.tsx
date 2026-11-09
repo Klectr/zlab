@@ -123,7 +123,6 @@ export function NoteCard(props: NoteCardProps) {
     const newDim = { w: newW, h: newH }
 
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
-    NotesSigal.default.notes.notify()
   }
 
 
@@ -205,7 +204,6 @@ export function NoteCard(props: NoteCardProps) {
       : null
     moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu)
     NotesSigal.default.removeNote(item.value.id)
-    NotesSigal.default.notes.notify()
     try {
       persistLocalStorage()
     } catch {
@@ -319,7 +317,6 @@ export function NoteCard(props: NoteCardProps) {
     if (!newDim) return
     e.preventDefault()
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
-    NotesSigal.default.notes.notify()
     updateLocalStorage()
   }
 
