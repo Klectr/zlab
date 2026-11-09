@@ -13,7 +13,7 @@ import { useToast } from "./Toast"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
-import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { CardTypes } from "../types"
 import { cardSnippet, imageCardName } from "../utils/cardName"
@@ -190,7 +190,7 @@ export function ImageCard(props: ImageCardProps) {
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
-    const ownMarker = document.querySelector(`[data-minimap-card="${itemKey}"]`) as HTMLElement | null
+    const ownMarker = findMinimapMarker(itemKey)
     moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
     ImagesSignal.default.removeImage(item.value.id)
     try {

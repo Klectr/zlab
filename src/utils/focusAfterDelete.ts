@@ -1,3 +1,10 @@
+export function findMinimapMarker(itemKey: string): HTMLElement | null {
+  for (const el of document.querySelectorAll("[data-minimap-card]")) {
+    if (el.getAttribute("data-minimap-card") === itemKey) return el as HTMLElement
+  }
+  return null
+}
+
 export function moveFocusToToolbarAfterDelete(
   container: HTMLElement | null,
   clicked: HTMLElement | null,

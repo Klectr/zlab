@@ -8,7 +8,7 @@ import { useThemeDetector } from "../utils/useThemeDetector"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
-import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardMove"
 import { useToast } from "./Toast"
 import { textCardName } from "../utils/cardName"
@@ -299,7 +299,7 @@ export function TextItem(props: TextCardProps) {
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
-    const ownMarker = document.querySelector(`[data-minimap-card="${itemKey}"]`) as HTMLElement | null
+    const ownMarker = findMinimapMarker(itemKey)
     moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
     TextSignal.default.removeText(item.value.id)
     try {
