@@ -10,7 +10,7 @@ import { Divider } from "./Divider"
 import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { createImageCardFromFile } from "../utils/createImageCard"
-import { moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
@@ -202,7 +202,7 @@ export function NoteCard(props: NoteCardProps) {
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
-    const ownMarker = document.querySelector(`[data-minimap-card="${itemKey}"]`) as HTMLElement | null
+    const ownMarker = findMinimapMarker(itemKey)
     moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
     NotesSigal.default.removeNote(item.value.id)
     try {
