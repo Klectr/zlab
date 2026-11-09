@@ -17,6 +17,7 @@ export function ContextMenuPortal({
 }: ContextMenuPortalProps) {
   initMouseTracking()
   const pos = signal({ x: 0, y: 0 })
+  const ready = signal(false)
   const elRef = ref<HTMLDivElement>(null)
   const closeSelf = () => closeAction?.()
 
@@ -80,7 +81,10 @@ export function ContextMenuPortal({
   })
 
   effect(() => {
-    if (!open.value) return
+    if (!open.value) {
+      ready.value = false
+      return
+    }
     for (const close of [...closeHandlers]) {
       if (close !== closeSelf) close()
     }
@@ -138,12 +142,16 @@ export function ContextMenuPortal({
       if (!el || !open.value) return
       el.focus({ preventScroll: true })
       const rect = el.getBoundingClientRect()
-      if (rect.width === 0 && rect.height === 0) return
+      if (rect.width === 0 && rect.height === 0) {
+        ready.value = true
+        return
+      }
       untrack(() => {
         const x = Math.min(pos.value.x, Math.max(0, window.innerWidth - rect.width))
         const y = Math.min(pos.value.y, Math.max(0, window.innerHeight - rect.height))
         if (x !== pos.value.x || y !== pos.value.y) pos.value = { x, y }
       })
+      ready.value = true
     })
     return () => {
       document.removeEventListener("keydown", _handleMenuKey)
@@ -188,6 +196,8 @@ export function ContextMenuPortal({
             left: `${pos.value.x}px`,
             top: `${pos.value.y}px`,
             zIndex: `1000`,
+            opacity: ready.value ? "1" : "0",
+            pointerEvents: ready.value ? "auto" : "none",
           }}
         >
           {children}
