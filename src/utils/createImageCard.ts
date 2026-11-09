@@ -8,7 +8,8 @@ export function createImageCardFromFile(
   file: File,
   position: { x: number; y: number },
   onPersistError: () => void,
-  onLoadError: () => void
+  onLoadError: () => void,
+  onSuccess?: () => void
 ) {
   const reader = new FileReader()
   reader.readAsDataURL(file)
@@ -60,6 +61,7 @@ export function createImageCardFromFile(
           h: normalizedH
         }
       })
+      onSuccess?.()
 
       try {
         updateLocalStorage(CardTypes.IMAGES, images.images).notify()

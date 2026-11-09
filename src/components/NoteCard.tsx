@@ -225,7 +225,11 @@ export function NoteCard(props: NoteCardProps) {
       createImageCardFromFile(file, {
         x: item.value.position.x + i * 24,
         y: item.value.position.y + i * 24
-      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"), () => {
+        if (cardRef.current?.contains(document.activeElement)) {
+          focusedItem.value = itemKey
+        }
+      })
     })
   }
 
