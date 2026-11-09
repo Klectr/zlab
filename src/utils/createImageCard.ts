@@ -1,6 +1,7 @@
 import { ImagesSignal, canvasDimentsion } from "../signals"
 import images from "../signals/images"
 import { CardTypes } from "../types"
+import { cascadeSpawnPosition } from "./cascadeSpawnPosition"
 import { isValidImageContents, updateLocalStorage } from "./localStorage"
 
 export function createImageCardFromFile(
@@ -36,16 +37,18 @@ export function createImageCardFromFile(
         return
       }
 
-      const clampedPosition = {
-        x: Math.min(
-          Math.max(position.x, 0),
-          Math.max(0, canvasDimentsion.value.width - normalizedW)
-        ),
-        y: Math.min(
-          Math.max(position.y, 0),
-          Math.max(0, canvasDimentsion.value.height - normalizedH)
-        ),
+      const maxPosition = {
+        x: Math.max(0, canvasDimentsion.value.width - normalizedW),
+        y: Math.max(0, canvasDimentsion.value.height - normalizedH),
       }
+      const clampedPosition = cascadeSpawnPosition(
+        {
+          x: Math.min(Math.max(position.x, 0), maxPosition.x),
+          y: Math.min(Math.max(position.y, 0), maxPosition.y),
+        },
+        Object.values(images.images.value).map((card) => card.position),
+        maxPosition
+      )
 
       const imgId = ImagesSignal.default.addImage({
         type: CardTypes.IMAGES,
