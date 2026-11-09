@@ -71,8 +71,8 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMouseMove(e: MouseEvent) {
-    if (e.buttons === 0) {
-      _handleMouseUp(e)
+    if ((e.buttons & 1) === 0) {
+      _handleMouseUp()
       return
     }
     e.preventDefault()
@@ -114,7 +114,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleResizeMove(e: MouseEvent) {
-    if (e.buttons === 0) {
+    if ((e.buttons & 1) === 0) {
       _handleResizeMouseUp()
       return
     }
