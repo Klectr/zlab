@@ -15,7 +15,11 @@ export function StickyNoteButton() {
         x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
         y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 200))
       },
-      allCardPositions()
+      allCardPositions(),
+      {
+        x: Math.max(0, canvasDimentsion.value.width - 200),
+        y: Math.max(0, canvasDimentsion.value.height - 200)
+      }
     )
     const noteId = NotesSigal.default.addNote({
       type: CardTypes.NOTES,
