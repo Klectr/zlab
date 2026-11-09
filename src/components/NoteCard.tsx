@@ -93,6 +93,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMouseUp(e?: MouseEvent) {
+    if (e && e.button !== 0 && e.buttons !== 0) return
     e?.preventDefault()
     pressed.value = false
     window.removeEventListener('mousemove', _handleMouseMove)
@@ -138,7 +139,8 @@ export function NoteCard(props: NoteCardProps) {
     window.addEventListener('mouseup', _handleResizeMouseUp)
   }
 
-  function _handleResizeMouseUp() {
+  function _handleResizeMouseUp(e?: MouseEvent) {
+    if (e && e.button !== 0 && e.buttons !== 0) return
     pressed.value = false
     updateLocalStorage()
     window.removeEventListener('mousemove', _handleResizeMove)
