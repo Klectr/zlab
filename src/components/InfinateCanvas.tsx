@@ -55,8 +55,8 @@ export default function InfiniteCanvas() {
       }
     }
 
-    function _disarmDragsOnPrimaryMouseDown(e: MouseEvent) {
-      if (e.button !== 0) return
+    function _disarmDragsOnMouseDown(e: MouseEvent) {
+      if (e.button !== 0 && (e.buttons & 1) !== 0) return
       disarmActiveDrags()
     }
 
@@ -80,7 +80,7 @@ export default function InfiniteCanvas() {
     }
 
     _updateDimensions()
-    window.addEventListener("mousedown", _disarmDragsOnPrimaryMouseDown, true)
+    window.addEventListener("mousedown", _disarmDragsOnMouseDown, true)
     window.addEventListener("resize", _updateDimensions)
     window.addEventListener("scroll", _updatePosition)
     window.addEventListener("dragover", _preventFileDropNavigation)
@@ -92,7 +92,7 @@ export default function InfiniteCanvas() {
     texts.loadLocalStorage()
 
     return () => {
-      window.removeEventListener("mousedown", _disarmDragsOnPrimaryMouseDown, true)
+      window.removeEventListener("mousedown", _disarmDragsOnMouseDown, true)
       window.removeEventListener("resize", _updateDimensions)
       window.removeEventListener("scroll", _updatePosition)
       window.removeEventListener("dragover", _preventFileDropNavigation)
