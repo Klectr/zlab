@@ -12,7 +12,7 @@ import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focus
 import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardMove"
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
-import { textCardName } from "../utils/cardName"
+import { cardSnippet, textCardName } from "../utils/cardName"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
@@ -414,7 +414,7 @@ export function TextItem(props: TextCardProps) {
     const zIndex = `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`
     const cardName = textCardName(it.contents)
     const nameSuffix = cardName ? `: ${cardName}` : ""
-    const menuTitle = cardName || it.title
+    const menuTitle = cardName || cardSnippet(it.title)
 
     return (
       <>
