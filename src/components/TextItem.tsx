@@ -366,6 +366,7 @@ export function TextItem(props: TextCardProps) {
 
       if (target === elRef.current) return
       if (elRef.current?.contains(target)) return
+      if (target.closest?.('#context-menu-portal')) return
 
       const classes = '.text-container, .text-p, .text-pre, .text-close'
       if (target.closest(classes)) return
