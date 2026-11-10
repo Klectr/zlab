@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v7"
+const CACHE_NAME = "zlab-v8"
 const APP_SHELL = ["/", "/index.html"]
 const OPTIONAL_SHELL = ["/manifest.webmanifest"]
 
@@ -75,11 +75,11 @@ self.addEventListener("install", (event) => {
       .then(async (cache) => {
         await cache.addAll(APP_SHELL)
         await Promise.all(OPTIONAL_SHELL.map((u) => cache.add(u).catch(() => {})))
+        const shell = await cache.match("/index.html")
+        const html = shell ? await shell.text() : ""
+        const assets = [...assetRefs(html)]
+        await Promise.all(assets.map((a) => cache.add(a)))
         try {
-          const shell = await cache.match("/index.html")
-          const html = shell ? await shell.text() : ""
-          const assets = [...assetRefs(html)]
-          await Promise.all(assets.map((a) => cache.add(a).catch(() => {})))
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
             const cssResponse = await cache.match(asset)
             const css = cssResponse ? await cssResponse.text() : ""
