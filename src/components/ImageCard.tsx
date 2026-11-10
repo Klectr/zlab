@@ -252,7 +252,7 @@ export function ImageCard(props: ImageCardProps) {
           ref={cardRef}
           oncontextmenu={_handleMouseClick}
           onmousedown={_handleMouseDown}
-          className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] absolute touch-none"
+          className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] dark:border-[#5c5c5c] absolute touch-none"
           style={{
             zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
             top: `${it.position.y}px`,
