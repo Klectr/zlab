@@ -9,6 +9,7 @@ interface ContextMenuPortalProps {
   children: JSX.Children
   open: Signal<boolean>
   closeAction: (() => void) | null | undefined
+  label?: string
 }
 
 export function ContextMenuPortal({
@@ -185,7 +186,7 @@ export function ContextMenuPortal({
     }
   })
 
-  return ({ children }: ContextMenuPortalProps) => {
+  return ({ children, label }: ContextMenuPortalProps) => {
     if (!open.value) return null
 
     return (
@@ -195,6 +196,7 @@ export function ContextMenuPortal({
         <div
           ref={elRef}
           role="menu"
+          aria-label={label}
           tabIndex={-1}
           className="fixed z-10 select-none shadow-md rounded min-w-[150px]"
           style={{

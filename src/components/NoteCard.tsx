@@ -392,7 +392,7 @@ export function NoteCard(props: NoteCardProps) {
             <ExpandIcon cb={_handleResizeMouseDown} label={`Resize note${nameSuffix}`} />
           </div>
 
-          <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
+          <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Note menu${nameSuffix}`}>
             <div className="bg-[#3c3c3c] flex flex-col rounded">
               <div className="flex justify-between items-center">
                 <div className="text-md text-[#999] px-2 py-1">
