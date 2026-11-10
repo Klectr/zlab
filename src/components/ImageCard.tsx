@@ -277,7 +277,7 @@ export function ImageCard(props: ImageCardProps) {
           <ExpandIcon cb={_handleResizeMouseDown} label={`Resize image${nameSuffix}`} />
         </div >
 
-        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose}>
+        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Image menu${nameSuffix}`}>
           <div className="bg-[#3c3c3c] flex flex-col rounded">
             <div className="flex justify-between items-center">
               <div className="text-md text-[#999] px-2 py-1">
