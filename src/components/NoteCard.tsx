@@ -11,6 +11,7 @@ import { ExportIcon } from "./icons/ExportIcon"
 import { createFileAndExport } from "../utils/createFileAndExport"
 import { createImageCardFromFile } from "../utils/createImageCard"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
+import { consumeEditorFocus } from "../utils/editorFocus"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
@@ -44,6 +45,7 @@ export function NoteCard(props: NoteCardProps) {
   const initialResizeH = ref(0)
   const openContextMenu = signal(false)
   const showHelp = signal(false)
+  const autoFocusEditor = consumeEditorFocus(itemKey)
   const cardRef = ref<HTMLDivElement>(null)
 
   const { debounce } = createDebounce()
@@ -386,7 +388,7 @@ export function NoteCard(props: NoteCardProps) {
             <hr className="border dark:border-[#2c2c2c] border-[#ddd]" />
 
             {/* Content Body */}
-            <MarkDownEditor initial={it.contents} title={cardName || undefined} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} />
+            <MarkDownEditor initial={it.contents} title={cardName || undefined} autoFocus={autoFocusEditor} autoFocusCheck={() => focusedItem.value === itemKey} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} />
             <ExpandIcon cb={_handleResizeMouseDown} label={`Resize note${nameSuffix}`} />
           </div>
 
