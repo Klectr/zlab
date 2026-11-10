@@ -462,7 +462,7 @@ function ExpandIcon({ cb, label }: {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          stroke={isDarkTheme ? "#777" : "#999"}
+          stroke={isDarkTheme ? "#777" : "#767676"}
           stroke-width="1"
           stroke-linecap="round"
           stroke-linejoin="round"
