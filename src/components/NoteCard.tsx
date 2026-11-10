@@ -367,6 +367,7 @@ export function NoteCard(props: NoteCardProps) {
                 <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`note-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show note shortcuts${nameSuffix}`} />
                 {/* Save indicator*/}
                 <div style={saveIndicatorStyle} className="rounded-full w-1 h-1 dark:bg-white bg-green-500"></div>
+                <span role="status" className="sr-only">{saved.value ? "" : "Unsaved changes"}</span>
               </div>
               <div className="flex gap-2">
                 <button type="button" aria-label={`Export note${nameSuffix}`} onclick={_handleExportClick} className="flex items-center">
