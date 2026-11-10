@@ -1,6 +1,7 @@
 import { NotesSigal, canvasDimentsion } from "../../signals"
 import notes from "../../signals/notes"
 import { CardTypes } from "../../types"
+import { clearEditorFocusRequest, requestEditorFocus } from "../../utils/editorFocus"
 import { updateLocalStorage } from "../../utils/localStorage"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
@@ -34,9 +35,11 @@ export function StickyNoteButton() {
         h: 200
       }
     })
+    requestEditorFocus(noteId)
     try {
       updateLocalStorage(CardTypes.NOTES, notes.notes)
     } catch (err: unknown) {
+      clearEditorFocusRequest(noteId)
       if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
       toast.showToast("error", "Could not save that note!")
       NotesSigal.default.removeNote(noteId)

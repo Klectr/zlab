@@ -15,6 +15,8 @@ export interface MarkDownEditorChange {
 interface MarkDownEditorProps {
   initial: string
   title?: string
+  autoFocus?: boolean
+  autoFocusCheck?: () => boolean
   onChange: (e: MarkDownEditorChange) => void
   onFocus?: () => void
   onPasteImage?: (files: File[]) => void
@@ -44,7 +46,7 @@ const highlightStyle = HighlightStyle.define([
 ])
 
 export function MarkDownEditor(props: MarkDownEditorProps) {
-  const { initial, onChange, onFocus, onPasteImage } = props
+  const { initial, onChange, onFocus, onPasteImage, autoFocus, autoFocusCheck } = props
   const $ = setup<MarkDownEditorProps>()
   const titleProp = $.derive((p) => p.title)
   const labelFor = (t?: string) => {
@@ -172,6 +174,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
         ],
       }),
     })
+    if (autoFocus && (autoFocusCheck?.() ?? true)) view.focus()
   })
 
   onCleanup(() => view?.destroy())
