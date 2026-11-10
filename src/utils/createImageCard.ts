@@ -12,7 +12,7 @@ export function createImageCardFromFile(
   onSuccess?: () => void
 ) {
   if (file.size > 10 * 1024 * 1024) {
-    onLoadError()
+    onPersistError()
     return
   }
   const reader = new FileReader()
