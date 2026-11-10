@@ -115,6 +115,7 @@ export function TextItem(props: TextCardProps) {
   const openContextMenu = signal(false)
 
   let lastMeasuredFontSize: number | null = null
+  let resizeObserver: ResizeObserver | null = null
 
   function _measureAndStoreDimensions() {
     const elDems = elRef.current?.getBoundingClientRect()
@@ -139,6 +140,10 @@ export function TextItem(props: TextCardProps) {
     }
     lastMeasuredFontSize = item.value.fontSize
     _measureAndStoreDimensions()
+    if (elRef.current && typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => _measureAndStoreDimensions())
+      resizeObserver.observe(elRef.current)
+    }
   })
 
   effect(() => {
@@ -283,6 +288,7 @@ export function TextItem(props: TextCardProps) {
   window.addEventListener('pagehide', flushLocalStorage)
 
   onCleanup(() => {
+    resizeObserver?.disconnect()
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
     window.removeEventListener('mousemove', _handleResizeMove)
