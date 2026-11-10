@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v8"
+const CACHE_NAME = "zlab-v9"
 const APP_SHELL = ["/", "/index.html"]
 const OPTIONAL_SHELL = ["/manifest.webmanifest"]
 
@@ -122,7 +122,12 @@ self.addEventListener("fetch", (event) => {
       fetch(request)
         .then((response) => {
           const contentType = response.headers.get("content-type") ?? ""
-          if (response.ok && contentType.includes("text/html")) {
+          let isShellPath = false
+          try {
+            const finalPath = new URL(response.url || request.url).pathname
+            isShellPath = finalPath === "/" || finalPath === "/index.html"
+          } catch {}
+          if (response.ok && isShellPath && contentType.includes("text/html")) {
             const copy = response.clone()
             const rootCopy = response.clone()
             const textCopy = response.clone()
