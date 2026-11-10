@@ -10,6 +10,7 @@ import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardMove"
+import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { textCardName } from "../utils/cardName"
 import {
@@ -113,6 +114,7 @@ export function TextItem(props: TextCardProps) {
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
   const openContextMenu = signal(false)
+  const autoFocusText = consumeEditorFocus(itemKey)
 
   let lastMeasuredFontSize: number | null = null
   let resizeObserver: ResizeObserver | null = null
@@ -137,6 +139,9 @@ export function TextItem(props: TextCardProps) {
   onMount(() => {
     if (pRef.current) {
       pRef.current.textContent = item.value.contents
+      if (autoFocusText && focusedItem.value === itemKey) {
+        pRef.current.focus()
+      }
     }
     lastMeasuredFontSize = item.value.fontSize
     _measureAndStoreDimensions()

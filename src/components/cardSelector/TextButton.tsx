@@ -5,6 +5,7 @@ import { updateLocalStorage } from "../../utils/localStorage";
 import { useToast } from "../Toast";
 import { allCardPositions, cascadeSpawnPosition, clickSpawnPoint, defaultClassName } from "./utils";
 import { CardTypes } from "../../types";
+import { clearEditorFocusRequest, requestEditorFocus } from "../../utils/editorFocus";
 
 export function TextButton() {
   const toast = useToast()
@@ -36,9 +37,11 @@ export function TextButton() {
         h: 100
       }
     })
+    requestEditorFocus(textId)
     try {
       updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
     } catch (err: unknown) {
+      clearEditorFocusRequest(textId)
       if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
       toast.showToast("error", "Could not save that text!")
       TextSignal.default.removeText(textId)
