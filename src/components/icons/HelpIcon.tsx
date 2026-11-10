@@ -28,7 +28,7 @@ export function HelpIcon({ onMouseOver, onMouseOut, describedBy, label }: HelpIc
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        className="cursor-pointer w-4 h-4 text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
+        className="cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
       >
         <circle
           cx="12"

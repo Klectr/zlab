@@ -371,7 +371,7 @@ export function NoteCard(props: NoteCardProps) {
               <div className="flex gap-2">
                 <button type="button" aria-label={`Export note${nameSuffix}`} onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
-                    className="cursor-pointer w-4 h-4 text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
+                    className="cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
                   />
                 </button>
 
