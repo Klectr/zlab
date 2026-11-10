@@ -364,7 +364,7 @@ export function NoteCard(props: NoteCardProps) {
             {/* Header Bar */}
             <div className="px-2 flex justify-between items-center cursor-move touch-none" onmousedown={_handleMouseDown}>
               <div className={"flex gap-1 items-center"}>
-                <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`note-shortcuts-${itemKey}`} label={`Show note shortcuts${nameSuffix}`} />
+                <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`note-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show note shortcuts${nameSuffix}`} />
                 {/* Save indicator*/}
                 <div style={saveIndicatorStyle} className="rounded-full w-1 h-1 dark:bg-white bg-green-500"></div>
               </div>
