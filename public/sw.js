@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v10"
+const CACHE_NAME = "zlab-v11"
 
 function offlinePageResponse() {
   return new Response(
@@ -7,7 +7,13 @@ function offlinePageResponse() {
   )
 }
 const APP_SHELL = ["/", "/index.html"]
-const OPTIONAL_SHELL = ["/manifest.webmanifest"]
+const OPTIONAL_SHELL = [
+  "/manifest.webmanifest",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/icons/icon-maskable-512.png",
+  "/icons/apple-touch-icon.png",
+]
 
 function assetRefs(html) {
   return new Set(
