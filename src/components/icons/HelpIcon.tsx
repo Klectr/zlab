@@ -4,9 +4,12 @@ interface HelpIconProps {
   describedBy?: string
   expanded?: boolean
   label?: string
+  buttonClass?: string
+  iconClass?: string
+  style?: Record<string, string>
 }
 
-export function HelpIcon({ onMouseOver, onMouseOut, describedBy, expanded, label }: HelpIconProps) {
+export function HelpIcon({ onMouseOver, onMouseOut, describedBy, expanded, label, buttonClass, iconClass, style }: HelpIconProps) {
 
   return (
     <button
@@ -18,7 +21,8 @@ export function HelpIcon({ onMouseOver, onMouseOut, describedBy, expanded, label
       onmouseover={onMouseOver}
       onfocus={onMouseOver}
       onblur={onMouseOut}
-      className="flex items-center"
+      className={buttonClass ?? "flex items-center"}
+      style={style}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +34,7 @@ export function HelpIcon({ onMouseOver, onMouseOut, describedBy, expanded, label
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        className="cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
+        className={iconClass ?? "cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"}
       >
         <circle
           cx="12"
