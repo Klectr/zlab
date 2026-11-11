@@ -27,6 +27,12 @@ function eventHitsOwnMenuTrigger(e: Event, menuId: string | undefined): boolean 
 
 const closeHandlers = new Set<() => void>()
 
+const openPortals = new Set<Signal<boolean>>()
+
+export function isAnyContextMenuOpen(): boolean {
+  return openPortals.size > 0
+}
+
 interface ContextMenuPortalProps {
   children: JSX.Children
   open: Signal<boolean>
@@ -101,6 +107,7 @@ export function ContextMenuPortal({
     }
     return () => {
       closeHandlers.delete(closeSelf)
+      openPortals.delete(open)
       document.removeEventListener("click", _handleClickOutside, {
         capture: true,
       })
@@ -113,9 +120,11 @@ export function ContextMenuPortal({
 
   effect(() => {
     if (!open.value) {
+      openPortals.delete(open)
       ready.value = false
       return
     }
+    openPortals.add(open)
     for (const close of [...closeHandlers]) {
       if (close !== closeSelf) close()
     }
@@ -124,6 +133,7 @@ export function ContextMenuPortal({
     function _handleMenuKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         closeAction?.()
+        e.stopImmediatePropagation()
         return
       }
       if (
@@ -204,6 +214,7 @@ export function ContextMenuPortal({
       ready.value = true
     })
     return () => {
+      openPortals.delete(open)
       document.removeEventListener("keydown", _handleMenuKey)
       document.removeEventListener("focusin", _handleFocusIn)
       window.removeEventListener("scroll", _handleScroll, {
