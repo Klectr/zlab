@@ -116,6 +116,7 @@ export default function InfiniteCanvas() {
         <CardSelector />
         <MiniMap />
 
+        <main aria-label="Board">
         <div
           className="h-screen w-full absolute top-0 left-0"
         >
@@ -154,6 +155,7 @@ export default function InfiniteCanvas() {
 
           </div>
         </div>
+        </main>
       </>
     )
   }

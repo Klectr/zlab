@@ -43,6 +43,8 @@ export function MiniMap() {
 
     return (
       <div
+        role="region"
+        aria-label="Minimap"
         className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded"
         style={{
           width: `${width}px`,
