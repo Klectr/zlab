@@ -111,6 +111,7 @@ export function TextItem(props: TextCardProps) {
   const offsetX = ref(0)
   const offsetY = ref(0)
   const initialResizeX = ref(0)
+  const initialResizeY = ref(0)
   const initialFontSize = ref(0)
   const initialResizeW = ref(0)
   const initialResizeH = ref(0)
@@ -235,8 +236,10 @@ export function TextItem(props: TextCardProps) {
       _handleResizeMouseUp()
       return
     }
+    const dx = e.pageX - initialResizeX.current
+    const dy = e.pageY - initialResizeY.current
     const candidate = Math.floor(
-      initialFontSize.current + (e.pageX - initialResizeX.current)
+      initialFontSize.current + (Math.abs(dx) >= Math.abs(dy) ? dx : dy)
     )
     const scaleCap = Math.min(
       initialResizeW.current > 0
@@ -264,6 +267,7 @@ export function TextItem(props: TextCardProps) {
     disarmActiveDrags()
     e.stopPropagation()
     initialResizeX.current = e.pageX
+    initialResizeY.current = e.pageY
     initialFontSize.current = item.value.fontSize
     initialResizeW.current = item.value.dimensions.w
     initialResizeH.current = item.value.dimensions.h
