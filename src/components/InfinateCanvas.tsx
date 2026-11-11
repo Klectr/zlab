@@ -68,13 +68,13 @@ export default function InfiniteCanvas() {
       const target = e.target as HTMLElement | null
       if (!e.dataTransfer?.files?.length && target?.closest?.(".text-p")) return
       e.preventDefault()
-      if (target?.closest?.(".cm-editor")) return
       const allFiles = Array.from(e.dataTransfer?.files ?? [])
       const files = allFiles.filter((f) => f.type.startsWith("image/"))
       if (allFiles.length > 0 && files.length === 0) {
         toast.showToast("error", "Only image files can be dropped.")
         return
       }
+      if (target?.closest?.(".cm-editor")) return
       files.forEach((file, i) => {
         createImageCardFromFile(file, {
           x: Math.max(0, e.pageX - 100 + i * 24),
