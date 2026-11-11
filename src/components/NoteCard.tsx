@@ -13,7 +13,7 @@ import { createImageCardFromFile } from "../utils/createImageCard"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
-import { ContextMenuPortal } from "./ContextMenuPortal"
+import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { HelpIcon } from "./icons/HelpIcon"
@@ -280,7 +280,7 @@ export function NoteCard(props: NoteCardProps) {
   effect(() => {
     if (!showHelp.value) return
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") showHelp.value = false
+      if (e.key === "Escape" && !isAnyContextMenuOpen()) showHelp.value = false
     }
     document.addEventListener("keydown", _handleHelpEscape)
     return () => document.removeEventListener("keydown", _handleHelpEscape)

@@ -5,7 +5,7 @@ import texts, { TextCardType } from "../signals/texts"
 import { LayerEnum } from "../utils/enums"
 import { Card, CardTypes } from "../types"
 import { useThemeDetector } from "../utils/useThemeDetector"
-import { ContextMenuPortal } from "./ContextMenuPortal"
+import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
@@ -349,7 +349,7 @@ export function TextItem(props: TextCardProps) {
   effect(() => {
     if (!showHelp.value) return
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") showHelp.value = false
+      if (e.key === "Escape" && !isAnyContextMenuOpen()) showHelp.value = false
     }
     document.addEventListener("keydown", _handleHelpEscape)
     return () => document.removeEventListener("keydown", _handleHelpEscape)
