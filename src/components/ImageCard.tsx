@@ -271,7 +271,7 @@ export function ImageCard(props: ImageCardProps) {
           <button
             type="button"
             aria-label={`Delete image${nameSuffix}`}
-            className="flex justify-center items-center hover:bg-blue-500 rounded w-5 h-5 text-white text-md absolute right-0 top-0 cursor-pointer"
+            className="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white text-md absolute right-0 top-0 cursor-pointer"
             onclick={_handleClose}>x</button>
 
           <ExpandIcon cb={_handleResizeMouseDown} label={`Resize image${nameSuffix}`} />
