@@ -136,11 +136,24 @@ export function ContextMenuPortal({
       const el = elRef.current
       if (!el) return
       const active = document.activeElement as HTMLElement | null
-      if (!active || !el.contains(active)) return
+      const inside = !!active && el.contains(active)
+      if (!inside) {
+        const triggerEl =
+          active && typeof active.closest === "function"
+            ? active.closest("[data-menu-trigger]")
+            : null
+        const onOwnTrigger =
+          !!triggerEl &&
+          (menuId === undefined ||
+            triggerEl.getAttribute("data-menu-trigger") === menuId)
+        const onBody = !active || active === document.body
+        if (!onOwnTrigger && !onBody) return
+      }
       const items = Array.from(el.querySelectorAll("button"))
       if (items.length === 0) return
       e.preventDefault()
-      const idx = items.indexOf(active as HTMLButtonElement)
+      e.stopPropagation()
+      const idx = inside ? items.indexOf(active as HTMLButtonElement) : -1
       let next: number
       if (e.key === "Home") next = 0
       else if (e.key === "End") next = items.length - 1
