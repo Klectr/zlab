@@ -1,20 +1,22 @@
 interface MenuIconProps {
   label: string
   expanded?: boolean
+  controls?: string
   onClick: Kiru.MouseEventHandler<HTMLButtonElement>
   buttonClass?: string
   iconClass?: string
   style?: Record<string, string>
 }
 
-export function MenuIcon({ label, expanded, onClick, buttonClass, iconClass, style }: MenuIconProps) {
+export function MenuIcon({ label, expanded, controls, onClick, buttonClass, iconClass, style }: MenuIconProps) {
   return (
     <button
       type="button"
       aria-label={label}
       aria-haspopup="menu"
       aria-expanded={expanded ? "true" : "false"}
-      data-menu-trigger=""
+      aria-controls={controls}
+      data-menu-trigger={controls ?? ""}
       onclick={onClick}
       className={buttonClass ?? "flex items-center"}
       style={style}
