@@ -17,6 +17,7 @@ import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { HelpIcon } from "./icons/HelpIcon"
+import { MenuIcon } from "./icons/MenuIcon"
 import { cardSnippet, noteCardName } from "../utils/cardName"
 import { useToast } from "./Toast"
 import {
@@ -256,6 +257,15 @@ export function NoteCard(props: NoteCardProps) {
     openContextMenu.value = false
   }
 
+  function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = {
+      x: e.clientX !== 0 ? e.clientX : rect.left,
+      y: e.clientY !== 0 ? e.clientY : rect.bottom,
+    }
+    openContextMenu.value = !openContextMenu.value
+  }
+
   function _handleHelpHover() {
     if (showHelp.value) return
     showHelp.value = true
@@ -373,6 +383,7 @@ export function NoteCard(props: NoteCardProps) {
                 <span role="status" className="sr-only">{saved.value ? "" : "Unsaved changes"}</span>
               </div>
               <div className="flex gap-2">
+                <MenuIcon label={`Note menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} />
                 <button type="button" aria-label={`Export note${nameSuffix}`} onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
                     className="cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
