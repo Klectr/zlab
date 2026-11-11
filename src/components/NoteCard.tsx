@@ -299,6 +299,7 @@ export function NoteCard(props: NoteCardProps) {
       case 'E':
         e.preventDefault()
         _exportFile()
+        if (openContextMenu.value) _handleContextClose()
         break
       default:
         break
@@ -411,7 +412,7 @@ export function NoteCard(props: NoteCardProps) {
                   </li>
                   <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
                     <button type="button" role="menuitem" aria-label={`Export note${nameSuffix}`} onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
-                      export
+                      Export
                     </button>
                   </li>
                 </ul>
