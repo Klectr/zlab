@@ -40,6 +40,7 @@ export function ImageCard(props: ImageCardProps) {
   const initialResizeW = ref(0)
   const initialResizeH = ref(0)
   const openContextMenu = signal(false)
+  const menuId = `image-menu-${itemKey}`
   const showHelp = signal(false)
 
   const toast = useToast()
@@ -298,7 +299,7 @@ export function ImageCard(props: ImageCardProps) {
         >
           <span role="img" aria-label={cardName || "Image"} className="sr-only"></span>
 
-          <MenuIcon label={`Image menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
+          <MenuIcon label={`Image menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
           <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`image-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show image shortcuts${nameSuffix}`} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-[24px] top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
@@ -311,7 +312,7 @@ export function ImageCard(props: ImageCardProps) {
           <ExpandIcon cb={_handleResizeMouseDown} label={`Resize image${nameSuffix}`} />
         </div >
 
-        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Image menu${nameSuffix}`}>
+        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Image menu${nameSuffix}`} menuId={menuId}>
           <div className="bg-[#3c3c3c] flex flex-col rounded">
             <div className="flex justify-between items-center">
               <div className="text-md text-[#999] px-2 py-1">

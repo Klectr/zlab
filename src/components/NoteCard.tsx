@@ -45,6 +45,7 @@ export function NoteCard(props: NoteCardProps) {
   const initialResizeW = ref(0)
   const initialResizeH = ref(0)
   const openContextMenu = signal(false)
+  const menuId = `note-menu-${itemKey}`
   const showHelp = signal(false)
   const autoFocusEditor = consumeEditorFocus(itemKey)
   const cardRef = ref<HTMLDivElement>(null)
@@ -383,7 +384,7 @@ export function NoteCard(props: NoteCardProps) {
                 <span role="status" className="sr-only">{saved.value ? "" : "Unsaved changes"}</span>
               </div>
               <div className="flex gap-2">
-                <MenuIcon label={`Note menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} />
+                <MenuIcon label={`Note menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} />
                 <button type="button" aria-label={`Export note${nameSuffix}`} onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
                     className="cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"
@@ -404,7 +405,7 @@ export function NoteCard(props: NoteCardProps) {
             <ExpandIcon cb={_handleResizeMouseDown} label={`Resize note${nameSuffix}`} />
           </div>
 
-          <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Note menu${nameSuffix}`}>
+          <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Note menu${nameSuffix}`} menuId={menuId}>
             <div className="bg-[#3c3c3c] flex flex-col rounded">
               <div className="flex justify-between items-center">
                 <div className="text-md text-[#999] px-2 py-1">

@@ -116,6 +116,7 @@ export function TextItem(props: TextCardProps) {
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
   const openContextMenu = signal(false)
+  const menuId = `text-menu-${itemKey}`
   const showHelp = signal(false)
   const autoFocusText = consumeEditorFocus(itemKey)
 
@@ -479,13 +480,13 @@ export function TextItem(props: TextCardProps) {
           </p>
         </pre>
 
-        <MenuIcon label={`Text menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[12px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />
       </div >
 
-        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Text menu${nameSuffix}`}>
+        <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Text menu${nameSuffix}`} menuId={menuId}>
           <div className="bg-[#3c3c3c] flex flex-col rounded">
             <div className="flex justify-between items-center">
               <div className="text-md text-[#999] px-2 py-1">
