@@ -117,6 +117,9 @@ export function ImportButton() {
           toast.showToast("error", "Could not import that file.")
           return
         }
+        const rawNotes = localStorage.getItem(CardTypes.NOTES)
+        const rawImages = localStorage.getItem(CardTypes.IMAGES)
+        const rawTexts = localStorage.getItem(CardTypes.TEXTS)
         const prevNotes = JSON.parse(JSON.stringify(notes.notes.value))
         const prevImages = JSON.parse(JSON.stringify(images.images.value))
         const prevTexts = JSON.parse(JSON.stringify(texts.texts.value))
@@ -156,10 +159,11 @@ export function ImportButton() {
             localStorage.removeItem(CardTypes.NOTES)
             localStorage.removeItem(CardTypes.IMAGES)
             localStorage.removeItem(CardTypes.TEXTS)
-            updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
-            updateLocalStorage(CardTypes.IMAGES, images.images).notify()
-            updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+            localStorage.setItem(CardTypes.NOTES, rawNotes ?? "{}")
+            localStorage.setItem(CardTypes.IMAGES, rawImages ?? "{}")
+            localStorage.setItem(CardTypes.TEXTS, rawTexts ?? "{}")
           } catch {
+            toast.showToast("error", "Could not restore your previous board!")
             return
           }
         }
