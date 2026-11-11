@@ -9,6 +9,10 @@ import { imageCardName, noteCardName } from "../utils/cardName"
 const _MAP_OFFSET = 20
 const _MAP_SCALE_FACTOR = 10
 
+function _scrollBehavior(): ScrollBehavior {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+}
+
 export function MiniMap() {
   const scrollX = signal(0)
   const scrollY = signal(0)
@@ -63,7 +67,7 @@ export function MiniMap() {
             window.scrollTo({
               left: newLeft,
               top: newTop,
-              behavior: 'smooth'
+              behavior: _scrollBehavior()
             })
           }
 
@@ -99,7 +103,7 @@ export function MiniMap() {
             window.scrollTo({
               left: newLeft,
               top: newTop,
-              behavior: 'smooth'
+              behavior: _scrollBehavior()
             })
           }
 
@@ -132,7 +136,7 @@ export function MiniMap() {
             window.scrollTo({
               left: text.position.x - ((viewportWidth / 2) - (text.dimensions.w / 2)),
               top: text.position.y - ((viewportHeight / 2) - (text.dimensions.h / 2)),
-              behavior: 'smooth'
+              behavior: _scrollBehavior()
             })
           }
 
