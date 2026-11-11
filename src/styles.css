@@ -50,6 +50,13 @@ body {
   padding: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background: #000;
+  }
+}
+
 .toast {
   @apply flex flex-col items-center justify-center;
   @apply fixed right-4 top-4 w-52 px-4;
