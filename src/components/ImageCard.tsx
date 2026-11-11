@@ -205,6 +205,17 @@ export function ImageCard(props: ImageCardProps) {
     }
   }
 
+  function _handleKeyDown(e: KeyboardEvent) {
+    if (e.repeat) return
+    if (!e.ctrlKey && !e.metaKey) return
+    if (e.key !== 'Delete' && e.key !== 'Backspace') return
+    const target = e.target as HTMLElement | null
+    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor")
+    if (inEditableTarget) return
+    e.preventDefault()
+    _handleClose()
+  }
+
   function _handleMoveKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
     const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
@@ -225,9 +236,11 @@ export function ImageCard(props: ImageCardProps) {
 
   effect(() => {
     if (focusedItem.value !== itemKey) return
+    window.addEventListener('keydown', _handleKeyDown)
     window.addEventListener('keydown', _handleMoveKeyDown)
     window.addEventListener('keydown', _handleResizeKeyDown)
     return () => {
+      window.removeEventListener('keydown', _handleKeyDown)
       window.removeEventListener('keydown', _handleMoveKeyDown)
       window.removeEventListener('keydown', _handleResizeKeyDown)
     }
@@ -344,6 +357,8 @@ export function ImageCard(props: ImageCardProps) {
             }}
           >
             <div className="flex flex-col text-sm dark:text-[#999] text-black">
+              <small>ctrl/cmd + del = delete</small>
+              <small>ctrl/cmd + back = delete</small>
               <small>arrow keys = move card (shift = 50px)</small>
               <small>alt + arrow keys = resize card (shift = 50px)</small>
             </div>
