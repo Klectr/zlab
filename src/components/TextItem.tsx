@@ -14,6 +14,7 @@ import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
 import { MenuIcon } from "./icons/MenuIcon"
+import { HelpIcon } from "./icons/HelpIcon"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
@@ -115,6 +116,7 @@ export function TextItem(props: TextCardProps) {
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
   const openContextMenu = signal(false)
+  const showHelp = signal(false)
   const autoFocusText = consumeEditorFocus(itemKey)
 
   let lastMeasuredFontSize: number | null = null
@@ -333,6 +335,25 @@ export function TextItem(props: TextCardProps) {
     openContextMenu.value = false
   }
 
+  function _handleHelpHover() {
+    if (showHelp.value) return
+    showHelp.value = true
+  }
+
+  function _handleHelpOut() {
+    if (!showHelp.value) return
+    showHelp.value = false
+  }
+
+  effect(() => {
+    if (!showHelp.value) return
+    function _handleHelpEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") showHelp.value = false
+    }
+    document.addEventListener("keydown", _handleHelpEscape)
+    return () => document.removeEventListener("keydown", _handleHelpEscape)
+  })
+
   function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     const rect = e.currentTarget.getBoundingClientRect()
     mouse.value = {
@@ -459,6 +480,7 @@ export function TextItem(props: TextCardProps) {
         </pre>
 
         <MenuIcon label={`Text menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[12px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />
       </div >
@@ -484,6 +506,22 @@ export function TextItem(props: TextCardProps) {
             </div>
           </div>
         </ContextMenuPortal>
+
+        {showHelp.value &&
+          <div
+            id={`text-shortcuts-${itemKey}`}
+            className={"dark:text-white absolute dark:bg-[#1c1c1c] bg-[#fff] rounded-md p-1 z-[1000] border border-blue-500"}
+            style={{
+              top: `${it.position.y}px`,
+              left: `${Math.max(0, it.position.x - 120)}px`
+            }}
+          >
+            <div className="flex flex-col text-sm dark:text-[#999] text-black">
+              <small>arrow keys = move card (shift = 50px)</small>
+              <small>alt + arrow keys = resize font (shift = 50px)</small>
+            </div>
+          </div>
+        }
       </>
     )
   }
