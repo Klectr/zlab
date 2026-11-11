@@ -138,6 +138,7 @@ export function TextItem(props: TextCardProps) {
       TextSignal.default.updateTextProperty(itemKey, 'position', clampedPos)
     }
     TextSignal.default.updateTextProperty(itemKey, 'dimensions', newDems)
+    updateLocalStorage()
   }
 
   onMount(() => {
