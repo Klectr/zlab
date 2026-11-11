@@ -13,6 +13,7 @@ import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardM
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
+import { createImageCardFromFile } from "../utils/createImageCard"
 import { MenuIcon } from "./icons/MenuIcon"
 import { HelpIcon } from "./icons/HelpIcon"
 import {
@@ -144,6 +145,7 @@ export function TextItem(props: TextCardProps) {
   onMount(() => {
     if (pRef.current) {
       pRef.current.textContent = item.value.contents
+      pRef.current.addEventListener('paste', _handlePaste)
       if (autoFocusText && focusedItem.value === itemKey) {
         pRef.current.focus()
       }
@@ -298,6 +300,7 @@ export function TextItem(props: TextCardProps) {
   window.addEventListener('pagehide', flushLocalStorage)
 
   onCleanup(() => {
+    pRef.current?.removeEventListener('paste', _handlePaste)
     resizeObserver?.disconnect()
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
@@ -371,6 +374,96 @@ export function TextItem(props: TextCardProps) {
     texts.updateTextProperty(itemKey, 'contents', val)
     _measureAndStoreDimensions()
     updateLocalStorage()
+  }
+
+  function _handlePasteImageFiles(files: File[]) {
+    files.forEach((file, i) => {
+      createImageCardFromFile(file, {
+        x: item.value.position.x + i * 24,
+        y: item.value.position.y + i * 24
+      }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"), () => {
+        if (elRef.current?.contains(document.activeElement)) {
+          focusedItem.value = itemKey
+        }
+      })
+    })
+  }
+
+  function _insertPlainText(text: string) {
+    const el = pRef.current
+    if (!el) return
+    const sel = document.getSelection()
+    let inserted = false
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0)
+      if (el.contains(range.commonAncestorContainer)) {
+        range.deleteContents()
+        const node = document.createTextNode(text)
+        range.insertNode(node)
+        range.setStartAfter(node)
+        range.setEndAfter(node)
+        sel.removeAllRanges()
+        sel.addRange(range)
+        inserted = true
+      }
+    }
+    if (!inserted) el.appendChild(document.createTextNode(text))
+    const val = _joinChildText(Array.from(el.childNodes), true)
+    texts.updateTextProperty(itemKey, 'contents', val)
+    _measureAndStoreDimensions()
+    updateLocalStorage()
+  }
+
+  function _fileFromDataUrl(dataUrl: string): File | null {
+    const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.trim())
+    if (!match) return null
+    try {
+      const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0))
+      return new File([bytes], "pasted-image", { type: match[1] })
+    } catch {
+      return null
+    }
+  }
+
+  function _insertCompanionText(dt: DataTransfer): boolean {
+    const plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
+    if (!plain) return false
+    const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
+    if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) return false
+    _insertPlainText(plain)
+    return true
+  }
+
+  function _handlePaste(e: ClipboardEvent) {
+    const dt = e.clipboardData
+    if (!dt) return
+    let files = Array.from(dt.files ?? []).filter((f) => f.type.startsWith("image/"))
+    if (!files.length) {
+      files = Array.from(dt.items ?? [])
+        .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
+        .map((i) => i.getAsFile())
+        .filter((f): f is File => !!f)
+    }
+    if (files.length) {
+      e.preventDefault()
+      _handlePasteImageFiles(files)
+      _insertCompanionText(dt)
+      return
+    }
+    const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
+    if (!/<img[\s/>]/i.test(html)) return
+    e.preventDefault()
+    const dataFiles = Array.from(html.matchAll(/<img[^>]+src=(?:"(data:image\/[^"]+)"|'(data:image\/[^']+)'|(data:image\/[^\s>]+))/gi))
+      .map((m) => _fileFromDataUrl(m[1] ?? m[2] ?? m[3] ?? ""))
+      .filter((f): f is File => !!f)
+    if (dataFiles.length) {
+      _handlePasteImageFiles(dataFiles)
+      _insertCompanionText(dt)
+      return
+    }
+    if (!_insertCompanionText(dt)) {
+      toast.showToast("error", "Could not load that image!")
+    }
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
