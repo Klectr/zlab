@@ -35,11 +35,11 @@ const editorThemeSpec = {
   ".cm-line": { padding: "0 4px" },
 }
 
-const highlightStyle = HighlightStyle.define([
+const highlightStyleFor = (dark: boolean) => HighlightStyle.define([
   { tag: [tags.heading1, tags.heading2, tags.heading3, tags.heading4, tags.heading5, tags.heading6], textTransform: "uppercase", fontWeight: "bold" },
-  { tag: tags.processingInstruction, color: "#3b82f6" },
-  { tag: tags.monospace, color: "#60a5fa" },
-  { tag: [tags.link, tags.url], color: "#3b82f6", textDecoration: "underline" },
+  { tag: tags.processingInstruction, color: dark ? "#3b82f6" : "#1d4ed8" },
+  { tag: tags.monospace, color: dark ? "#60a5fa" : "#1d4ed8" },
+  { tag: [tags.link, tags.url], color: dark ? "#3b82f6" : "#1d4ed8", textDecoration: "underline" },
   { tag: tags.quote, fontStyle: "italic" },
   { tag: tags.emphasis, fontStyle: "italic" },
   { tag: tags.strong, fontWeight: "bold" },
@@ -57,6 +57,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
   initThemeDetector()
   const elRef = ref<HTMLDivElement>(null)
   const themeCompartment = new Compartment()
+  const highlightCompartment = new Compartment()
   const labelCompartment = new Compartment()
   let view: EditorView | undefined
 
@@ -72,9 +73,14 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
   effect(() => {
     const dark = isDarkTheme.value
     view?.dispatch({
-      effects: themeCompartment.reconfigure(
-        EditorView.theme(editorThemeSpec, { dark })
-      ),
+      effects: [
+        themeCompartment.reconfigure(
+          EditorView.theme(editorThemeSpec, { dark })
+        ),
+        highlightCompartment.reconfigure(
+          syntaxHighlighting(highlightStyleFor(dark))
+        ),
+      ],
     })
   })
 
@@ -95,7 +101,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           search(),
           markdown(),
-          syntaxHighlighting(highlightStyle),
+          highlightCompartment.of(syntaxHighlighting(highlightStyleFor(isDarkTheme.value))),
           themeCompartment.of(EditorView.theme(editorThemeSpec, { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
           labelCompartment.of(EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel })),
