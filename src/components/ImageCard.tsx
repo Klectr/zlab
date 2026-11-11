@@ -8,7 +8,6 @@ import {
   clearSaveFailureReport,
   updateLocalStorage,
 } from "../utils/localStorage"
-import { useThemeDetector } from "../utils/useThemeDetector"
 import { useToast } from "./Toast"
 import { ContextMenuPortal } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
@@ -310,13 +309,12 @@ function ExpandIcon({ cb, label }: {
   label: string
 }) {
   return () => {
-    const isDarkTheme = useThemeDetector()
     return (
       <button
         type="button"
         aria-label={label}
         onmousedown={cb}
-        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none"
+        className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none bg-black/60 rounded-full"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -324,7 +322,7 @@ function ExpandIcon({ cb, label }: {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          stroke={isDarkTheme ? "#777" : "#767676"}
+          stroke="#fff"
           stroke-width="1"
           stroke-linecap="round"
           stroke-linejoin="round"
