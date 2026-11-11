@@ -309,13 +309,13 @@ export function TextItem(props: TextCardProps) {
     flushLocalStorage()
   })
 
-  function _handleClose(e: Kiru.MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation()
+  function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
+    e?.stopPropagation()
     const ownMenu = openContextMenu.value
       ? (document.querySelector("#context-menu-portal > div") as HTMLElement | null)
       : null
     const ownMarker = findMinimapMarker(itemKey)
-    moveFocusToToolbarAfterDelete(elRef.current, (e.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
+    moveFocusToToolbarAfterDelete(elRef.current, (e?.currentTarget as HTMLElement | null | undefined) ?? null, ownMenu, ownMarker)
     TextSignal.default.removeText(item.value.id)
     try {
       persistLocalStorage()
@@ -372,6 +372,17 @@ export function TextItem(props: TextCardProps) {
     updateLocalStorage()
   }
 
+  function _handleKeyDown(e: KeyboardEvent) {
+    if (e.repeat) return
+    if (!e.ctrlKey && !e.metaKey) return
+    if (e.key !== 'Delete' && e.key !== 'Backspace') return
+    const target = e.target as HTMLElement | null
+    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor")
+    if (inEditableTarget) return
+    e.preventDefault()
+    _handleClose()
+  }
+
   function _handleMoveKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
     const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
@@ -392,9 +403,11 @@ export function TextItem(props: TextCardProps) {
 
   effect(() => {
     if (focusedItem.value !== itemKey) return
+    window.addEventListener('keydown', _handleKeyDown)
     window.addEventListener('keydown', _handleMoveKeyDown)
     window.addEventListener('keydown', _handleResizeKeyDown)
     return () => {
+      window.removeEventListener('keydown', _handleKeyDown)
       window.removeEventListener('keydown', _handleMoveKeyDown)
       window.removeEventListener('keydown', _handleResizeKeyDown)
     }
@@ -518,6 +531,8 @@ export function TextItem(props: TextCardProps) {
             }}
           >
             <div className="flex flex-col text-sm dark:text-[#999] text-black">
+              <small>ctrl/cmd + del = delete</small>
+              <small>ctrl/cmd + back = delete</small>
               <small>arrow keys = move card (shift = 50px)</small>
               <small>alt + arrow keys = resize font (shift = 50px)</small>
             </div>
