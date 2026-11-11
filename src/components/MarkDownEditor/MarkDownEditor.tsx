@@ -140,7 +140,11 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   .map((i) => i.getAsFile())
                   .filter((f): f is File => !!f)
               }
-              if (!files.length) return false
+              if (!files.length) {
+                const hasFiles = (event.dataTransfer?.files?.length ?? 0) > 0 ||
+                  Array.from(event.dataTransfer?.items ?? []).some((i) => i.kind === "file")
+                return hasFiles
+              }
               event.preventDefault()
               const dt = event.dataTransfer
               let text = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
