@@ -13,6 +13,7 @@ import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardM
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
+import { MenuIcon } from "./icons/MenuIcon"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
@@ -332,6 +333,15 @@ export function TextItem(props: TextCardProps) {
     openContextMenu.value = false
   }
 
+  function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = {
+      x: e.clientX !== 0 ? e.clientX : rect.left,
+      y: e.clientY !== 0 ? e.clientY : rect.bottom,
+    }
+    openContextMenu.value = !openContextMenu.value
+  }
+
   function _handleContentInput(e: InputEvent) {
     const el = e.target as HTMLParagraphElement & Pick<HTMLInputElement, 'oninput'>
     const val = _joinChildText(Array.from(el.childNodes), true)
@@ -448,6 +458,7 @@ export function TextItem(props: TextCardProps) {
           </p>
         </pre>
 
+        <MenuIcon label={`Text menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />
       </div >

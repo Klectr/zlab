@@ -16,6 +16,7 @@ import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focus
 import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
 import { CardTypes } from "../types"
 import { cardSnippet, imageCardName } from "../utils/cardName"
+import { MenuIcon } from "./icons/MenuIcon"
 
 interface ImageCardProps {
   itemKey: ImageCardType['id']
@@ -239,6 +240,15 @@ export function ImageCard(props: ImageCardProps) {
     openContextMenu.value = false
   }
 
+  function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = {
+      x: e.clientX !== 0 ? e.clientX : rect.left,
+      y: e.clientY !== 0 ? e.clientY : rect.bottom,
+    }
+    openContextMenu.value = !openContextMenu.value
+  }
+
   return () => {
     const it = item.value
     const cardName = imageCardName(it.title)
@@ -266,6 +276,8 @@ export function ImageCard(props: ImageCardProps) {
           }}
         >
           <span role="img" aria-label={cardName || "Image"} className="sr-only"></span>
+
+          <MenuIcon label={`Image menu${nameSuffix}`} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
           <button
             type="button"

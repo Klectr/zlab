@@ -3,6 +3,17 @@ import { initMouseTracking, mouse } from "../utils/mouse"
 
 const noopClick = () => {}
 
+function eventHitsMenuTrigger(e: Event): boolean {
+  const t = e.target as HTMLElement | null
+  if (t && typeof t.closest === "function" && t.closest("[data-menu-trigger]")) return true
+  if (typeof e.composedPath === "function") {
+    return e.composedPath().some(
+      (n) => n instanceof Element && n.hasAttribute("data-menu-trigger")
+    )
+  }
+  return false
+}
+
 const closeHandlers = new Set<() => void>()
 
 interface ContextMenuPortalProps {
@@ -26,11 +37,16 @@ export function ContextMenuPortal({
     closeHandlers.add(closeSelf)
     let pointerStartedOutside = true
     function _handlePointerDown(e: PointerEvent) {
+      if (eventHitsMenuTrigger(e)) {
+        pointerStartedOutside = false
+        return
+      }
       const el = elRef.current
       pointerStartedOutside = !!el && !e.composedPath().includes(el)
       if (el && pointerStartedOutside) closeAction?.()
     }
     function _handleClickOutside(e: MouseEvent) {
+      if (eventHitsMenuTrigger(e)) return
       const el = elRef.current
       if (!el || e.target === el || e.composedPath().includes(el)) return
       if (e.detail === 0) pointerStartedOutside = true
@@ -41,6 +57,7 @@ export function ContextMenuPortal({
       closeAction?.()
     }
     function _handleContextMenuOutside(e: MouseEvent) {
+      if (eventHitsMenuTrigger(e)) return
       const el = elRef.current
       if (el && e.composedPath().includes(el)) {
         e.preventDefault()
@@ -130,6 +147,7 @@ export function ContextMenuPortal({
     function _handleFocusIn(e: FocusEvent) {
       const el = elRef.current
       if (!el) return
+      if (eventHitsMenuTrigger(e)) return
       const target = e.target as HTMLElement | null
       if (target && el.contains(target)) return
       if (target?.closest?.("#context-menu-portal")) return
