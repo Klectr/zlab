@@ -65,7 +65,7 @@ export function CardSelector() {
       onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {
         if (!(e.target as HTMLElement).closest("button")) focusedItem.value = null
       }}
-      className="z-50 flex gap-1 border dark:border-[#3c3c3c] border-[#ddd] rounded-full fixed px-4 dark:bg-[#222] bg-[#eee] top-2 py-1 shadow-md"
+      className="z-50 flex gap-1 border dark:border-[#5c5c5c] border-[#ddd] rounded-full fixed px-4 dark:bg-[#222] bg-[#eee] top-2 py-1 shadow-md"
       style={{
         left: `${centeredLeft.value}px`
       }}>
