@@ -284,7 +284,7 @@ export function ImageCard(props: ImageCardProps) {
       if (e.key !== "Escape") return
       const target = e.target as Element | null
       const editor = target?.closest?.(".cm-editor")
-      searchPanelOpen = !!target?.closest?.(".cm-panel.cm-search") || !!(editor && editor.querySelector(".cm-panel.cm-search"))
+      searchPanelOpen = !!target?.closest?.(".cm-panel.cm-search") || !!target?.closest?.(".cm-goto-line") || !!(editor && (editor.querySelector(".cm-panel.cm-search") || editor.querySelector(".cm-goto-line")))
     }
     function _handleHelpEscape(e: KeyboardEvent) {
       if (e.key === "Escape" && !searchPanelOpen && !isAnyContextMenuOpen()) {
