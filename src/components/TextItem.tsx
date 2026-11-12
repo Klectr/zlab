@@ -475,7 +475,7 @@ export function TextItem(props: TextCardProps) {
     if (!e.ctrlKey && !e.metaKey) return
     if (e.key !== 'Delete' && e.key !== 'Backspace') return
     const target = e.target as HTMLElement | null
-    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor")
+    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal")
     if (inEditableTarget) return
     e.preventDefault()
     _handleClose()
