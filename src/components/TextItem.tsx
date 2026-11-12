@@ -120,6 +120,7 @@ export function TextItem(props: TextCardProps) {
   const openContextMenu = signal(false)
   const menuId = `text-menu-${itemKey}`
   const showHelp = signal(false)
+  const helpPinned = signal(false)
   const autoFocusText = consumeEditorFocus(itemKey)
 
   let lastMeasuredFontSize: number | null = null
@@ -350,14 +351,22 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleHelpOut() {
-    if (!showHelp.value) return
+    if (!showHelp.value || helpPinned.value) return
     showHelp.value = false
+  }
+
+  function _handleHelpClick() {
+    helpPinned.value = !helpPinned.value
+    showHelp.value = helpPinned.value
   }
 
   effect(() => {
     if (!showHelp.value) return
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !isAnyContextMenuOpen()) showHelp.value = false
+      if (e.key === "Escape" && !isAnyContextMenuOpen()) {
+        helpPinned.value = false
+        showHelp.value = false
+      }
     }
     document.addEventListener("keydown", _handleHelpEscape)
     return () => document.removeEventListener("keydown", _handleHelpEscape)
@@ -592,7 +601,7 @@ export function TextItem(props: TextCardProps) {
         </pre>
 
         <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
-        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[12px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[12px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />
       </div >

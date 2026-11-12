@@ -1,6 +1,7 @@
 interface HelpIconProps {
   onMouseOver?: () => void
   onMouseOut?: () => void
+  onClick?: () => void
   describedBy?: string
   expanded?: boolean
   label?: string
@@ -9,7 +10,7 @@ interface HelpIconProps {
   style?: Record<string, string>
 }
 
-export function HelpIcon({ onMouseOver, onMouseOut, describedBy, expanded, label, buttonClass, iconClass, style }: HelpIconProps) {
+export function HelpIcon({ onMouseOver, onMouseOut, onClick, describedBy, expanded, label, buttonClass, iconClass, style }: HelpIconProps) {
 
   return (
     <button
@@ -18,6 +19,7 @@ export function HelpIcon({ onMouseOver, onMouseOut, describedBy, expanded, label
       aria-expanded={expanded ? "true" : "false"}
       aria-describedby={expanded ? describedBy : undefined}
       onmouseout={onMouseOut}
+      onclick={onClick}
       onmouseover={onMouseOver}
       onfocus={onMouseOver}
       onblur={onMouseOut}
