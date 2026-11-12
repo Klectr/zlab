@@ -93,10 +93,18 @@ export default function InfiniteCanvas() {
         }
         if (target?.closest?.(".cm-editor")) return
         if (!files.length) {
-          const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-          if (!hasDraggedImage && !uriList) return
           files = imageFilesFromHtml(html)
           if (!files.length) {
+            const residualText = html
+              .replace(/<img[\s/>][^>]*>/gi, "")
+              .replace(/<[^>]+>/g, "")
+              .replace(/&[a-z#0-9]+;/gi, " ")
+              .trim()
+            if (residualText) return
+            const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+            const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
+            const uriIsImage = /\.(?:png|jpe?g|gif|webp|avif|svg|bmp|ico|tiff?)(?:[?#].*)?$/i.test(firstUri)
+            if (!hasDraggedImage && !uriIsImage) return
             toast.showToast("error", "Only image files can be dropped.")
             return
           }
