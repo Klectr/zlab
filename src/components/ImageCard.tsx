@@ -39,6 +39,8 @@ export function ImageCard(props: ImageCardProps) {
   const initialResizeY = ref(0)
   const initialResizeW = ref(0)
   const initialResizeH = ref(0)
+  const dragStartPos = ref<{ x: number; y: number } | null>(null)
+  const dragKind = ref<string | null>(null)
   const openContextMenu = signal(false)
   const menuId = `image-menu-${itemKey}`
   const showHelp = signal(false)
@@ -86,6 +88,7 @@ export function ImageCard(props: ImageCardProps) {
     if (e && e.button !== 0 && e.buttons !== 0) return
     e?.preventDefault()
     pressed.value = false
+    dragKind.current = null
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
   }
@@ -99,6 +102,8 @@ export function ImageCard(props: ImageCardProps) {
     e.preventDefault()
     offsetX.current = e.pageX - item.value.position.x
     offsetY.current = e.pageY - item.value.position.y
+    dragStartPos.current = { x: item.value.position.x, y: item.value.position.y }
+    dragKind.current = "move"
     pressed.value = true
     window.addEventListener('mousemove', _handleMouseMove)
     window.addEventListener('mouseup', _handleMouseUp)
@@ -127,6 +132,7 @@ export function ImageCard(props: ImageCardProps) {
     initialResizeY.current = e.pageY
     initialResizeW.current = item.value.dimensions.w
     initialResizeH.current = item.value.dimensions.h
+    dragKind.current = "resize"
     pressed.value = true
     window.addEventListener('mousemove', _handleResizeMove)
     window.addEventListener('mouseup', _handleResizeMouseUp)
@@ -135,6 +141,7 @@ export function ImageCard(props: ImageCardProps) {
   function _handleResizeMouseUp(e?: MouseEvent) {
     if (e && e.button !== 0 && e.buttons !== 0) return
     pressed.value = false
+    dragKind.current = null
     debounceLSUpdate()
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
@@ -150,6 +157,24 @@ export function ImageCard(props: ImageCardProps) {
     } catch {
       return
     }
+  }
+
+  function _cancelDrag() {
+    if (!pressed.value) return
+    if (dragKind.current === "move" && dragStartPos.current) {
+      ImagesSignal.default.updateImageProperty(itemKey, 'position', { x: dragStartPos.current.x, y: dragStartPos.current.y })
+    } else if (dragKind.current === "resize") {
+      ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', { w: initialResizeW.current, h: initialResizeH.current })
+    }
+    _handleMouseUp()
+    _handleResizeMouseUp()
+  }
+
+  function _handleDragEscape(e: KeyboardEvent) {
+    if (e.key !== "Escape" || !pressed.value) return
+    e.preventDefault()
+    e.stopPropagation()
+    _cancelDrag()
   }
 
   function _disarmDrag() {
@@ -173,6 +198,7 @@ export function ImageCard(props: ImageCardProps) {
 
   activeDragDisarmers.add(_disarmDrag)
   window.addEventListener('blur', _disarmDrag)
+  window.addEventListener('keydown', _handleDragEscape, true)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
   document.addEventListener('focusin', _handleFocusIn)
@@ -185,6 +211,7 @@ export function ImageCard(props: ImageCardProps) {
     window.removeEventListener('beforeunload', flushLocalStorage)
     window.removeEventListener('pagehide', flushLocalStorage)
     window.removeEventListener('blur', _disarmDrag)
+    window.removeEventListener('keydown', _handleDragEscape, true)
     document.removeEventListener('focusin', _handleFocusIn)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
