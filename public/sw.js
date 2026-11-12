@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v11"
+const CACHE_NAME = "zlab-v12"
 
 function offlinePageResponse() {
   return new Response(
@@ -45,6 +45,7 @@ async function pruneSupersededAssets(previousHtml, newHtml) {
   try {
     const cache = await caches.open(CACHE_NAME)
     const keep = assetRefs(newHtml)
+    if (keep.size === 0) return
     const newCss = await cssRefs(cache, keep, true)
     for (const ref of newCss.refs) keep.add(ref)
     const stale = assetRefs(previousHtml)
@@ -153,14 +154,9 @@ self.addEventListener("fetch", (event) => {
                 const previous = await cache.match("/index.html")
                 previousHtml = previous ? await previous.text() : ""
               } catch {}
-              if (!newHtml) {
-                try {
-                  const cache = await caches.open(CACHE_NAME)
-                  await cache.put("/index.html", copy)
-                } catch {}
-                return
-              }
+              if (!newHtml) return
               const newRefs = assetRefs(newHtml)
+              if (newRefs.size === 0) return
               let assetsOk = true
               try {
                 const cache = await caches.open(CACHE_NAME)
