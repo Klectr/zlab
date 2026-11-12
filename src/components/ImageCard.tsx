@@ -279,14 +279,25 @@ export function ImageCard(props: ImageCardProps) {
 
   effect(() => {
     if (!showHelp.value) return
+    let searchPanelOpen = false
+    function _noteSearchPanelEscape(e: KeyboardEvent) {
+      if (e.key !== "Escape") return
+      const target = e.target as Element | null
+      const editor = target?.closest?.(".cm-editor")
+      searchPanelOpen = !!target?.closest?.(".cm-panel.cm-search") || !!(editor && editor.querySelector(".cm-panel.cm-search"))
+    }
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !isAnyContextMenuOpen()) {
+      if (e.key === "Escape" && !searchPanelOpen && !isAnyContextMenuOpen()) {
         helpPinned.value = false
         showHelp.value = false
       }
     }
+    document.addEventListener("keydown", _noteSearchPanelEscape, true)
     document.addEventListener("keydown", _handleHelpEscape)
-    return () => document.removeEventListener("keydown", _handleHelpEscape)
+    return () => {
+      document.removeEventListener("keydown", _noteSearchPanelEscape, true)
+      document.removeEventListener("keydown", _handleHelpEscape)
+    }
   })
 
   function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
