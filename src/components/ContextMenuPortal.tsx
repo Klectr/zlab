@@ -29,6 +29,10 @@ const closeHandlers = new Set<() => void>()
 
 const openPortals = new Set<Signal<boolean>>()
 
+let lastMenuRestore: { menuId: string | undefined; target: HTMLElement } | null =
+  null
+let lastMenuRestoreAt = 0
+
 export function isAnyContextMenuOpen(): boolean {
   return openPortals.size > 0
 }
@@ -124,12 +128,25 @@ export function ContextMenuPortal({
       ready.value = false
       return
     }
+    const activeAtOpen = document.activeElement as HTMLElement | null
+    const chainedRestore =
+      !!lastMenuRestore &&
+      lastMenuRestore.menuId !== menuId &&
+      activeAtOpen === lastMenuRestore.target &&
+      Date.now() - lastMenuRestoreAt < 1000
+    const previouslyFocused =
+      activeAtOpen &&
+      !activeAtOpen.closest?.("#context-menu-portal") &&
+      !chainedRestore
+        ? activeAtOpen
+        : ((Array.from(document.querySelectorAll("[data-menu-trigger]")).find(
+            (el) => el.getAttribute("data-menu-trigger") === menuId
+          ) as HTMLElement | undefined) ?? activeAtOpen)
     openPortals.add(open)
     for (const close of [...closeHandlers]) {
       if (close !== closeSelf) close()
     }
     pos.value = untrack(() => ({ x: mouse.value.x, y: mouse.value.y }))
-    const previouslyFocused = document.activeElement as HTMLElement | null
     function _handleMenuKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         closeAction?.()
@@ -237,6 +254,8 @@ export function ContextMenuPortal({
         (activeInPortal || activeIsBody)
       ) {
         previouslyFocused.focus({ preventScroll: true })
+        lastMenuRestore = { menuId, target: previouslyFocused }
+        lastMenuRestoreAt = Date.now()
       }
     }
   })
