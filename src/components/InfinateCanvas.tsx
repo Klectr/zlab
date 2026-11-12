@@ -8,7 +8,7 @@ import images from "../signals/images"
 import { CardSelector } from "./cardSelector/CardSelector"
 import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
-import { createImageCardFromFile } from "../utils/createImageCard"
+import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
 import { disarmActiveDrags } from "../utils/activeDrag"
 import { useToast } from "./Toast"
 import { TextItem } from "./TextItem"
@@ -66,15 +66,42 @@ export default function InfiniteCanvas() {
 
     function _handleFileDrop(e: DragEvent) {
       const target = e.target as HTMLElement | null
-      if (!e.dataTransfer?.files?.length && target?.closest?.(".text-p")) return
-      e.preventDefault()
-      const allFiles = Array.from(e.dataTransfer?.files ?? [])
-      const files = allFiles.filter((f) => f.type.startsWith("image/"))
-      if (allFiles.length > 0 && files.length === 0) {
-        toast.showToast("error", "Only image files can be dropped.")
-        return
+      const dt = e.dataTransfer
+      let allFiles = Array.from(dt?.files ?? [])
+      if (!allFiles.length && dt) {
+        allFiles = Array.from(dt.items ?? [])
+          .filter((i) => i.kind === "file")
+          .map((i) => i.getAsFile())
+          .filter((f): f is File => !!f)
       }
-      if (target?.closest?.(".cm-editor")) return
+      let files = allFiles.filter((f) => f.type.startsWith("image/"))
+      const html = !allFiles.length && dt && typeof dt.getData === "function" ? dt.getData("text/html") : ""
+      const hasDraggedImage = /<img[\s/>]/i.test(html)
+      if (!allFiles.length && target?.closest?.(".text-p")) {
+        if (!hasDraggedImage) return
+        e.preventDefault()
+        files = imageFilesFromHtml(html)
+        if (!files.length) {
+          toast.showToast("error", "Could not load that image!")
+          return
+        }
+      } else {
+        e.preventDefault()
+        if (allFiles.length > 0 && files.length === 0) {
+          toast.showToast("error", "Only image files can be dropped.")
+          return
+        }
+        if (target?.closest?.(".cm-editor")) return
+        if (!files.length) {
+          const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+          if (!hasDraggedImage && !uriList) return
+          files = imageFilesFromHtml(html)
+          if (!files.length) {
+            toast.showToast("error", "Only image files can be dropped.")
+            return
+          }
+        }
+      }
       files.forEach((file, i) => {
         createImageCardFromFile(file, {
           x: Math.max(0, e.pageX - 100 + i * 24),

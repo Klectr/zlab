@@ -13,7 +13,7 @@ import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardM
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
-import { createImageCardFromFile } from "../utils/createImageCard"
+import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
 import { MenuIcon } from "./icons/MenuIcon"
 import { HelpIcon } from "./icons/HelpIcon"
 import {
@@ -465,17 +465,6 @@ export function TextItem(props: TextCardProps) {
     updateLocalStorage()
   }
 
-  function _fileFromDataUrl(dataUrl: string): File | null {
-    const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.trim())
-    if (!match) return null
-    try {
-      const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0))
-      return new File([bytes], "pasted-image", { type: match[1] })
-    } catch {
-      return null
-    }
-  }
-
   function _insertCompanionText(dt: DataTransfer): boolean {
     const plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
     if (!plain) return false
@@ -504,9 +493,7 @@ export function TextItem(props: TextCardProps) {
     const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
     if (!/<img[\s/>]/i.test(html)) return
     e.preventDefault()
-    const dataFiles = Array.from(html.matchAll(/<img[^>]+src=(?:"(data:image\/[^"]+)"|'(data:image\/[^']+)'|(data:image\/[^\s>]+))/gi))
-      .map((m) => _fileFromDataUrl(m[1] ?? m[2] ?? m[3] ?? ""))
-      .filter((f): f is File => !!f)
+    const dataFiles = imageFilesFromHtml(html)
     if (dataFiles.length) {
       _handlePasteImageFiles(dataFiles)
       _insertCompanionText(dt)
