@@ -15,7 +15,7 @@ export function MenuIcon({ label, expanded, controls, onClick, buttonClass, icon
       aria-label={label}
       aria-haspopup="menu"
       aria-expanded={expanded ? "true" : "false"}
-      aria-controls={controls}
+      aria-controls={expanded ? controls : undefined}
       data-menu-trigger={controls ?? ""}
       onclick={onClick}
       className={buttonClass ?? "flex items-center"}
