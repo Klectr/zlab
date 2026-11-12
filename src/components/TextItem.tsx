@@ -150,6 +150,7 @@ export function TextItem(props: TextCardProps) {
     if (pRef.current) {
       pRef.current.textContent = item.value.contents
       pRef.current.addEventListener('paste', _handlePaste)
+      pRef.current.addEventListener('drop', _handleDrop)
       if (autoFocusText && focusedItem.value === itemKey) {
         pRef.current.focus()
       }
@@ -332,6 +333,7 @@ export function TextItem(props: TextCardProps) {
 
   onCleanup(() => {
     pRef.current?.removeEventListener('paste', _handlePaste)
+    pRef.current?.removeEventListener('drop', _handleDrop)
     resizeObserver?.disconnect()
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
@@ -502,6 +504,24 @@ export function TextItem(props: TextCardProps) {
     if (!_insertCompanionText(dt)) {
       toast.showToast("error", "Could not load that image!")
     }
+  }
+
+  function _handleDrop(e: DragEvent) {
+    const dt = e.dataTransfer
+    if (!dt) return
+    if ((dt.files ?? []).length) return
+    if (Array.from(dt.items ?? []).some((i) => i.kind === "file")) return
+    const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
+    if (!/<img[\s/>]/i.test(html)) return
+    const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
+    if (plain && !/[\r\n]/.test(plain)) {
+      const uri = typeof dt.getData === "function"
+        ? (dt.getData("text/uri-list").split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? "")
+        : ""
+      if (plain === uri || /^(https?|data|blob):\S+$/i.test(plain)) return
+    }
+    document.getSelection()?.removeAllRanges()
+    _insertCompanionText(dt)
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
