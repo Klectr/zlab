@@ -47,6 +47,7 @@ export function NoteCard(props: NoteCardProps) {
   const openContextMenu = signal(false)
   const menuId = `note-menu-${itemKey}`
   const showHelp = signal(false)
+  const helpPinned = signal(false)
   const autoFocusEditor = consumeEditorFocus(itemKey)
   const cardRef = ref<HTMLDivElement>(null)
 
@@ -273,14 +274,22 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleHelpOut() {
-    if (!showHelp.value) return
+    if (!showHelp.value || helpPinned.value) return
     showHelp.value = false
+  }
+
+  function _handleHelpClick() {
+    helpPinned.value = !helpPinned.value
+    showHelp.value = helpPinned.value
   }
 
   effect(() => {
     if (!showHelp.value) return
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !isAnyContextMenuOpen()) showHelp.value = false
+      if (e.key === "Escape" && !isAnyContextMenuOpen()) {
+        helpPinned.value = false
+        showHelp.value = false
+      }
     }
     document.addEventListener("keydown", _handleHelpEscape)
     return () => document.removeEventListener("keydown", _handleHelpEscape)
@@ -383,7 +392,7 @@ export function NoteCard(props: NoteCardProps) {
             {/* Header Bar */}
             <div className="px-2 flex justify-between items-center cursor-move touch-none" onmousedown={_handleMouseDown}>
               <div className={"flex gap-1 items-center"}>
-                <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`note-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show note shortcuts${nameSuffix}`} />
+                <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`note-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show note shortcuts${nameSuffix}`} />
                 {/* Save indicator*/}
                 <div style={saveIndicatorStyle} className="rounded-full w-1 h-1 dark:bg-white bg-green-500"></div>
                 <span role="status" className="sr-only">{saved.value ? "" : "Unsaved changes"}</span>

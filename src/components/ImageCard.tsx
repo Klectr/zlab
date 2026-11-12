@@ -42,6 +42,7 @@ export function ImageCard(props: ImageCardProps) {
   const openContextMenu = signal(false)
   const menuId = `image-menu-${itemKey}`
   const showHelp = signal(false)
+  const helpPinned = signal(false)
 
   const toast = useToast()
 
@@ -262,14 +263,22 @@ export function ImageCard(props: ImageCardProps) {
   }
 
   function _handleHelpOut() {
-    if (!showHelp.value) return
+    if (!showHelp.value || helpPinned.value) return
     showHelp.value = false
+  }
+
+  function _handleHelpClick() {
+    helpPinned.value = !helpPinned.value
+    showHelp.value = helpPinned.value
   }
 
   effect(() => {
     if (!showHelp.value) return
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !isAnyContextMenuOpen()) showHelp.value = false
+      if (e.key === "Escape" && !isAnyContextMenuOpen()) {
+        helpPinned.value = false
+        showHelp.value = false
+      }
     }
     document.addEventListener("keydown", _handleHelpEscape)
     return () => document.removeEventListener("keydown", _handleHelpEscape)
@@ -314,7 +323,7 @@ export function ImageCard(props: ImageCardProps) {
 
           <MenuIcon label={`Image menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
-          <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} describedBy={`image-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show image shortcuts${nameSuffix}`} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-[24px] top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
+          <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`image-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show image shortcuts${nameSuffix}`} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-[24px] top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
           <button
             type="button"
