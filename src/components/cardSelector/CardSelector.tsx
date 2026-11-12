@@ -5,6 +5,7 @@ import { ExportButton } from "./ExportButton"
 import { TextButton } from "./TextButton"
 import { ImportButton } from "./ImportButton"
 import { Divider } from "../Divider"
+import { focusedItem } from "../../signals"
 
 export function CardSelector() {
   const containerRef = ref<HTMLDivElement>(null)
@@ -61,6 +62,9 @@ export function CardSelector() {
       aria-label="Board tools"
       id="card-selector"
       ref={containerRef}
+      onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {
+        if (!(e.target as HTMLElement).closest("button")) focusedItem.value = null
+      }}
       className="z-50 flex gap-1 border dark:border-[#3c3c3c] border-[#ddd] rounded-full fixed px-4 dark:bg-[#222] bg-[#eee] top-2 py-1 shadow-md"
       style={{
         left: `${centeredLeft.value}px`
