@@ -525,6 +525,10 @@ export function TextItem(props: TextCardProps) {
   }
 
   effect(() => {
+    if (openContextMenu.value) focusedItem.value = itemKey
+  })
+
+  effect(() => {
     if (focusedItem.value !== itemKey) return
     window.addEventListener('keydown', _handleKeyDown)
     window.addEventListener('keydown', _handleMoveKeyDown)
