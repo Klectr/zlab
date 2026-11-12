@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v12"
+const CACHE_NAME = "zlab-v13"
 
 function offlinePageResponse() {
   return new Response(
@@ -84,29 +84,53 @@ async function pruneStaleAssets() {
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then(async (cache) => {
-        await cache.addAll(APP_SHELL)
-        await Promise.all(OPTIONAL_SHELL.map((u) => cache.add(u).catch(() => {})))
-        const shell = await cache.match("/index.html")
+    (async () => {
+      const stagingName = CACHE_NAME + "-staging"
+      await caches.delete(stagingName).catch(() => {})
+      const staging = await caches.open(stagingName)
+      try {
+        await staging.addAll(APP_SHELL)
+        await Promise.all(OPTIONAL_SHELL.map((u) => staging.add(u).catch(() => {})))
+        const shell = await staging.match("/index.html")
         const html = shell ? await shell.text() : ""
         const assets = [...assetRefs(html)]
-        await Promise.all(assets.map((a) => cache.add(a)))
+        await Promise.all(assets.map((a) => staging.add(a)))
         try {
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
-            const cssResponse = await cache.match(asset)
+            const cssResponse = await staging.match(asset)
             const css = cssResponse ? await cssResponse.text() : ""
             const refs = [
               ...new Set(
                 [...css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)].map((m) => m[1])
               ),
             ]
-            await Promise.all(refs.map((r) => cache.add(r).catch(() => {})))
+            await Promise.all(refs.map((r) => staging.add(r).catch(() => {})))
           }
         } catch {}
-      })
-      .then(() => self.skipWaiting())
+      } catch (err) {
+        await caches.delete(stagingName).catch(() => {})
+        throw err
+      }
+      const live = await caches.open(CACHE_NAME)
+      const requests = await staging.keys()
+      const isShellEntry = (request) => {
+        try {
+          const path = new URL(request.url).pathname
+          return path === "/" || path === "/index.html"
+        } catch {
+          return false
+        }
+      }
+      const ordered = [...requests].sort(
+        (a, b) => Number(isShellEntry(a)) - Number(isShellEntry(b))
+      )
+      for (const request of ordered) {
+        const response = await staging.match(request)
+        if (response) await live.put(request, response)
+      }
+      await caches.delete(stagingName).catch(() => {})
+      await self.skipWaiting()
+    })()
   )
 })
 
