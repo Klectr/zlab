@@ -44,6 +44,8 @@ export function NoteCard(props: NoteCardProps) {
   const initialResizeY = ref(0)
   const initialResizeW = ref(0)
   const initialResizeH = ref(0)
+  const dragStartPos = ref<{ x: number; y: number } | null>(null)
+  const dragKind = ref<string | null>(null)
   const openContextMenu = signal(false)
   const menuId = `note-menu-${itemKey}`
   const showHelp = signal(false)
@@ -101,6 +103,7 @@ export function NoteCard(props: NoteCardProps) {
     if (e && e.button !== 0 && e.buttons !== 0) return
     e?.preventDefault()
     pressed.value = false
+    dragKind.current = null
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
   }
@@ -113,6 +116,8 @@ export function NoteCard(props: NoteCardProps) {
     e.preventDefault()
     offsetX.current = e.pageX - item.value.position.x
     offsetY.current = e.pageY - item.value.position.y
+    dragStartPos.current = { x: item.value.position.x, y: item.value.position.y }
+    dragKind.current = "move"
     pressed.value = true
     window.addEventListener('mousemove', _handleMouseMove)
     window.addEventListener('mouseup', _handleMouseUp)
@@ -138,6 +143,7 @@ export function NoteCard(props: NoteCardProps) {
     initialResizeY.current = e.pageY
     initialResizeW.current = item.value.dimensions.w
     initialResizeH.current = item.value.dimensions.h
+    dragKind.current = "resize"
     pressed.value = true
     window.addEventListener('mousemove', _handleResizeMove)
     window.addEventListener('mouseup', _handleResizeMouseUp)
@@ -146,6 +152,7 @@ export function NoteCard(props: NoteCardProps) {
   function _handleResizeMouseUp(e?: MouseEvent) {
     if (e && e.button !== 0 && e.buttons !== 0) return
     pressed.value = false
+    dragKind.current = null
     updateLocalStorage()
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
@@ -157,6 +164,24 @@ export function NoteCard(props: NoteCardProps) {
     } catch {
       return
     }
+  }
+
+  function _cancelDrag() {
+    if (!pressed.value) return
+    if (dragKind.current === "move" && dragStartPos.current) {
+      NotesSigal.default.updateNoteProperty(itemKey, 'position', { x: dragStartPos.current.x, y: dragStartPos.current.y })
+    } else if (dragKind.current === "resize") {
+      NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', { w: initialResizeW.current, h: initialResizeH.current })
+    }
+    _handleMouseUp()
+    _handleResizeMouseUp()
+  }
+
+  function _handleDragEscape(e: KeyboardEvent) {
+    if (e.key !== "Escape" || !pressed.value) return
+    e.preventDefault()
+    e.stopPropagation()
+    _cancelDrag()
   }
 
   function _disarmDrag() {
@@ -180,6 +205,7 @@ export function NoteCard(props: NoteCardProps) {
 
   activeDragDisarmers.add(_disarmDrag)
   window.addEventListener('blur', _disarmDrag)
+  window.addEventListener('keydown', _handleDragEscape, true)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
   document.addEventListener('focusin', _handleFocusIn)
@@ -193,6 +219,7 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('pagehide', flushLocalStorage)
     document.removeEventListener('focusin', _handleFocusIn)
     window.removeEventListener('blur', _disarmDrag)
+    window.removeEventListener('keydown', _handleDragEscape, true)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
   })
