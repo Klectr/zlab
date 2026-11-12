@@ -114,7 +114,6 @@ export default function InfiniteCanvas() {
       <>
         <Logo />
         <CardSelector />
-        <MiniMap />
 
         <main aria-label="Board">
         <div
@@ -156,6 +155,7 @@ export default function InfiniteCanvas() {
           </div>
         </div>
         </main>
+        <MiniMap />
       </>
     )
   }
