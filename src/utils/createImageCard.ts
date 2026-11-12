@@ -4,6 +4,23 @@ import { CardTypes } from "../types"
 import { cascadeSpawnPosition } from "./cascadeSpawnPosition"
 import { isValidImageContents, updateLocalStorage } from "./localStorage"
 
+export function imageFileFromDataUrl(dataUrl: string): File | null {
+  const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.trim())
+  if (!match) return null
+  try {
+    const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0))
+    return new File([bytes], "pasted-image", { type: match[1] })
+  } catch {
+    return null
+  }
+}
+
+export function imageFilesFromHtml(html: string): File[] {
+  return Array.from(html.matchAll(/<img[^>]+src=(?:"(data:image\/[^"]+)"|'(data:image\/[^']+)'|(data:image\/[^\s>]+))/gi))
+    .map((m) => imageFileFromDataUrl(m[1] ?? m[2] ?? m[3] ?? ""))
+    .filter((f): f is File => !!f)
+}
+
 export function createImageCardFromFile(
   file: File,
   position: { x: number; y: number },
