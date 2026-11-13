@@ -38,6 +38,13 @@ const editorThemeSpec = {
   ".cm-line": { padding: "0 4px" },
 }
 
+const editorThemeSpecFor = (dark: boolean) => dark ? {
+  ...editorThemeSpec,
+  ".cm-panels-top": { borderBottom: "1px solid #808080" },
+  ".cm-panels-bottom": { borderTop: "1px solid #808080" },
+  ".cm-textfield": { border: "1px solid #808080" },
+} : editorThemeSpec
+
 const highlightStyleFor = (dark: boolean) => HighlightStyle.define([
   { tag: [tags.heading1, tags.heading2, tags.heading3, tags.heading4, tags.heading5, tags.heading6], textTransform: "uppercase", fontWeight: "bold" },
   { tag: tags.processingInstruction, color: dark ? "#3b82f6" : "#1d4ed8" },
@@ -78,7 +85,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
     view?.dispatch({
       effects: [
         themeCompartment.reconfigure(
-          EditorView.theme(editorThemeSpec, { dark })
+          EditorView.theme(editorThemeSpecFor(dark), { dark })
         ),
         highlightCompartment.reconfigure(
           syntaxHighlighting(highlightStyleFor(dark))
@@ -105,7 +112,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           search(),
           markdown(),
           highlightCompartment.of(syntaxHighlighting(highlightStyleFor(isDarkTheme.value))),
-          themeCompartment.of(EditorView.theme(editorThemeSpec, { dark: isDarkTheme.value })),
+          themeCompartment.of(EditorView.theme(editorThemeSpecFor(isDarkTheme.value), { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
           labelCompartment.of(EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel })),
           EditorView.domEventHandlers({
