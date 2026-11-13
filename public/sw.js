@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v14"
+const CACHE_NAME = "zlab-v15"
 
 function offlinePageResponse() {
   return new Response(
@@ -78,6 +78,19 @@ async function pruneStaleAssets() {
     const { refs: keepCssRefs } = await cssRefs(cache, keep)
     for (const ref of keepCssRefs) keep.add(ref)
     const requests = await cache.keys()
+    let derivedMissing = false
+    for (const ref of keepCssRefs) {
+      if (!(await cache.match(ref))) derivedMissing = true
+    }
+    if (derivedMissing) {
+      const staleCss = new Set(
+        requests
+          .map((request) => new URL(request.url).pathname)
+          .filter((path) => path.endsWith(".css") && !keep.has(path))
+      )
+      const { refs: staleCssRefs } = await cssRefs(cache, staleCss)
+      for (const ref of staleCssRefs) keep.add(ref)
+    }
     await Promise.all(
       requests
         .filter((request) => {
