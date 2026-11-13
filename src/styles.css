@@ -23,6 +23,10 @@
   outline-offset: 2px;
 }
 
+.toast button:focus-visible {
+  outline-color: #fff;
+}
+
 .text-p:focus-visible {
   outline: none;
 }
