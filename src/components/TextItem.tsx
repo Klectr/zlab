@@ -662,7 +662,7 @@ export function TextItem(props: TextCardProps) {
       </div >
 
         <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Text menu${nameSuffix}`} menuId={menuId}>
-          <div className="bg-[#3c3c3c] flex flex-col rounded">
+          <div className="bg-[#3c3c3c] flex flex-col rounded dark:border dark:border-[#5c5c5c]">
             <div className="flex justify-between items-center">
               <div className="text-md text-[#b3b3b3] px-2 py-1">
                 {menuTitle}
