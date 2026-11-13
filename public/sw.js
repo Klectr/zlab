@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v15"
+const CACHE_NAME = "zlab-v16"
 
 function offlinePageResponse() {
   return new Response(
@@ -160,7 +160,14 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+          keys
+            .filter(
+              (key) =>
+                key !== CACHE_NAME &&
+                key.startsWith(CACHE_NAME.replace(/\d+$/, "")) &&
+                !key.endsWith("-staging")
+            )
+            .map((key) => caches.delete(key))
         )
       )
       .then(() => pruneStaleAssets())
