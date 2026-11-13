@@ -2,7 +2,7 @@ import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor } 
 import { Compartment, EditorState } from "@codemirror/state"
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
-import { search, searchKeymap } from "@codemirror/search"
+import { highlightSelectionMatches, search, searchKeymap } from "@codemirror/search"
 import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } from "@codemirror/language"
 import { tags } from "@lezer/highlight"
 import { effect, onCleanup, onMount, ref, setup } from "kiru"
@@ -34,6 +34,7 @@ const editorThemeSpec = {
   ".cm-selectionBackground": { backgroundColor: "#3d8ccc" },
   "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground": { backgroundColor: "#3d8ccc" },
   ".cm-content ::selection": { backgroundColor: "#3d8ccc" },
+  ".cm-selectionMatch": { backgroundColor: "#3d8ccc66" },
   ".cm-scroller": { overflow: "auto", fontFamily: "inherit" },
   ".cm-content": { caretColor: "auto", padding: "4px 0" },
   ".cm-line": { padding: "0 4px" },
@@ -111,6 +112,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           bracketMatching(),
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           search(),
+          highlightSelectionMatches(),
           markdown(),
           highlightCompartment.of(syntaxHighlighting(highlightStyleFor(isDarkTheme.value))),
           themeCompartment.of(EditorView.theme(editorThemeSpecFor(isDarkTheme.value), { dark: isDarkTheme.value })),
