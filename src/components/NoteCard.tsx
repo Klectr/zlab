@@ -460,7 +460,7 @@ export function NoteCard(props: NoteCardProps) {
           <ContextMenuPortal open={openContextMenu} closeAction={_handleContextClose} label={`Note menu${nameSuffix}`} menuId={menuId}>
             <div className="bg-[#3c3c3c] flex flex-col rounded">
               <div className="flex justify-between items-center">
-                <div className="text-md text-[#999] px-2 py-1">
+                <div className="text-md text-[#b3b3b3] px-2 py-1">
                   {menuTitle}
                 </div>
               </div>
@@ -470,12 +470,12 @@ export function NoteCard(props: NoteCardProps) {
               <div>
                 <ul role="none">
                   <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button type="button" role="menuitem" aria-label={`Delete note${nameSuffix}`} onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button type="button" role="menuitem" aria-label={`Delete note${nameSuffix}`} onclick={_handleClose} className="w-full text-left px-2 py-1 text-md text-[#b3b3b3] group-hover:text-black dark:group-hover:text-[#b3b3b3]">
                       Delete
                     </button>
                   </li>
                   <li role="none" className="group flex items-center hover:bg-[#fff] dark:hover:bg-[#1a1a1a] cursor-pointer">
-                    <button type="button" role="menuitem" aria-label={`Export note${nameSuffix}`} onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#999] group-hover:text-black dark:group-hover:text-[#999]">
+                    <button type="button" role="menuitem" aria-label={`Export note${nameSuffix}`} onclick={_handleContextExportClick} className="w-full text-left px-2 py-1 text-md text-[#b3b3b3] group-hover:text-black dark:group-hover:text-[#b3b3b3]">
                       Export
                     </button>
                   </li>
