@@ -695,6 +695,7 @@ export function TextItem(props: TextCardProps) {
             <div className="flex flex-col text-sm dark:text-[#999] text-black">
               <small>ctrl/cmd + del = delete</small>
               <small>ctrl/cmd + back = delete</small>
+              <small>ctrl/cmd + s = save</small>
               <small>arrow keys = move card (shift = 50px)</small>
               <small>alt + arrow keys = resize font (shift = 50px)</small>
             </div>
