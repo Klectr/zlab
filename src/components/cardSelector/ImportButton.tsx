@@ -111,7 +111,11 @@ export function ImportButton() {
       reader.readAsDataURL(file)
       reader.onload = function(readerEvent) {
         let content = readerEvent.target?.result;
-        content = (content as string).split(',')[1]
+        if (typeof content !== "string") {
+          toast.showToast("error", "Could not import that file.")
+          return
+        }
+        content = content.split(',')[1]
         const entries = parseImportData(convertBase64ToJson(content))
         if (!entries) {
           toast.showToast("error", "Could not import that file.")
