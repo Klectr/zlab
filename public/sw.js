@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v16"
+const CACHE_NAME = "zlab-v17"
 
 function offlinePageResponse() {
   return new Response(
@@ -144,9 +144,14 @@ self.addEventListener("install", (event) => {
       const ordered = [...requests].sort(
         (a, b) => Number(isShellEntry(a)) - Number(isShellEntry(b))
       )
-      for (const request of ordered) {
-        const response = await staging.match(request)
-        if (response) await live.put(request, response)
+      try {
+        for (const request of ordered) {
+          const response = await staging.match(request)
+          if (response) await live.put(request, response)
+        }
+      } catch (err) {
+        await caches.delete(stagingName).catch(() => {})
+        throw err
       }
       await caches.delete(stagingName).catch(() => {})
       await self.skipWaiting()
