@@ -578,6 +578,7 @@ export function TextItem(props: TextCardProps) {
     if (focusedItem.value !== itemKey) return
 
     function _handleClick(e: MouseEvent) {
+      if (e.button !== 0) return
       if (focusedItem.value !== itemKey) return
       const target = e.target as HTMLElement
 

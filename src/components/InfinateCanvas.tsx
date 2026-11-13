@@ -158,6 +158,7 @@ export default function InfiniteCanvas() {
             className="dark:bg-black absolute top-0 left-0"
             ref={containerRef}
             onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {
+              if (e.button !== 0) return
               if (e.target === containerRef.current) focusedItem.value = null
             }}
             style={{
