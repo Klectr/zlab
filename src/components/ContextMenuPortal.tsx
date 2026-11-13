@@ -153,6 +153,26 @@ export function ContextMenuPortal({
         e.stopImmediatePropagation()
         return
       }
+      if (e.key === "Tab") {
+        const el = elRef.current
+        const active = document.activeElement as HTMLElement | null
+        if (!el || !active || !el.contains(active)) return
+        const trigger = Array.from(
+          document.querySelectorAll("[data-menu-trigger]")
+        ).find(
+          (t) => t.getAttribute("data-menu-trigger") === menuId
+        ) as HTMLElement | undefined
+        if (trigger) trigger.focus({ preventScroll: true })
+        return
+      }
+      if (e.key === " " || e.key === "PageUp" || e.key === "PageDown") {
+        const el = elRef.current
+        const active = document.activeElement as HTMLElement | null
+        if (!el || !active) return
+        if (e.key === " " ? active === el : el.contains(active))
+          e.preventDefault()
+        return
+      }
       if (
         e.key !== "ArrowDown" &&
         e.key !== "ArrowUp" &&
