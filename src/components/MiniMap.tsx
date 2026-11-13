@@ -53,7 +53,7 @@ export function MiniMap() {
           if (e.button !== 0) return
           if (e.target === e.currentTarget) focusedItem.value = null
         }}
-        className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded"
+        className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded border border-[#5c5c5c]"
         style={{
           width: `${width}px`,
           height: `${height}px`,
