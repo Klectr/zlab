@@ -525,13 +525,13 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
-    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 's' || e.key === 'S')) {
       e.preventDefault()
       flushLocalStorage()
       return
     }
     if (e.repeat) return
-    if (!e.ctrlKey && !e.metaKey) return
+    if ((!e.ctrlKey && !e.metaKey) || e.altKey) return
     if (e.key !== 'Delete' && e.key !== 'Backspace') return
     const target = e.target as HTMLElement | null
     const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal")
