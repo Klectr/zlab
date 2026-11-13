@@ -47,6 +47,14 @@ const editorThemeSpecFor = (dark: boolean) => dark ? {
   ".cm-textfield": { border: "1px solid #808080" },
 } : editorThemeSpec
 
+const contentAttributesFor = (label: string) =>
+  EditorView.contentAttributes.of({
+    spellcheck: "true",
+    autocapitalize: "sentences",
+    autocorrect: "on",
+    "aria-label": label,
+  })
+
 const highlightStyleFor = (dark: boolean) => HighlightStyle.define([
   { tag: [tags.heading1, tags.heading2, tags.heading3, tags.heading4, tags.heading5, tags.heading6], textTransform: "uppercase", fontWeight: "bold" },
   { tag: tags.processingInstruction, color: dark ? "#3b82f6" : "#1d4ed8" },
@@ -76,9 +84,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
   effect(() => {
     const label = labelFor(titleProp.value)
     view?.dispatch({
-      effects: labelCompartment.reconfigure(
-        EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": label })
-      ),
+      effects: labelCompartment.reconfigure(contentAttributesFor(label)),
     })
   })
 
@@ -117,7 +123,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           highlightCompartment.of(syntaxHighlighting(highlightStyleFor(isDarkTheme.value))),
           themeCompartment.of(EditorView.theme(editorThemeSpecFor(isDarkTheme.value), { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
-          labelCompartment.of(EditorView.contentAttributes.of({ spellcheck: "true", "aria-label": ariaLabel })),
+          labelCompartment.of(contentAttributesFor(ariaLabel)),
           EditorView.domEventHandlers({
             paste: (event) => {
               if (!onPasteImage) return false
