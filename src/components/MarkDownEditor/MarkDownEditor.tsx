@@ -1,4 +1,4 @@
-import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor } from "@codemirror/view"
+import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor, placeholder } from "@codemirror/view"
 import { Compartment, EditorState } from "@codemirror/state"
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
@@ -35,6 +35,7 @@ const editorThemeSpec = {
   "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground": { backgroundColor: "#3d8ccc" },
   ".cm-content ::selection": { backgroundColor: "#3d8ccc" },
   ".cm-selectionMatch": { backgroundColor: "#3d8ccc66" },
+  ".cm-placeholder": { color: "#767676" },
   ".cm-scroller": { overflow: "auto", fontFamily: "inherit" },
   ".cm-content": { caretColor: "auto", padding: "4px 0" },
   ".cm-line": { padding: "0 4px" },
@@ -119,6 +120,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           search(),
           highlightSelectionMatches(),
+          placeholder("Type here…"),
           markdown(),
           highlightCompartment.of(syntaxHighlighting(highlightStyleFor(isDarkTheme.value))),
           themeCompartment.of(EditorView.theme(editorThemeSpecFor(isDarkTheme.value), { dark: isDarkTheme.value })),
