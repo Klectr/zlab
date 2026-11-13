@@ -50,6 +50,7 @@ export function MiniMap() {
         role="region"
         aria-label="Minimap"
         onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {
+          if (e.button !== 0) return
           if (e.target === e.currentTarget) focusedItem.value = null
         }}
         className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded"
