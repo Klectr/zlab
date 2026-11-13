@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v17"
+const CACHE_NAME = "zlab-v18"
 
 function offlinePageResponse() {
   return new Response(
@@ -68,52 +68,19 @@ async function pruneSupersededAssets(previousHtml, newHtml) {
   } catch {}
 }
 
-async function pruneStaleAssets() {
-  try {
-    const cache = await caches.open(CACHE_NAME)
-    const shell = await cache.match("/index.html")
-    const html = shell ? await shell.text() : ""
-    const keep = assetRefs(html)
-    if (keep.size === 0) return
-    const { refs: keepCssRefs } = await cssRefs(cache, keep)
-    for (const ref of keepCssRefs) keep.add(ref)
-    const requests = await cache.keys()
-    let derivedMissing = false
-    for (const ref of keepCssRefs) {
-      if (!(await cache.match(ref))) derivedMissing = true
-    }
-    if (derivedMissing) {
-      const staleCss = new Set(
-        requests
-          .map((request) => new URL(request.url).pathname)
-          .filter((path) => path.endsWith(".css") && !keep.has(path))
-      )
-      const { refs: staleCssRefs } = await cssRefs(cache, staleCss)
-      for (const ref of staleCssRefs) keep.add(ref)
-    }
-    await Promise.all(
-      requests
-        .filter((request) => {
-          const path = new URL(request.url).pathname
-          return path.startsWith("/assets/") && !keep.has(path)
-        })
-        .map((request) => cache.delete(request))
-    )
-  } catch {}
-}
-
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const stagingName = CACHE_NAME + "-staging"
       await caches.delete(stagingName).catch(() => {})
       const staging = await caches.open(stagingName)
+      let newHtml = ""
       try {
         await staging.addAll(APP_SHELL)
         await Promise.all(OPTIONAL_SHELL.map((u) => staging.add(u).catch(() => {})))
         const shell = await staging.match("/index.html")
-        const html = shell ? await shell.text() : ""
-        const assets = [...assetRefs(html)]
+        newHtml = shell ? await shell.text() : ""
+        const assets = [...assetRefs(newHtml)]
         await Promise.all(assets.map((a) => staging.add(a)))
         try {
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
@@ -132,6 +99,11 @@ self.addEventListener("install", (event) => {
         throw err
       }
       const live = await caches.open(CACHE_NAME)
+      let previousHtml = ""
+      try {
+        const previous = await live.match("/index.html")
+        previousHtml = previous ? await previous.text() : ""
+      } catch {}
       const requests = await staging.keys()
       const isShellEntry = (request) => {
         try {
@@ -154,6 +126,7 @@ self.addEventListener("install", (event) => {
         throw err
       }
       await caches.delete(stagingName).catch(() => {})
+      await pruneSupersededAssets(previousHtml, newHtml)
       await self.skipWaiting()
     })()
   )
@@ -175,7 +148,6 @@ self.addEventListener("activate", (event) => {
             .map((key) => caches.delete(key))
         )
       )
-      .then(() => pruneStaleAssets())
       .then(() => self.clients.claim())
   )
 })
