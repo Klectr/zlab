@@ -7,6 +7,7 @@ import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } fr
 import { tags } from "@lezer/highlight"
 import { effect, onCleanup, onMount, ref, setup } from "kiru"
 import { initThemeDetector, isDarkTheme } from "../../utils/useThemeDetector"
+import { imageFilesFromHtml } from "../../utils/createImageCard"
 
 export interface MarkDownEditorChange {
   content: string
@@ -125,6 +126,10 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   .map((i) => i.getAsFile())
                   .filter((f): f is File => !!f)
               }
+              if (!files.length && event.clipboardData && typeof event.clipboardData.getData === "function") {
+                const html = event.clipboardData.getData("text/html")
+                if (/<img[\s/>]/i.test(html)) files = imageFilesFromHtml(html)
+              }
               if (!files.length) return false
               onPasteImage(files)
               const dt = event.clipboardData
@@ -149,6 +154,10 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
                   .map((i) => i.getAsFile())
                   .filter((f): f is File => !!f)
+              }
+              if (!files.length && event.dataTransfer && typeof event.dataTransfer.getData === "function") {
+                const html = event.dataTransfer.getData("text/html")
+                if (/<img[\s/>]/i.test(html)) files = imageFilesFromHtml(html)
               }
               if (!files.length) {
                 const hasFiles = (event.dataTransfer?.files?.length ?? 0) > 0 ||
