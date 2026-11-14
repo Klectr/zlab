@@ -366,7 +366,11 @@ export function TextItem(props: TextCardProps) {
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
-    mouse.value = { x: e.clientX, y: e.clientY }
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = {
+      x: e.clientX !== 0 ? e.clientX : rect.left,
+      y: e.clientY !== 0 ? e.clientY : rect.top,
+    }
     openContextMenu.value = !openContextMenu.value
   }
 
