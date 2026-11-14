@@ -12,7 +12,7 @@ import { createFileAndExport } from "../utils/createFileAndExport"
 import { createImageCardFromFile } from "../utils/createImageCard"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { consumeEditorFocus } from "../utils/editorFocus"
-import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
+import { arrowKeyMovePosition, arrowKeyResizeDimensions, scrollCardIntoView } from "../utils/keyboardMove"
 import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
@@ -378,6 +378,7 @@ export function NoteCard(props: NoteCardProps) {
     e.preventDefault()
     NotesSigal.default.updateNoteProperty(itemKey, 'position', newPos)
     updateLocalStorage()
+    scrollCardIntoView(newPos, item.value.dimensions)
   }
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
@@ -387,6 +388,7 @@ export function NoteCard(props: NoteCardProps) {
     e.preventDefault()
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
     updateLocalStorage()
+    scrollCardIntoView(item.value.position, newDim)
   }
 
   effect(() => {
