@@ -5,7 +5,7 @@ import { cascadeSpawnPosition } from "./cascadeSpawnPosition"
 import { isValidImageContents, updateLocalStorage } from "./localStorage"
 
 export function imageFileFromDataUrl(dataUrl: string): File | null {
-  const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.trim())
+  const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.replace(/\s/g, ""))
   if (!match) return null
   try {
     const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0))
