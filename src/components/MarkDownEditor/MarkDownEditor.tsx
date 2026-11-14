@@ -176,6 +176,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 return hasFiles
               }
               event.preventDefault()
+              editorView.focus()
               const dt = event.dataTransfer
               let text = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
               if (text) {
@@ -197,7 +198,8 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (text) {
                 editorView.dispatch({
                   changes: { from: pos, insert: text },
-                  selection: { anchor: pos + text.length },
+                  selection: { anchor: pos, head: pos + text.length },
+                  userEvent: "input.drop",
                 })
               }
               return true
