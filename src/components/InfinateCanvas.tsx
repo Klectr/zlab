@@ -114,11 +114,16 @@ export default function InfiniteCanvas() {
           }
         }
       }
+      const focusBeforeDrop = focusedItem.value
+      const elementBeforeDrop = document.activeElement
       files.forEach((file, i) => {
         createImageCardFromFile(file, {
           x: Math.max(0, e.pageX - 100 + i * 24),
           y: Math.max(0, e.pageY - 100 + i * 24)
-        }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+        }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"), () => {
+          const active = document.activeElement
+          if (active && active !== document.body && active === elementBeforeDrop) focusedItem.value = focusBeforeDrop
+        })
       })
     }
 
