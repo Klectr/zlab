@@ -166,6 +166,7 @@ export function ContextMenuPortal({
         return
       }
       if (e.key === " " || e.key === "PageUp" || e.key === "PageDown") {
+        if (e.ctrlKey || e.metaKey || e.altKey) return
         const el = elRef.current
         const active = document.activeElement as HTMLElement | null
         if (!el || !active) return
@@ -180,6 +181,7 @@ export function ContextMenuPortal({
         e.key !== "End"
       )
         return
+      if (e.ctrlKey || e.metaKey || e.altKey) return
       const el = elRef.current
       if (!el) return
       const active = document.activeElement as HTMLElement | null
