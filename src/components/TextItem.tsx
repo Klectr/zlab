@@ -9,7 +9,7 @@ import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
-import { arrowKeyMovePosition, arrowKeyResizeFontSize } from "../utils/keyboardMove"
+import { arrowKeyMovePosition, arrowKeyResizeFontSize, scrollCardIntoView } from "../utils/keyboardMove"
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
@@ -547,6 +547,7 @@ export function TextItem(props: TextCardProps) {
     e.preventDefault()
     TextSignal.default.updateTextProperty(itemKey, 'position', newPos)
     updateLocalStorage()
+    scrollCardIntoView(newPos, item.value.dimensions)
   }
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
@@ -556,6 +557,11 @@ export function TextItem(props: TextCardProps) {
     e.preventDefault()
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
     updateLocalStorage()
+    const scale = item.value.fontSize > 0 ? newFontSize / item.value.fontSize : 1
+    scrollCardIntoView(item.value.position, {
+      w: item.value.dimensions.w * scale,
+      h: item.value.dimensions.h * scale,
+    })
   }
 
   effect(() => {

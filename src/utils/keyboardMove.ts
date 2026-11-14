@@ -110,3 +110,23 @@ export function arrowKeyResizeFontSize(
   const candidate = Math.floor(fontSize + step)
   return Math.max(fontCap >= 10 ? 10 : Math.max(1, fontCap), Math.min(candidate, fontCap))
 }
+
+export function scrollCardIntoView(
+  position: { x: number; y: number },
+  dimensions: { w: number; h: number }
+) {
+  const viewportWidth = document.documentElement.clientWidth || window.innerWidth
+  const viewportHeight = document.documentElement.clientHeight || window.innerHeight
+  let left = window.scrollX
+  let top = window.scrollY
+  if (dimensions.w > viewportWidth) left = position.x
+  else if (position.x < left) left = position.x
+  else if (position.x + dimensions.w > left + viewportWidth)
+    left = position.x + dimensions.w - viewportWidth
+  if (dimensions.h > viewportHeight) top = position.y
+  else if (position.y < top) top = position.y
+  else if (position.y + dimensions.h > top + viewportHeight)
+    top = position.y + dimensions.h - viewportHeight
+  if (left === window.scrollX && top === window.scrollY) return
+  window.scrollTo({ left: Math.max(0, left), top: Math.max(0, top) })
+}

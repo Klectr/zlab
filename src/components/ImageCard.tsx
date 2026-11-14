@@ -13,7 +13,7 @@ import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
-import { arrowKeyMovePosition, arrowKeyResizeDimensions } from "../utils/keyboardMove"
+import { arrowKeyMovePosition, arrowKeyResizeDimensions, scrollCardIntoView } from "../utils/keyboardMove"
 import { CardTypes } from "../types"
 import { cardSnippet, imageCardName } from "../utils/cardName"
 import { MenuIcon } from "./icons/MenuIcon"
@@ -256,6 +256,7 @@ export function ImageCard(props: ImageCardProps) {
     e.preventDefault()
     ImagesSignal.default.updateImageProperty(itemKey, 'position', newPos)
     debounceLSUpdate()
+    scrollCardIntoView(newPos, item.value.dimensions)
   }
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
@@ -265,6 +266,7 @@ export function ImageCard(props: ImageCardProps) {
     e.preventDefault()
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
     debounceLSUpdate()
+    scrollCardIntoView(item.value.position, newDim)
   }
 
   effect(() => {
