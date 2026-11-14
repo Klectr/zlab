@@ -38,12 +38,16 @@ export function MiniMap() {
     )
     const width = canvasDimentsion.value.width / scaleFactor
     const height = canvasDimentsion.value.height / scaleFactor
+    const innerWidth = Math.max(1, width - 2)
+    const innerHeight = Math.max(1, height - 2)
+    const scaleX = canvasDimentsion.value.width / innerWidth
+    const scaleY = canvasDimentsion.value.height / innerHeight
     const xPos = Math.max(0, viewportWidth - width - _MAP_OFFSET)
     const yPos = Math.max(0, viewportHeight - height - _MAP_OFFSET)
-    const indicatorWidth = viewportWidth / scaleFactor
-    const indicatorHeight = viewportHeight / scaleFactor
-    const indicatorTop = Math.max(0, Math.min(scrollY.value / scaleFactor, height - indicatorHeight))
-    const indicatorLeft = Math.max(0, Math.min(scrollX.value / scaleFactor, width - indicatorWidth))
+    const indicatorWidth = viewportWidth / scaleX
+    const indicatorHeight = viewportHeight / scaleY
+    const indicatorTop = Math.max(0, Math.min(scrollY.value / scaleY, innerHeight - indicatorHeight))
+    const indicatorLeft = Math.max(0, Math.min(scrollX.value / scaleX, innerWidth - indicatorWidth))
 
     return (
       <div
@@ -75,10 +79,10 @@ export function MiniMap() {
             })
           }
 
-          const newWidth = note.dimensions.w / scaleFactor
-          const newHeight = note.dimensions.h / scaleFactor
-          const newTop = Math.max(0, Math.min(note.position.y / scaleFactor, height - newHeight))
-          const newLeft = Math.max(0, Math.min(note.position.x / scaleFactor, width - newWidth))
+          const newWidth = note.dimensions.w / scaleX
+          const newHeight = note.dimensions.h / scaleY
+          const newTop = Math.max(0, Math.min(note.position.y / scaleY, innerHeight - newHeight))
+          const newLeft = Math.max(0, Math.min(note.position.x / scaleX, innerWidth - newWidth))
           const newZIndex = focusedItem.value === noteKey ? LayerEnum.MINIMAP + 2 : LayerEnum.MINIMAP + 1
 
           return (
@@ -111,10 +115,10 @@ export function MiniMap() {
             })
           }
 
-          const newWidth = image.dimensions.w / scaleFactor
-          const newHeight = image.dimensions.h / scaleFactor
-          const newTop = Math.max(0, Math.min(image.position.y / scaleFactor, height - newHeight))
-          const newLeft = Math.max(0, Math.min(image.position.x / scaleFactor, width - newWidth))
+          const newWidth = image.dimensions.w / scaleX
+          const newHeight = image.dimensions.h / scaleY
+          const newTop = Math.max(0, Math.min(image.position.y / scaleY, innerHeight - newHeight))
+          const newLeft = Math.max(0, Math.min(image.position.x / scaleX, innerWidth - newWidth))
           const newZIndex = focusedItem.value === imageKey ? LayerEnum.MINIMAP + 2 : LayerEnum.MINIMAP + 1
 
           return (
@@ -144,10 +148,10 @@ export function MiniMap() {
             })
           }
 
-          const newWidth = text.dimensions.w / scaleFactor
-          const newHeight = text.dimensions.h / scaleFactor
-          const newTop = Math.max(0, Math.min(text.position.y / scaleFactor, height - newHeight))
-          const newLeft = Math.max(0, Math.min(text.position.x / scaleFactor, width - newWidth))
+          const newWidth = text.dimensions.w / scaleX
+          const newHeight = text.dimensions.h / scaleY
+          const newTop = Math.max(0, Math.min(text.position.y / scaleY, innerHeight - newHeight))
+          const newLeft = Math.max(0, Math.min(text.position.x / scaleX, innerWidth - newWidth))
           const snippet = text.contents.replace(/\s+/g, " ").trim()
           const textLabel = snippet ? `Scroll to text item: ${snippet.slice(0, 40)}${snippet.length > 40 ? "…" : ""}` : "Scroll to text item"
 
