@@ -86,6 +86,22 @@ export default function InfiniteCanvas() {
         e.preventDefault()
         files = imageFilesFromHtml(html)
         if (!files.length) {
+          const residualText = html
+            .replace(/<img[\s/>][^>]*>/gi, "")
+            .replace(/<[^>]+>/g, "")
+            .replace(/&[a-z#0-9]+;/gi, " ")
+            .trim()
+          if (residualText) return
+          const plain = dt && typeof dt.getData === "function" ? dt.getData("text/plain") : ""
+          const plainTrim = plain.trim()
+          if (plainTrim) {
+            const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+            const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
+            const isLoneUri = !/[\r\n]/.test(plainTrim) && (plainTrim === firstUri || /^(https?|data|blob):\S+$/i.test(plainTrim))
+            const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
+            const allFileUri = lines.length > 0 && lines.every((l) => l.startsWith("file://"))
+            if (!isLoneUri && !allFileUri) return
+          }
           toast.showToast("error", "Could not load that image!")
           return
         }
