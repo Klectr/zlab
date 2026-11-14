@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v20"
+const CACHE_NAME = "zlab-v21"
 
 function offlinePageResponse() {
   return new Response(
@@ -165,6 +165,7 @@ self.addEventListener("fetch", (event) => {
       fetch(request)
         .then(async (response) => {
           if (!response.ok) {
+            if (response.type === "opaqueredirect") return response
             const cachedShell = await caches.match("/index.html")
             if (cachedShell) return cachedShell
             return response
