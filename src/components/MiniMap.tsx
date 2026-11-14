@@ -51,6 +51,7 @@ export function MiniMap() {
 
     return (
       <div
+        id="minimap"
         role="region"
         aria-label="Minimap"
         onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {

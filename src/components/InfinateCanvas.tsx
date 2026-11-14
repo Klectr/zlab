@@ -66,6 +66,10 @@ export default function InfiniteCanvas() {
 
     function _handleFileDrop(e: DragEvent) {
       const target = e.target as HTMLElement | null
+      if (target?.closest?.("#minimap, #card-selector")) {
+        e.preventDefault()
+        return
+      }
       const dt = e.dataTransfer
       let allFiles = Array.from(dt?.files ?? [])
       if (!allFiles.length && dt) {
