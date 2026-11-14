@@ -552,12 +552,13 @@ export function TextItem(props: TextCardProps) {
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
-    const newFontSize = arrowKeyResizeFontSize(e, item.value.fontSize, item.value.dimensions, item.value.position, canvasDimentsion.value)
+    const prevFontSize = item.value.fontSize
+    const newFontSize = arrowKeyResizeFontSize(e, prevFontSize, item.value.dimensions, item.value.position, canvasDimentsion.value)
     if (newFontSize === null) return
     e.preventDefault()
     TextSignal.default.updateTextProperty(itemKey, 'fontSize', newFontSize)
     updateLocalStorage()
-    const scale = item.value.fontSize > 0 ? newFontSize / item.value.fontSize : 1
+    const scale = prevFontSize > 0 ? newFontSize / prevFontSize : 1
     scrollCardIntoView(item.value.position, {
       w: item.value.dimensions.w * scale,
       h: item.value.dimensions.h * scale,
