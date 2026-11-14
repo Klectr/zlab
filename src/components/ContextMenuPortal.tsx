@@ -159,7 +159,10 @@ export function ContextMenuPortal({
     for (const close of [...closeHandlers]) {
       if (close !== closeSelf) close()
     }
-    pos.value = untrack(() => ({ x: mouse.value.x, y: mouse.value.y }))
+    pos.value = untrack(() => ({
+      x: Math.max(0, mouse.value.x),
+      y: Math.max(0, mouse.value.y),
+    }))
     function _handleMenuKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         closeAction?.()
@@ -267,8 +270,8 @@ export function ContextMenuPortal({
         ready.value = true
       } else {
         untrack(() => {
-          const x = Math.min(pos.value.x, Math.max(0, window.innerWidth - rect.width))
-          const y = Math.min(pos.value.y, Math.max(0, window.innerHeight - rect.height))
+          const x = Math.max(0, Math.min(pos.value.x, Math.max(0, window.innerWidth - rect.width)))
+          const y = Math.max(0, Math.min(pos.value.y, Math.max(0, window.innerHeight - rect.height)))
           if (x !== pos.value.x || y !== pos.value.y) pos.value = { x, y }
         })
         ready.value = true
