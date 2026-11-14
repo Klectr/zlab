@@ -59,13 +59,16 @@ export function ContextMenuPortal({
   onMount(() => {
     closeHandlers.add(closeSelf)
     let pointerStartedOutside = true
+    let pointerStartedInsideMenu = false
     function _handlePointerDown(e: PointerEvent) {
       if (eventHitsOwnMenuTrigger(e, menuId)) {
         pointerStartedOutside = false
+        pointerStartedInsideMenu = false
         return
       }
       const el = elRef.current
-      pointerStartedOutside = !!el && !e.composedPath().includes(el)
+      pointerStartedInsideMenu = !!el && e.composedPath().includes(el)
+      pointerStartedOutside = !!el && !pointerStartedInsideMenu
       if (el && pointerStartedOutside) closeAction?.()
     }
     function _handleClickOutside(e: MouseEvent) {
@@ -73,10 +76,11 @@ export function ContextMenuPortal({
       const el = elRef.current
       if (!el || e.target === el || e.composedPath().includes(el)) return
       if (e.detail === 0) pointerStartedOutside = true
-      if (!pointerStartedOutside) {
+      if (!pointerStartedOutside && !pointerStartedInsideMenu) {
         pointerStartedOutside = true
         return
       }
+      pointerStartedInsideMenu = false
       closeAction?.()
     }
     function _handleContextMenuOutside(e: MouseEvent) {
