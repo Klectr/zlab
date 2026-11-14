@@ -1,4 +1,4 @@
-import { canvasDimentsion } from "../../signals"
+import { canvasDimentsion, focusedItem } from "../../signals"
 import { createImageCardFromFile } from "../../utils/createImageCard"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
@@ -27,7 +27,12 @@ export function ImageCardButton() {
     input.onchange = (e: Event) => {
       const el = e.target as HTMLInputElement
       if (!el.files?.length) return
-      createImageCardFromFile(el.files[0], spawn, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"))
+      const focusBeforePick = focusedItem.value
+      const elementBeforePick = document.activeElement
+      createImageCardFromFile(el.files[0], spawn, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"), () => {
+        const active = document.activeElement
+        if (active && active !== document.body && active === elementBeforePick) focusedItem.value = focusBeforePick
+      })
     }
     input.click()
   }
