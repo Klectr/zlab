@@ -5,7 +5,7 @@ import texts, { TextCardType } from "../signals/texts"
 import { LayerEnum } from "../utils/enums"
 import { Card, CardTypes } from "../types"
 import { useThemeDetector } from "../utils/useThemeDetector"
-import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
+import { ContextMenuPortal, isAnyContextMenuOpen, requestMenuItemFocus } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
@@ -425,6 +425,18 @@ export function TextItem(props: TextCardProps) {
     openContextMenu.value = !openContextMenu.value
   }
 
+  function _handleMenuButtonKeyDown(e: Kiru.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (openContextMenu.value) return
+    e.preventDefault()
+    e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = { x: rect.left, y: rect.bottom }
+    requestMenuItemFocus(menuId, e.key === "ArrowDown" ? "first" : "last")
+    openContextMenu.value = true
+  }
+
   function _handleContentInput(e: InputEvent) {
     const el = e.target as HTMLParagraphElement & Pick<HTMLInputElement, 'oninput'>
     const val = _joinChildText(Array.from(el.childNodes), true)
@@ -666,7 +678,7 @@ export function TextItem(props: TextCardProps) {
           </p>
         </pre>
 
-        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[12px]" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />

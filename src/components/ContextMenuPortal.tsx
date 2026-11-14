@@ -37,6 +37,15 @@ export function isAnyContextMenuOpen(): boolean {
   return openPortals.size > 0
 }
 
+const pendingItemFocus = new Map<string | undefined, "first" | "last">()
+
+export function requestMenuItemFocus(
+  menuId: string | undefined,
+  which: "first" | "last"
+) {
+  pendingItemFocus.set(menuId, which)
+}
+
 interface ContextMenuPortalProps {
   children: JSX.Children
   open: Signal<boolean>
@@ -256,17 +265,25 @@ export function ContextMenuPortal({
       const rect = el.getBoundingClientRect()
       if (rect.width === 0 && rect.height === 0) {
         ready.value = true
-        return
+      } else {
+        untrack(() => {
+          const x = Math.min(pos.value.x, Math.max(0, window.innerWidth - rect.width))
+          const y = Math.min(pos.value.y, Math.max(0, window.innerHeight - rect.height))
+          if (x !== pos.value.x || y !== pos.value.y) pos.value = { x, y }
+        })
+        ready.value = true
       }
-      untrack(() => {
-        const x = Math.min(pos.value.x, Math.max(0, window.innerWidth - rect.width))
-        const y = Math.min(pos.value.y, Math.max(0, window.innerHeight - rect.height))
-        if (x !== pos.value.x || y !== pos.value.y) pos.value = { x, y }
-      })
-      ready.value = true
+      const which = pendingItemFocus.get(menuId)
+      if (which) {
+        pendingItemFocus.delete(menuId)
+        const items = Array.from(el.querySelectorAll("button"))
+        const target = which === "first" ? items[0] : items[items.length - 1]
+        if (target) target.focus({ preventScroll: true })
+      }
     })
     return () => {
       openPortals.delete(open)
+      pendingItemFocus.delete(menuId)
       document.removeEventListener("keydown", _handleMenuKey)
       document.removeEventListener("focusin", _handleFocusIn)
       window.removeEventListener("scroll", _handleScroll, {

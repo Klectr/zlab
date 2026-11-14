@@ -3,12 +3,13 @@ interface MenuIconProps {
   expanded?: boolean
   controls?: string
   onClick: Kiru.MouseEventHandler<HTMLButtonElement>
+  onKeyDown?: Kiru.KeyboardEventHandler<HTMLButtonElement>
   buttonClass?: string
   iconClass?: string
   style?: Record<string, string>
 }
 
-export function MenuIcon({ label, expanded, controls, onClick, buttonClass, iconClass, style }: MenuIconProps) {
+export function MenuIcon({ label, expanded, controls, onClick, onKeyDown, buttonClass, iconClass, style }: MenuIconProps) {
   return (
     <button
       type="button"
@@ -18,6 +19,7 @@ export function MenuIcon({ label, expanded, controls, onClick, buttonClass, icon
       aria-controls={expanded ? controls : undefined}
       data-menu-trigger={controls ?? ""}
       onclick={onClick}
+      onkeydown={onKeyDown}
       className={buttonClass ?? "flex items-center"}
       style={style}
     >
