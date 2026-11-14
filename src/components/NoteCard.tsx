@@ -13,7 +13,7 @@ import { createImageCardFromFile } from "../utils/createImageCard"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions, scrollCardIntoView } from "../utils/keyboardMove"
-import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
+import { ContextMenuPortal, isAnyContextMenuOpen, requestMenuItemFocus } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { HelpIcon } from "./icons/HelpIcon"
@@ -299,6 +299,18 @@ export function NoteCard(props: NoteCardProps) {
     openContextMenu.value = !openContextMenu.value
   }
 
+  function _handleMenuButtonKeyDown(e: Kiru.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (openContextMenu.value) return
+    e.preventDefault()
+    e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = { x: rect.left, y: rect.bottom }
+    requestMenuItemFocus(menuId, e.key === "ArrowDown" ? "first" : "last")
+    openContextMenu.value = true
+  }
+
   function _handleHelpHover() {
     if (showHelp.value) return
     showHelp.value = true
@@ -444,7 +456,7 @@ export function NoteCard(props: NoteCardProps) {
                 <span role="status" className="sr-only">{saved.value ? "" : "Unsaved changes"}</span>
               </div>
               <div className="flex gap-2">
-                <MenuIcon label={`Note menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} />
+                <MenuIcon label={`Note menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} />
                 <button type="button" aria-label={`Export note${nameSuffix}`} onclick={_handleExportClick} className="flex items-center">
                   <ExportIcon
                     className="cursor-pointer w-4 h-4 text-[#767676] dark:text-[#9c9c9c] hover:text-blue-500 transition-color duration-300"

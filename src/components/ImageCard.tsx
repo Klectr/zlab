@@ -9,7 +9,7 @@ import {
   updateLocalStorage,
 } from "../utils/localStorage"
 import { useToast } from "./Toast"
-import { ContextMenuPortal, isAnyContextMenuOpen } from "./ContextMenuPortal"
+import { ContextMenuPortal, isAnyContextMenuOpen, requestMenuItemFocus } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
 import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
 import { findMinimapMarker, moveFocusToToolbarAfterDelete } from "../utils/focusAfterDelete"
@@ -342,6 +342,18 @@ export function ImageCard(props: ImageCardProps) {
     openContextMenu.value = !openContextMenu.value
   }
 
+  function _handleMenuButtonKeyDown(e: Kiru.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (openContextMenu.value) return
+    e.preventDefault()
+    e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    mouse.value = { x: rect.left, y: rect.bottom }
+    requestMenuItemFocus(menuId, e.key === "ArrowDown" ? "first" : "last")
+    openContextMenu.value = true
+  }
+
   return () => {
     const it = item.value
     const cardName = imageCardName(it.title)
@@ -370,7 +382,7 @@ export function ImageCard(props: ImageCardProps) {
         >
           <span role="img" aria-label={cardName || "Image"} className="sr-only"></span>
 
-          <MenuIcon label={`Image menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
+          <MenuIcon label={`Image menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
           <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`image-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show image shortcuts${nameSuffix}`} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-[24px] top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
