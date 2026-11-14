@@ -165,7 +165,7 @@ function ToastItem({
       <span className="toast-message pr-4">{toast.message}</span>
       <button
         type="button"
-        aria-label="Dismiss notification"
+        aria-label={`Dismiss notification: ${toast.message}`}
         onclick={onDismiss}
         onfocus={() => onPause("focus")}
         onblur={() => onResume("focus")}
