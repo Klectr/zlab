@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v18"
+const CACHE_NAME = "zlab-v19"
 
 function offlinePageResponse() {
   return new Response(
@@ -162,7 +162,12 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
-        .then((response) => {
+        .then(async (response) => {
+          if (!response.ok) {
+            const cachedShell = await caches.match("/index.html")
+            if (cachedShell) return cachedShell
+            return response
+          }
           const contentType = response.headers.get("content-type") ?? ""
           let isShellPath = false
           try {
