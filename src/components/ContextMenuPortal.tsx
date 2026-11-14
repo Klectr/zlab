@@ -223,6 +223,11 @@ export function ContextMenuPortal({
       if (el && e.target instanceof Node && el.contains(e.target)) return
       closeAction?.()
     }
+    function _handleWheel(e: Event) {
+      const el = elRef.current
+      if (el && e.target instanceof Node && el.contains(e.target)) return
+      closeAction?.()
+    }
     function _handleFocusIn(e: FocusEvent) {
       const el = elRef.current
       if (!el) return
@@ -235,6 +240,10 @@ export function ContextMenuPortal({
     document.addEventListener("keydown", _handleMenuKey)
     document.addEventListener("focusin", _handleFocusIn)
     window.addEventListener("scroll", _handleScroll, {
+      capture: true,
+      passive: true,
+    })
+    window.addEventListener("wheel", _handleWheel, {
       capture: true,
       passive: true,
     })
@@ -261,6 +270,9 @@ export function ContextMenuPortal({
       document.removeEventListener("keydown", _handleMenuKey)
       document.removeEventListener("focusin", _handleFocusIn)
       window.removeEventListener("scroll", _handleScroll, {
+        capture: true,
+      })
+      window.removeEventListener("wheel", _handleWheel, {
         capture: true,
       })
       window.removeEventListener("resize", _handleViewportChange)
