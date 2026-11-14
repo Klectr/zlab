@@ -51,6 +51,8 @@ function isValidEntry(item: unknown): item is ImportEntry {
 
 const MAX_IMPORT_ENTRIES = 1000
 
+let latestImportId = 0
+
 function parseImportData(data: unknown): ImportEntry[] | null {
   if (!isRecord(data)) return null
   if (Object.keys(data).length > MAX_IMPORT_ENTRIES) return null
@@ -104,12 +106,15 @@ export function ImportButton() {
         return
       }
 
+      const importId = ++latestImportId
       const reader = new FileReader()
       reader.onerror = function() {
+        if (importId !== latestImportId) return
         toast.showToast("error", "Could not import that file.")
       }
       reader.readAsDataURL(file)
       reader.onload = function(readerEvent) {
+        if (importId !== latestImportId) return
         let content = readerEvent.target?.result;
         if (typeof content !== "string") {
           toast.showToast("error", "Could not import that file.")
