@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v22"
+const CACHE_NAME = "zlab-v23"
 
 function offlinePageResponse() {
   return new Response(
@@ -82,6 +82,10 @@ self.addEventListener("install", (event) => {
         newHtml = shell ? await shell.text() : ""
         const assets = [...assetRefs(newHtml)]
         if (assets.length === 0) throw new Error("shell has no bundle assets")
+        const root = await staging.match("/")
+        const rootHtml = root ? await root.text() : ""
+        if (rootHtml && rootHtml !== newHtml && assetRefs(rootHtml).size === 0)
+          throw new Error("root shell has no bundle assets")
         await Promise.all(assets.map((a) => staging.add(a)))
         try {
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
