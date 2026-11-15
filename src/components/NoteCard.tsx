@@ -408,6 +408,10 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   effect(() => {
+    if (openContextMenu.value) focusedItem.value = itemKey
+  })
+
+  effect(() => {
     if (focusedItem.value !== itemKey) return
     window.addEventListener('keydown', _handleKeyDown)
     window.addEventListener('keydown', _handleMoveKeyDown)
