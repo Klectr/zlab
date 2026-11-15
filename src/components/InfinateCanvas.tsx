@@ -62,6 +62,10 @@ export default function InfiniteCanvas() {
 
     function _preventFileDropNavigation(e: DragEvent) {
       e.preventDefault()
+      const target = e.target as HTMLElement | null
+      if (e.dataTransfer && target?.closest?.("#minimap, #card-selector, #context-menu-portal, #toast-root")) {
+        e.dataTransfer.dropEffect = "none"
+      }
     }
 
     function _handleFileDrop(e: DragEvent) {
