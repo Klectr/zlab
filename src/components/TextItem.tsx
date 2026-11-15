@@ -536,7 +536,28 @@ export function TextItem(props: TextCardProps) {
         : ""
       if (plain === uri || /^(https?|data|blob):\S+$/i.test(plain)) return
     }
-    document.getSelection()?.removeAllRanges()
+    const el = pRef.current
+    const sel = document.getSelection()
+    if (el && sel) {
+      let range: Range | null = null
+      const docCaret = document as Document & {
+        caretRangeFromPoint?: (x: number, y: number) => Range | null
+        caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null
+      }
+      if (typeof docCaret.caretRangeFromPoint === "function") {
+        range = docCaret.caretRangeFromPoint(e.clientX, e.clientY)
+      }
+      if (!range && typeof docCaret.caretPositionFromPoint === "function") {
+        const pos = docCaret.caretPositionFromPoint(e.clientX, e.clientY)
+        if (pos) {
+          range = document.createRange()
+          range.setStart(pos.offsetNode, pos.offset)
+          range.collapse(true)
+        }
+      }
+      sel.removeAllRanges()
+      if (range && el.contains(range.startContainer)) sel.addRange(range)
+    }
     _insertCompanionText(dt)
   }
 
