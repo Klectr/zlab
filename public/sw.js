@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v23"
+const CACHE_NAME = "zlab-v24"
 
 function offlinePageResponse() {
   return new Response(
@@ -153,6 +153,20 @@ self.addEventListener("activate", (event) => {
             .map((key) => caches.delete(key))
         )
       )
+      .then(() => caches.keys())
+      .then((keys) => {
+        const prefix = CACHE_NAME.replace(/\d+$/, "")
+        const currentVersion = Number(CACHE_NAME.match(/\d+$/)?.[0] ?? 0)
+        const stagingPattern = new RegExp("^" + prefix + "(\\d+)-staging$")
+        return Promise.all(
+          keys
+            .filter((key) => {
+              const match = stagingPattern.exec(key)
+              return match !== null && Number(match[1]) < currentVersion
+            })
+            .map((key) => caches.delete(key))
+        )
+      })
       .then(() => self.clients.claim())
   )
 })
