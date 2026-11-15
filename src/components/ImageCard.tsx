@@ -251,6 +251,7 @@ export function ImageCard(props: ImageCardProps) {
 
   function _handleMoveKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
+    if (openContextMenu.value) return
     const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
     if (!newPos) return
     e.preventDefault()
