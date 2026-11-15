@@ -155,6 +155,7 @@ export function ImportButton() {
           updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
           updateLocalStorage(CardTypes.IMAGES, images.images).notify()
           updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+          toast.showToast("success", "Board imported.")
         } catch (err: unknown) {
           if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
           toast.showToast("error", "Could not save the imported cards!")
