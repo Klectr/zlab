@@ -16,19 +16,28 @@ function _scrollBehavior(): ScrollBehavior {
 export function MiniMap() {
   const scrollX = signal(0)
   const scrollY = signal(0)
+  const resizeTick = signal(0)
 
   onMount(() => {
     function _handleScroll() {
       scrollX.value = window.scrollX
       scrollY.value = window.scrollY
     }
+    function _handleResize() {
+      resizeTick.value++
+    }
     _handleScroll()
     window.addEventListener('scroll', _handleScroll)
+    window.addEventListener('resize', _handleResize)
 
-    return () => window.removeEventListener('scroll', _handleScroll)
+    return () => {
+      window.removeEventListener('scroll', _handleScroll)
+      window.removeEventListener('resize', _handleResize)
+    }
   })
 
   return () => {
+    void resizeTick.value
     const viewportWidth = document.documentElement.clientWidth || window.innerWidth
     const viewportHeight = document.documentElement.clientHeight || window.innerHeight
     const scaleFactor = Math.max(
