@@ -43,6 +43,7 @@ const editorThemeSpec = {
 
 const editorThemeSpecFor = (dark: boolean) => dark ? {
   ...editorThemeSpec,
+  ".cm-dropCursor": { borderLeftColor: "#ddd" },
   ".cm-placeholder": { color: "#9c9c9c" },
   ".cm-panels-top": { borderBottom: "1px solid #808080" },
   ".cm-panels-bottom": { borderTop: "1px solid #808080" },
