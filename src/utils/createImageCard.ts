@@ -26,7 +26,8 @@ export function createImageCardFromFile(
   position: { x: number; y: number },
   onPersistError: () => void,
   onLoadError: () => void,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  onPersisted?: () => void
 ) {
   if (file.size > 10 * 1024 * 1024) {
     onPersistError()
@@ -86,6 +87,7 @@ export function createImageCardFromFile(
 
       try {
         updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+        onPersisted?.()
       } catch (e: unknown) {
         if (!(e instanceof DOMException) || e.name !== "LocalStorageError") return
         onPersistError()

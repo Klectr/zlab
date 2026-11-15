@@ -259,7 +259,7 @@ export function NoteCard(props: NoteCardProps) {
         if (cardRef.current?.contains(document.activeElement)) {
           focusedItem.value = itemKey
         }
-      })
+      }, () => toast.showToast("success", "Image added."))
     })
   }
 
