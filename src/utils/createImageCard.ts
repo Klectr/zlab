@@ -51,8 +51,14 @@ export function createImageCardFromFile(
       }
 
       const len = Math.sqrt(width * width + height * height)
-      const normalizedW = (width / len) * 300
-      const normalizedH = (height / len) * 300
+      const normalizedW = Math.max(
+        (width / len) * 300,
+        Math.min(100, canvasDimentsion.value.width)
+      )
+      const normalizedH = Math.max(
+        (height / len) * 300,
+        Math.min(80, canvasDimentsion.value.height)
+      )
 
       const content = readerEvent.target?.result
       if (typeof content !== "string" || !isValidImageContents(content)) {
