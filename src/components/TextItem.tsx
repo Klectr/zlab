@@ -735,7 +735,7 @@ export function TextItem(props: TextCardProps) {
         {showHelp.value &&
           <div
             id={`text-shortcuts-${itemKey}`}
-            className={"dark:text-white absolute dark:bg-[#1c1c1c] bg-[#fff] rounded-md p-1 z-[1000] border border-blue-500"}
+            className={"dark:text-white absolute dark:bg-[#1c1c1c] bg-[#fff] rounded-md p-1 z-[1000] border border-blue-500 pointer-events-none"}
             style={{
               top: `${it.position.y}px`,
               left: `${Math.max(0, it.position.x - 120)}px`
