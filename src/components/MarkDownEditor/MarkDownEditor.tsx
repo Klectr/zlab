@@ -123,7 +123,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           search(),
           highlightSelectionMatches(),
           placeholder("Type here…"),
-          markdown(),
+          markdown({ pasteURLAsLink: false }),
           highlightCompartment.of(syntaxHighlighting(highlightStyleFor(isDarkTheme.value))),
           themeCompartment.of(EditorView.theme(editorThemeSpecFor(isDarkTheme.value), { dark: isDarkTheme.value })),
           EditorView.lineWrapping,
