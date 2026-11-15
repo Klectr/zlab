@@ -1,5 +1,7 @@
-import { ImagesSignal, canvasDimentsion } from "../signals"
+import { ImagesSignal, canvasDimentsion, focusedItem } from "../signals"
 import images from "../signals/images"
+import notes from "../signals/notes"
+import texts from "../signals/texts"
 import { CardTypes } from "../types"
 import { cascadeSpawnPosition } from "./cascadeSpawnPosition"
 import { isValidImageContents, updateLocalStorage } from "./localStorage"
@@ -33,6 +35,12 @@ export function createImageCardFromFile(
     onPersistError()
     return
   }
+  const focusAtStart = focusedItem.value
+  const idsAtStart = new Set([
+    ...Object.keys(notes.notes.value),
+    ...Object.keys(texts.texts.value),
+    ...Object.keys(images.images.value),
+  ])
   const reader = new FileReader()
   reader.readAsDataURL(file)
   reader.onerror = function () {
@@ -79,6 +87,7 @@ export function createImageCardFromFile(
         maxPosition
       )
 
+      const focusBeforeAdd = focusedItem.value
       const imgId = ImagesSignal.default.addImage({
         type: CardTypes.IMAGES,
         title: file.name.trim() ? file.name.trim() : "New Image",
@@ -89,6 +98,11 @@ export function createImageCardFromFile(
           h: normalizedH
         }
       })
+      if (
+        focusBeforeAdd !== focusAtStart &&
+        (focusBeforeAdd === null || idsAtStart.has(focusBeforeAdd))
+      )
+        focusedItem.value = focusBeforeAdd
       onSuccess?.()
 
       try {
