@@ -441,6 +441,8 @@ export function NoteCard(props: NoteCardProps) {
       <>
         <div
           ref={cardRef}
+          role="group"
+          aria-label={`Note${nameSuffix}`}
           oncontextmenu={_handleMouseClick}
           onmousedown={_handleFocusCard}
           style={cardPositionStyle}

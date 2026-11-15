@@ -650,6 +650,8 @@ export function TextItem(props: TextCardProps) {
       <>
       <div
         ref={elRef}
+        role="group"
+        aria-label={`Text item${nameSuffix}`}
         onmousedown={_handleMouseDown}
         oncontextmenu={_handleMouseClick}
         className="text-container dark:text-white transition flex flex-col justify-stretch rounded absolute touch-none"
