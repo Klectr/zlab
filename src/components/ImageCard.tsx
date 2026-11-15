@@ -364,6 +364,8 @@ export function ImageCard(props: ImageCardProps) {
       <>
         <div
           ref={cardRef}
+          role="group"
+          aria-label={`Image${nameSuffix}`}
           oncontextmenu={_handleMouseClick}
           onmousedown={_handleMouseDown}
           className="select-none transition flex flex-col justify-stretch shadow-md rounded border border-[#1c1c1c] dark:border-[#5c5c5c] absolute touch-none"
