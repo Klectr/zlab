@@ -32,7 +32,7 @@ export function ImageCardButton() {
       createImageCardFromFile(el.files[0], spawn, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"), () => {
         const active = document.activeElement
         if (active && active !== document.body && active === elementBeforePick) focusedItem.value = focusBeforePick
-      })
+      }, () => toast.showToast("success", "Image added."))
     }
     input.click()
   }

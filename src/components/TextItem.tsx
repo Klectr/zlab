@@ -454,7 +454,7 @@ export function TextItem(props: TextCardProps) {
         if (elRef.current?.contains(document.activeElement)) {
           focusedItem.value = itemKey
         }
-      })
+      }, () => toast.showToast("success", "Image added."))
     })
   }
 

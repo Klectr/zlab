@@ -143,7 +143,7 @@ export default function InfiniteCanvas() {
         }, () => toast.showToast("error", "Could not add such a girthy image!"), () => toast.showToast("error", "Could not load that image!"), () => {
           const active = document.activeElement
           if (active && active !== document.body && active === elementBeforeDrop) focusedItem.value = focusBeforeDrop
-        })
+        }, () => toast.showToast("success", "Image added."))
       })
     }
 
