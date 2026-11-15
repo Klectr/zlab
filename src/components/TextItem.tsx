@@ -558,6 +558,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleMoveKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
+    if (openContextMenu.value) return
     const newPos = arrowKeyMovePosition(e, item.value.position, item.value.dimensions, canvasDimentsion.value)
     if (!newPos) return
     e.preventDefault()
@@ -568,6 +569,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
+    if (openContextMenu.value) return
     const prevFontSize = item.value.fontSize
     const newFontSize = arrowKeyResizeFontSize(e, prevFontSize, item.value.dimensions, item.value.position, canvasDimentsion.value)
     if (newFontSize === null) return
