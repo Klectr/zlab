@@ -11,7 +11,7 @@ export function clickSpawnPoint(e: {
   clientX: number
   clientY: number
 }) {
-  if (e.pageX !== 0 || e.pageY !== 0 || e.clientX !== 0 || e.clientY !== 0)
+  if (e.clientX !== 0 || e.clientY !== 0)
     return { pageX: e.pageX, pageY: e.pageY }
   return {
     pageX: window.scrollX + window.innerWidth / 2,
