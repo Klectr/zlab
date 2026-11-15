@@ -399,6 +399,7 @@ export function NoteCard(props: NoteCardProps) {
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
+    if (openContextMenu.value) return
     const newDim = arrowKeyResizeDimensions(e, item.value.dimensions, item.value.position, canvasDimentsion.value)
     if (!newDim) return
     e.preventDefault()

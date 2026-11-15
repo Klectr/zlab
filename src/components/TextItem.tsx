@@ -568,6 +568,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleResizeKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
+    if (openContextMenu.value) return
     const prevFontSize = item.value.fontSize
     const newFontSize = arrowKeyResizeFontSize(e, prevFontSize, item.value.dimensions, item.value.position, canvasDimentsion.value)
     if (newFontSize === null) return
