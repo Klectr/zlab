@@ -171,17 +171,17 @@ self.addEventListener("install", (event) => {
       }
       await caches.delete(stagingName).catch(() => {})
       await pruneSupersededAssets(previousHtml, newHtml)
-      await self.skipWaiting()
+      await self.skipWaiting().catch(() => {})
     })()
   )
 })
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
+    (async () => {
+      try {
+        const keys = await caches.keys()
+        await Promise.all(
           keys
             .filter(
               (key) =>
@@ -189,24 +189,25 @@ self.addEventListener("activate", (event) => {
                 new RegExp("^" + CACHE_NAME.replace(/\d+$/, "") + "\\d+$").test(key) &&
                 !key.endsWith("-staging")
             )
-            .map((key) => caches.delete(key))
+            .map((key) => caches.delete(key).catch(() => {}))
         )
-      )
-      .then(() => caches.keys())
-      .then((keys) => {
+      } catch {}
+      try {
+        const keys = await caches.keys()
         const prefix = CACHE_NAME.replace(/\d+$/, "")
         const currentVersion = Number(CACHE_NAME.match(/\d+$/)?.[0] ?? 0)
         const stagingPattern = new RegExp("^" + prefix + "(\\d+)-staging$")
-        return Promise.all(
+        await Promise.all(
           keys
             .filter((key) => {
               const match = stagingPattern.exec(key)
               return match !== null && Number(match[1]) < currentVersion
             })
-            .map((key) => caches.delete(key))
+            .map((key) => caches.delete(key).catch(() => {}))
         )
-      })
-      .then(() => self.clients.claim())
+      } catch {}
+      await self.clients.claim().catch(() => {})
+    })()
   )
 })
 
