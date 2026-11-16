@@ -4,6 +4,7 @@ import { createDebounce } from "../utils/useDebounce"
 import notes, { NoteCardType } from "../signals/notes"
 import { LayerEnum } from "../utils/enums"
 import { useThemeDetector } from "../utils/useThemeDetector"
+import { EditorView } from "@codemirror/view"
 import { MarkDownEditor, type MarkDownEditorChange } from "./MarkDownEditor/MarkDownEditor"
 
 import { Divider } from "./Divider"
@@ -329,14 +330,18 @@ export function NoteCard(props: NoteCardProps) {
   effect(() => {
     if (!showHelp.value) return
     let searchPanelOpen = false
+    let editorSelectionOpen = false
     function _noteSearchPanelEscape(e: KeyboardEvent) {
       if (e.key !== "Escape") return
       const target = e.target as Element | null
       const editor = target?.closest?.(".cm-editor")
       searchPanelOpen = !!target?.closest?.(".cm-panel.cm-search") || !!target?.closest?.(".cm-goto-line") || !!(editor && (editor.querySelector(".cm-panel.cm-search") || editor.querySelector(".cm-goto-line")))
+      const view = editor ? EditorView.findFromDOM(editor as HTMLElement) : null
+      const selection = view?.state.selection
+      editorSelectionOpen = !!selection && (selection.ranges.length > 1 || !selection.main.empty)
     }
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !searchPanelOpen && !isAnyContextMenuOpen()) {
+      if (e.key === "Escape" && !searchPanelOpen && !editorSelectionOpen && !isAnyContextMenuOpen()) {
         helpPinned.value = false
         showHelp.value = false
       }
