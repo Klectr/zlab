@@ -29,8 +29,10 @@ const closeHandlers = new Set<() => void>()
 
 const openPortals = new Set<Signal<boolean>>()
 
-let lastMenuRestore: { menuId: string | undefined; target: HTMLElement } | null =
-  null
+let lastMenuRestore: {
+  menuId: string | undefined
+  target: WeakRef<HTMLElement>
+} | null = null
 let lastMenuRestoreAt = 0
 
 export function isAnyContextMenuOpen(): boolean {
@@ -145,7 +147,7 @@ export function ContextMenuPortal({
     const chainedRestore =
       !!lastMenuRestore &&
       lastMenuRestore.menuId !== menuId &&
-      activeAtOpen === lastMenuRestore.target &&
+      activeAtOpen === lastMenuRestore.target.deref() &&
       Date.now() - lastMenuRestoreAt < 1000
     const previouslyFocused =
       activeAtOpen &&
@@ -312,7 +314,7 @@ export function ContextMenuPortal({
         (activeInPortal || activeIsBody)
       ) {
         previouslyFocused.focus({ preventScroll: true })
-        lastMenuRestore = { menuId, target: previouslyFocused }
+        lastMenuRestore = { menuId, target: new WeakRef(previouslyFocused) }
         lastMenuRestoreAt = Date.now()
       }
     }
