@@ -1,10 +1,18 @@
-const CACHE_NAME = "zlab-v24"
+const CACHE_NAME = "zlab-v25"
 
 function offlinePageResponse() {
   return new Response(
     "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"color-scheme\" content=\"light dark\"><title>Zlab offline</title><style>@media (prefers-color-scheme: dark){body{background:#000;color:#fff}}</style></head><body><h1>Zlab is offline</h1><p>Reconnect and reload to open your board.</p></body></html>",
     { status: 503, headers: { "content-type": "text/html" } }
   )
+}
+async function matchOwnCache(request) {
+  try {
+    const cache = await caches.open(CACHE_NAME)
+    return await cache.match(request)
+  } catch {
+    return undefined
+  }
 }
 const APP_SHELL = ["/", "/index.html"]
 const OPTIONAL_SHELL = [
@@ -184,7 +192,7 @@ self.addEventListener("fetch", (event) => {
         .then(async (response) => {
           if (!response.ok) {
             if (response.type === "opaqueredirect") return response
-            const cachedShell = await caches.match("/index.html")
+            const cachedShell = await matchOwnCache("/index.html")
             if (cachedShell) return cachedShell
             return response
           }
@@ -256,14 +264,14 @@ self.addEventListener("fetch", (event) => {
           }
           return response
         })
-        .catch(async () => (await caches.match("/index.html")) ?? offlinePageResponse())
+        .catch(async () => (await matchOwnCache("/index.html")) ?? offlinePageResponse())
     )
     return
   }
 
   if (url.pathname.startsWith("/assets/")) {
     event.respondWith(
-      caches.match(request).then(
+      matchOwnCache(request).then(
         (cached) =>
           cached ??
           fetch(request).then((response) => {
@@ -299,6 +307,6 @@ self.addEventListener("fetch", (event) => {
         }
         return response
       })
-      .catch(async () => (await caches.match(request)) ?? Response.error())
+      .catch(async () => (await matchOwnCache(request)) ?? Response.error())
   )
 })
