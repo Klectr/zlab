@@ -49,7 +49,7 @@ function isValidEntry(item: unknown): item is ImportEntry {
   return true
 }
 
-const MAX_IMPORT_ENTRIES = 1000
+export const MAX_IMPORT_ENTRIES = 1000
 
 let latestImportId = 0
 
