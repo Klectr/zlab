@@ -62,6 +62,7 @@ export function ContextMenuPortal({
   menuId,
 }: ContextMenuPortalProps) {
   initMouseTracking()
+  let dismissedByOutsidePointerDown = false
   const pos = signal({ x: 0, y: 0 })
   const ready = signal(false)
   const elRef = ref<HTMLDivElement>(null)
@@ -80,7 +81,10 @@ export function ContextMenuPortal({
       const el = elRef.current
       pointerStartedInsideMenu = !!el && e.composedPath().includes(el)
       pointerStartedOutside = !!el && !pointerStartedInsideMenu
-      if (el && pointerStartedOutside) closeAction?.()
+      if (el && pointerStartedOutside) {
+        dismissedByOutsidePointerDown = true
+        closeAction?.()
+      }
     }
     function _handleClickOutside(e: MouseEvent) {
       if (eventHitsOwnMenuTrigger(e, menuId)) return
@@ -143,6 +147,7 @@ export function ContextMenuPortal({
       ready.value = false
       return
     }
+    dismissedByOutsidePointerDown = false
     const activeAtOpen = document.activeElement as HTMLElement | null
     const chainedRestore =
       !!lastMenuRestore &&
@@ -306,7 +311,10 @@ export function ContextMenuPortal({
         (!!elRef.current?.contains(active) ||
           !!active.closest?.("#context-menu-portal"))
       const activeIsBody = !active || active === document.body
+      const skipRestore = dismissedByOutsidePointerDown
+      dismissedByOutsidePointerDown = false
       if (
+        !skipRestore &&
         previouslyFocused &&
         previouslyFocused !== active &&
         document.contains(previouslyFocused) &&
