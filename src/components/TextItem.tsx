@@ -696,6 +696,8 @@ export function TextItem(props: TextCardProps) {
           zIndex: zIndex,
           top: `${it.position.y}px`,
           left: `${it.position.x}px`,
+          maxWidth: `${Math.max(0, canvasDimentsion.value.width - it.position.x)}px`,
+          maxHeight: `${Math.max(0, canvasDimentsion.value.height - it.position.y)}px`,
           userSelect: focusedItem.value === itemKey ? 'text' : 'none',
         }}
       >
@@ -705,6 +707,11 @@ export function TextItem(props: TextCardProps) {
 
         <pre
           className={'text-pre px-2 w-full select-none drop-shadow relative'}
+          style={{
+            maxWidth: `${Math.max(0, canvasDimentsion.value.width - it.position.x)}px`,
+            maxHeight: `${Math.max(0, canvasDimentsion.value.height - it.position.y)}px`,
+            overflow: "hidden",
+          }}
         >
           <p
             ref={pRef}
