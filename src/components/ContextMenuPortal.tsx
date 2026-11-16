@@ -118,13 +118,14 @@ export function ContextMenuPortal({
       /iP(ad|hone|od)/.test(window.navigator.userAgent) ||
       (window.navigator.maxTouchPoints > 2 &&
         /iPad|Macintosh/.test(window.navigator.userAgent))
-    if (isIOS) {
-      Array.from(document.body.children).forEach((child) =>
-        child.addEventListener("click", noopClick)
-      )
-      document.documentElement.addEventListener("click", noopClick)
-    }
+    const iosNoopTargets: Element[] = isIOS
+      ? [...Array.from(document.body.children), document.documentElement]
+      : []
+    iosNoopTargets.forEach((el) => el.addEventListener("click", noopClick))
     return () => {
+      iosNoopTargets.forEach((el) =>
+        el.removeEventListener("click", noopClick)
+      )
       closeHandlers.delete(closeSelf)
       openPortals.delete(open)
       document.removeEventListener("click", _handleClickOutside, {
