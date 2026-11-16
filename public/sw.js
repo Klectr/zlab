@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v26"
+const CACHE_NAME = "zlab-v27"
 
 function isHtmlForAsset(pathname, response) {
   if (!/\.(?:js|css|woff2)$/.test(pathname)) return false
@@ -77,6 +77,16 @@ async function pruneSupersededAssets(previousHtml, newHtml) {
         for (const ref of staleCss.refs) keep.add(ref)
       }
     }
+    try {
+      const current = await cache.match("/index.html")
+      const currentHtml = current ? await current.text() : ""
+      if (currentHtml) {
+        const currentRefs = assetRefs(currentHtml)
+        for (const ref of currentRefs) keep.add(ref)
+        const currentCss = await cssRefs(cache, currentRefs)
+        for (const ref of currentCss.refs) keep.add(ref)
+      }
+    } catch {}
     await Promise.all(
       [...stale]
         .filter((path) => !keep.has(path))
