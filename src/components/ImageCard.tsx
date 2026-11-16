@@ -18,6 +18,7 @@ import { CardTypes } from "../types"
 import { cardSnippet, imageCardName } from "../utils/cardName"
 import { MenuIcon } from "./icons/MenuIcon"
 import { HelpIcon } from "./icons/HelpIcon"
+import { EditorView } from "@codemirror/view"
 
 interface ImageCardProps {
   itemKey: ImageCardType['id']
@@ -319,14 +320,18 @@ export function ImageCard(props: ImageCardProps) {
   effect(() => {
     if (!showHelp.value) return
     let searchPanelOpen = false
+    let editorSelectionOpen = false
     function _noteSearchPanelEscape(e: KeyboardEvent) {
       if (e.key !== "Escape") return
       const target = e.target as Element | null
       const editor = target?.closest?.(".cm-editor")
       searchPanelOpen = !!target?.closest?.(".cm-panel.cm-search") || !!target?.closest?.(".cm-goto-line") || !!(editor && (editor.querySelector(".cm-panel.cm-search") || editor.querySelector(".cm-goto-line")))
+      const view = editor ? EditorView.findFromDOM(editor as HTMLElement) : null
+      const selection = view?.state.selection
+      editorSelectionOpen = !!selection && (selection.ranges.length > 1 || !selection.main.empty)
     }
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !searchPanelOpen && !isAnyContextMenuOpen()) {
+      if (e.key === "Escape" && !searchPanelOpen && !editorSelectionOpen && !isAnyContextMenuOpen()) {
         helpPinned.value = false
         showHelp.value = false
       }
