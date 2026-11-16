@@ -133,7 +133,7 @@ export function TextItem(props: TextCardProps) {
     const elDems = elRef.current?.getBoundingClientRect()
     const elW = Math.min(elDems?.width ?? 100, canvasDimentsion.value.width)
     const elH = Math.min(elDems?.height ?? 100, canvasDimentsion.value.height)
-    if (elW <= 0 || elH <= 0) return
+    if (elW <= 0 || elH <= 0) return false
     const newDems: Card<CardTypes.TEXTS>['dimensions'] = { w: elW, h: elH }
     const pos = item.value.position
     const clampedPos = {
@@ -145,6 +145,7 @@ export function TextItem(props: TextCardProps) {
     }
     TextSignal.default.updateTextProperty(itemKey, 'dimensions', newDems)
     updateLocalStorage()
+    return true
   }
 
   onMount(() => {
@@ -164,12 +165,25 @@ export function TextItem(props: TextCardProps) {
     }
   })
 
+  let measureFrame: number | null = null
+
   effect(() => {
     const fontSize = item.value.fontSize
     if (!elRef.current) return
     if (fontSize === lastMeasuredFontSize) return
-    lastMeasuredFontSize = fontSize
-    _measureAndStoreDimensions()
+    if (_measureAndStoreDimensions()) {
+      lastMeasuredFontSize = fontSize
+    }
+    if (typeof requestAnimationFrame !== "undefined") {
+      if (measureFrame !== null) cancelAnimationFrame(measureFrame)
+      measureFrame = requestAnimationFrame(() => {
+        measureFrame = null
+        if (!elRef.current) return
+        if (_measureAndStoreDimensions() && item.value.fontSize === fontSize) {
+          lastMeasuredFontSize = fontSize
+        }
+      })
+    }
   })
 
   const toast = useToast()
@@ -333,6 +347,7 @@ export function TextItem(props: TextCardProps) {
   window.addEventListener('pagehide', flushLocalStorage)
 
   onCleanup(() => {
+    if (measureFrame !== null) cancelAnimationFrame(measureFrame)
     pRef.current?.removeEventListener('paste', _handlePaste)
     pRef.current?.removeEventListener('drop', _handleDrop)
     resizeObserver?.disconnect()
