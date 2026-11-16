@@ -486,6 +486,13 @@ export function TextItem(props: TextCardProps) {
   function _insertCompanionText(dt: DataTransfer): boolean {
     const plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
     if (!plain) return false
+    const trimmed = plain.trim()
+    if (trimmed && !/[\r\n]/.test(trimmed)) {
+      const uri = typeof dt.getData === "function"
+        ? (dt.getData("text/uri-list").split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? "")
+        : ""
+      if (trimmed === uri || /^(https?|data|blob):\S+$/i.test(trimmed)) return false
+    }
     const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
     if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) return false
     _insertPlainText(plain)

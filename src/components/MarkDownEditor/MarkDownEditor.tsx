@@ -148,6 +148,15 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               const plainText = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
               const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
               let text = plainText || uriList
+              if (text && plainText) {
+                const trimmed = plainText.trim()
+                if (trimmed && !/[\r\n]/.test(trimmed)) {
+                  const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
+                  if (trimmed === firstUri || /^(https?|data|blob):\S+$/i.test(trimmed)) {
+                    text = ""
+                  }
+                }
+              }
               if (text) {
                 const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
                 if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) {
@@ -183,7 +192,8 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (text) {
                 const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
                 const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
-                if ((lines.length > 0 && lines.every((l) => l.startsWith("file://"))) || (!!uriList && text.trim() === uriList.trim())) {
+                const trimmed = text.trim()
+                if ((lines.length > 0 && lines.every((l) => l.startsWith("file://"))) || (!!uriList && trimmed === uriList.trim()) || (!/[\r\n]/.test(trimmed) && /^(https?|data|blob):\S+$/i.test(trimmed))) {
                   text = ""
                 }
               }
