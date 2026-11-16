@@ -95,7 +95,6 @@ export function ContextMenuPortal({
       closeAction?.()
     }
     function _handleContextMenuOutside(e: MouseEvent) {
-      if (eventHitsOwnMenuTrigger(e, menuId)) return
       const el = elRef.current
       if (el && e.composedPath().includes(el)) {
         e.preventDefault()
