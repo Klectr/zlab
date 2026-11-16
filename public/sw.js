@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v27"
+const CACHE_NAME = "zlab-v28"
 
 function isHtmlForAsset(pathname, response) {
   if (!/\.(?:js|css|woff2)$/.test(pathname)) return false
@@ -288,6 +288,9 @@ self.addEventListener("fetch", (event) => {
               let shellOk = false
               try {
                 const cache = await caches.open(CACHE_NAME)
+                const current = await cache.match("/index.html")
+                const currentHtml = current ? await current.text() : ""
+                if (currentHtml !== previousHtml) return
                 await cache.put("/index.html", copy)
                 await cache.put("/", rootCopy)
                 shellOk = true
