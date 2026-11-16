@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v30"
+const CACHE_NAME = "zlab-v31"
 
 async function isHtmlForAsset(pathname, response) {
   if (!/\.(?:js|css|woff2|png|webmanifest)$/.test(pathname)) return false
@@ -130,8 +130,8 @@ self.addEventListener("install", (event) => {
         if (assets.length === 0) throw new Error("shell has no bundle assets")
         const root = await staging.match("/")
         const rootHtml = root ? await root.text() : ""
-        if (rootHtml && rootHtml !== newHtml && assetRefs(rootHtml).size === 0)
-          throw new Error("root shell has no bundle assets")
+        if (rootHtml && rootHtml !== newHtml)
+          throw new Error("root shell differs from index shell")
         await Promise.all(assets.map((a) => staging.add(a)))
         for (const asset of assets.filter((a) => /\.(?:js|css)$/.test(a))) {
           const staged = await staging.match(asset)
