@@ -73,7 +73,7 @@ export function ContextMenuPortal({
     let pointerStartedInsideMenu = false
     function _handlePointerDown(e: PointerEvent) {
       if (eventHitsOwnMenuTrigger(e, menuId)) {
-        pointerStartedOutside = false
+        pointerStartedOutside = true
         pointerStartedInsideMenu = false
         return
       }
