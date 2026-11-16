@@ -1,12 +1,22 @@
-const CACHE_NAME = "zlab-v28"
+const CACHE_NAME = "zlab-v29"
 
-function isHtmlForAsset(pathname, response) {
+async function isHtmlForAsset(pathname, response) {
   if (!/\.(?:js|css|woff2)$/.test(pathname)) return false
   let contentType = ""
   try {
     contentType = response.headers?.get?.("content-type") ?? ""
   } catch {}
-  return contentType.includes("text/html")
+  if (contentType.includes("text/html")) return true
+  if (pathname.endsWith(".css") && contentType.includes("text/css")) return false
+  if (pathname.endsWith(".woff2") && (contentType.includes("font") || contentType.includes("woff2"))) return false
+  if (!pathname.endsWith(".css") && !pathname.endsWith(".woff2") && contentType.includes("javascript")) return false
+  try {
+    const text = await response.clone().text()
+    const start = text.replace(/^\uFEFF/, "").trimStart().toLowerCase()
+    return start.startsWith("<!doctype html") || start.startsWith("<html") || start.startsWith("<head")
+  } catch {
+    return false
+  }
 }
 
 function offlinePageResponse() {
@@ -47,7 +57,7 @@ async function cssRefs(cache, refs, fetchMissing = false) {
     if (!cssResponse && fetchMissing) {
       try {
         const fetched = await fetch(asset)
-        if (fetched.ok && !isHtmlForAsset(asset, fetched)) css = await fetched.text()
+        if (fetched.ok && !(await isHtmlForAsset(asset, fetched))) css = await fetched.text()
       } catch {}
     }
     if (!css) missing = true
@@ -116,7 +126,7 @@ self.addEventListener("install", (event) => {
         await Promise.all(assets.map((a) => staging.add(a)))
         for (const asset of assets.filter((a) => /\.(?:js|css)$/.test(a))) {
           const staged = await staging.match(asset)
-          if (staged && isHtmlForAsset(asset, staged))
+          if (staged && (await isHtmlForAsset(asset, staged)))
             throw new Error("asset served as html: " + asset)
         }
         try {
@@ -132,7 +142,7 @@ self.addEventListener("install", (event) => {
               refs.map(async (r) => {
                 await staging.add(r).catch(() => {})
                 const stagedRef = await staging.match(r).catch(() => undefined)
-                if (stagedRef && isHtmlForAsset(r, stagedRef))
+                if (stagedRef && (await isHtmlForAsset(r, stagedRef)))
                   await staging.delete(r).catch(() => {})
               })
             )
@@ -257,7 +267,7 @@ self.addEventListener("fetch", (event) => {
                   if (await cache.match(ref)) continue
                   try {
                     const fetched = await fetch(ref)
-                    if (!fetched.ok || isHtmlForAsset(ref, fetched)) {
+                    if (!fetched.ok || (await isHtmlForAsset(ref, fetched))) {
                       assetsOk = false
                     } else {
                       await cache.put(ref, fetched)
@@ -278,7 +288,7 @@ self.addEventListener("fetch", (event) => {
                       if (await cache.match(ref)) return
                       try {
                         const fetched = await fetch(ref)
-                        if (fetched.ok && !isHtmlForAsset(ref, fetched))
+                        if (fetched.ok && !(await isHtmlForAsset(ref, fetched)))
                           await cache.put(ref, fetched)
                       } catch {}
                     })
@@ -319,12 +329,13 @@ self.addEventListener("fetch", (event) => {
         (cached) =>
           cached ??
           fetch(request).then((response) => {
-            if (response.ok && !isHtmlForAsset(url.pathname, response)) {
+            if (response.ok) {
               const copy = response.clone()
-              const put = caches
-                .open(CACHE_NAME)
-                .then((cache) => cache.put(request, copy))
-                .catch(() => {})
+              const put = (async () => {
+                if (await isHtmlForAsset(url.pathname, response)) return
+                const cache = await caches.open(CACHE_NAME)
+                await cache.put(request, copy)
+              })().catch(() => {})
               try {
                 event.waitUntil(put)
               } catch {}
@@ -339,12 +350,13 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response.ok && !isHtmlForAsset(url.pathname, response)) {
+        if (response.ok) {
           const copy = response.clone()
-          const put = caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(request, copy))
-            .catch(() => {})
+          const put = (async () => {
+            if (await isHtmlForAsset(url.pathname, response)) return
+            const cache = await caches.open(CACHE_NAME)
+            await cache.put(request, copy)
+          })().catch(() => {})
           try {
             event.waitUntil(put)
           } catch {}
