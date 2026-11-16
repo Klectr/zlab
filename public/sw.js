@@ -1,7 +1,7 @@
-const CACHE_NAME = "zlab-v29"
+const CACHE_NAME = "zlab-v30"
 
 async function isHtmlForAsset(pathname, response) {
-  if (!/\.(?:js|css|woff2)$/.test(pathname)) return false
+  if (!/\.(?:js|css|woff2|png|webmanifest)$/.test(pathname)) return false
   let contentType = ""
   try {
     contentType = response.headers?.get?.("content-type") ?? ""
@@ -9,7 +9,9 @@ async function isHtmlForAsset(pathname, response) {
   if (contentType.includes("text/html")) return true
   if (pathname.endsWith(".css") && contentType.includes("text/css")) return false
   if (pathname.endsWith(".woff2") && (contentType.includes("font") || contentType.includes("woff2"))) return false
-  if (!pathname.endsWith(".css") && !pathname.endsWith(".woff2") && contentType.includes("javascript")) return false
+  if (pathname.endsWith(".js") && contentType.includes("javascript")) return false
+  if (pathname.endsWith(".png") && contentType.includes("image/png")) return false
+  if (pathname.endsWith(".webmanifest") && (contentType.includes("manifest") || contentType.includes("json"))) return false
   try {
     const text = await response.clone().text()
     const start = text.replace(/^\uFEFF/, "").trimStart().toLowerCase()
@@ -114,7 +116,14 @@ self.addEventListener("install", (event) => {
       let newHtml = ""
       try {
         await staging.addAll(APP_SHELL)
-        await Promise.all(OPTIONAL_SHELL.map((u) => staging.add(u).catch(() => {})))
+        await Promise.all(
+          OPTIONAL_SHELL.map(async (u) => {
+            await staging.add(u).catch(() => {})
+            const staged = await staging.match(u).catch(() => undefined)
+            if (staged && (await isHtmlForAsset(u, staged)))
+              await staging.delete(u).catch(() => {})
+          })
+        )
         const shell = await staging.match("/index.html")
         newHtml = shell ? await shell.text() : ""
         const assets = [...assetRefs(newHtml)]
