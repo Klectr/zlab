@@ -8,13 +8,25 @@ import { isValidImageContents, updateLocalStorage } from "./localStorage"
 
 export function imageFileFromDataUrl(dataUrl: string): File | null {
   const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.replace(/\s/g, ""))
-  if (!match) return null
-  try {
-    const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0))
-    return new File([bytes], "pasted-image", { type: match[1] })
-  } catch {
-    return null
+  if (match) {
+    try {
+      const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0))
+      return new File([bytes], "pasted-image", { type: match[1] })
+    } catch {
+      return null
+    }
   }
+  const plainMatch = /^data:(image\/[a-z0-9.+-]+)(?:;[^,]*)?,([\s\S]+)$/i.exec(dataUrl)
+  if (!plainMatch) return null
+  if (/;base64/i.test(dataUrl.slice(0, dataUrl.indexOf(",")))) return null
+  let payload = plainMatch[2]
+  try {
+    payload = decodeURIComponent(payload)
+  } catch {
+    payload = plainMatch[2]
+  }
+  if (!payload) return null
+  return new File([new TextEncoder().encode(payload)], "pasted-image", { type: plainMatch[1] })
 }
 
 export function imageFilesFromHtml(html: string): File[] {
