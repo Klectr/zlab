@@ -1,4 +1,13 @@
-const CACHE_NAME = "zlab-v25"
+const CACHE_NAME = "zlab-v26"
+
+function isHtmlForAsset(pathname, response) {
+  if (!/\.(?:js|css|woff2)$/.test(pathname)) return false
+  let contentType = ""
+  try {
+    contentType = response.headers?.get?.("content-type") ?? ""
+  } catch {}
+  return contentType.includes("text/html")
+}
 
 function offlinePageResponse() {
   return new Response(
@@ -38,7 +47,7 @@ async function cssRefs(cache, refs, fetchMissing = false) {
     if (!cssResponse && fetchMissing) {
       try {
         const fetched = await fetch(asset)
-        if (fetched.ok) css = await fetched.text()
+        if (fetched.ok && !isHtmlForAsset(asset, fetched)) css = await fetched.text()
       } catch {}
     }
     if (!css) missing = true
@@ -95,6 +104,11 @@ self.addEventListener("install", (event) => {
         if (rootHtml && rootHtml !== newHtml && assetRefs(rootHtml).size === 0)
           throw new Error("root shell has no bundle assets")
         await Promise.all(assets.map((a) => staging.add(a)))
+        for (const asset of assets.filter((a) => /\.(?:js|css)$/.test(a))) {
+          const staged = await staging.match(asset)
+          if (staged && isHtmlForAsset(asset, staged))
+            throw new Error("asset served as html: " + asset)
+        }
         try {
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
             const cssResponse = await staging.match(asset)
@@ -104,7 +118,14 @@ self.addEventListener("install", (event) => {
                 [...css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)].map((m) => m[1])
               ),
             ]
-            await Promise.all(refs.map((r) => staging.add(r).catch(() => {})))
+            await Promise.all(
+              refs.map(async (r) => {
+                await staging.add(r).catch(() => {})
+                const stagedRef = await staging.match(r).catch(() => undefined)
+                if (stagedRef && isHtmlForAsset(r, stagedRef))
+                  await staging.delete(r).catch(() => {})
+              })
+            )
           }
         } catch {}
       } catch (err) {
@@ -224,7 +245,12 @@ self.addEventListener("fetch", (event) => {
                 for (const ref of newRefs) {
                   if (await cache.match(ref)) continue
                   try {
-                    await cache.add(ref)
+                    const fetched = await fetch(ref)
+                    if (!fetched.ok || isHtmlForAsset(ref, fetched)) {
+                      assetsOk = false
+                    } else {
+                      await cache.put(ref, fetched)
+                    }
                   } catch {
                     assetsOk = false
                   }
@@ -239,7 +265,11 @@ self.addEventListener("fetch", (event) => {
                   await Promise.all(
                     [...derived].map(async (ref) => {
                       if (await cache.match(ref)) return
-                      await cache.add(ref).catch(() => {})
+                      try {
+                        const fetched = await fetch(ref)
+                        if (fetched.ok && !isHtmlForAsset(ref, fetched))
+                          await cache.put(ref, fetched)
+                      } catch {}
                     })
                   )
                 } catch {}
@@ -275,7 +305,7 @@ self.addEventListener("fetch", (event) => {
         (cached) =>
           cached ??
           fetch(request).then((response) => {
-            if (response.ok) {
+            if (response.ok && !isHtmlForAsset(url.pathname, response)) {
               const copy = response.clone()
               const put = caches
                 .open(CACHE_NAME)
@@ -295,7 +325,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response.ok) {
+        if (response.ok && !isHtmlForAsset(url.pathname, response)) {
           const copy = response.clone()
           const put = caches
             .open(CACHE_NAME)
