@@ -35,7 +35,7 @@ const editorThemeSpec = {
   "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground": { backgroundColor: "#3d8ccc" },
   ".cm-content ::selection": { backgroundColor: "#3d8ccc" },
   ".cm-selectionMatch": { backgroundColor: "#3d8ccc66" },
-  ".cm-placeholder": { color: "#767676" },
+  ".cm-placeholder": { color: "#6b6b6b" },
   ".cm-scroller": { overflow: "auto", fontFamily: "inherit" },
   ".cm-content": { caretColor: "auto", padding: "4px 0" },
   ".cm-line": { padding: "0 4px" },
