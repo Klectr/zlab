@@ -22,7 +22,7 @@ export function ExportButton() {
     const jsonData = JSON.stringify(mergeState)
     createFileAndExport(name, jsonData, "text/json")
     if (Object.keys(mergeState).length > MAX_IMPORT_ENTRIES)
-      toast.showToast("warning", `This board has over ${MAX_IMPORT_ENTRIES} cards — the export is too large to import back.`)
+      toast.showToast("warning", `This board has over ${MAX_IMPORT_ENTRIES} cards. The export is too large to import back.`)
   }
 
   return (
