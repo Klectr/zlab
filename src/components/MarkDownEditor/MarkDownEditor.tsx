@@ -142,7 +142,13 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 const html = event.clipboardData.getData("text/html")
                 if (/<img[\s/>]/i.test(html)) files = imageFilesFromHtml(html)
               }
-              if (!files.length) return false
+              if (!files.length) {
+                const hasFiles = (event.clipboardData?.files?.length ?? 0) > 0 ||
+                  Array.from(event.clipboardData?.items ?? []).some((i) => i.kind === "file")
+                if (!hasFiles) return false
+                event.preventDefault()
+                return true
+              }
               onPasteImage(files)
               const dt = event.clipboardData
               const plainText = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
