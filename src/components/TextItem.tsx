@@ -14,6 +14,7 @@ import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
 import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
+import { plainTextIsImageAddress } from "../utils/plainTextIsImageAddress"
 import { MenuIcon } from "./icons/MenuIcon"
 import { HelpIcon } from "./icons/HelpIcon"
 import { EditorView } from "@codemirror/view"
@@ -506,15 +507,8 @@ export function TextItem(props: TextCardProps) {
   function _insertCompanionText(dt: DataTransfer): boolean {
     const plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
     if (!plain) return false
-    const trimmed = plain.trim()
-    if (trimmed && !/[\r\n]/.test(trimmed)) {
-      const uri = typeof dt.getData === "function"
-        ? (dt.getData("text/uri-list").split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? "")
-        : ""
-      if (trimmed === uri || /^(https?|data|blob):\S+$/i.test(trimmed)) return false
-    }
-    const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
-    if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) return false
+    const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+    if (plainTextIsImageAddress(plain, uriList)) return false
     _insertPlainText(plain)
     return true
   }
@@ -557,11 +551,9 @@ export function TextItem(props: TextCardProps) {
     const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
     if (!/<img[\s/>]/i.test(html)) return
     const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
-    if (plain && !/[\r\n]/.test(plain)) {
-      const uri = typeof dt.getData === "function"
-        ? (dt.getData("text/uri-list").split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? "")
-        : ""
-      if (plain === uri || /^(https?|data|blob):\S+$/i.test(plain)) return
+    if (plain) {
+      const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+      if (plainTextIsImageAddress(plain, uriList)) return
     }
     const el = pRef.current
     const sel = document.getSelection()
