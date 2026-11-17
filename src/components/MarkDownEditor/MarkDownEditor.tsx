@@ -9,6 +9,7 @@ import { effect, onCleanup, onMount, ref, setup } from "kiru"
 import { initThemeDetector, isDarkTheme } from "../../utils/useThemeDetector"
 import { imageFilesFromHtml } from "../../utils/createImageCard"
 import { plainTextIsImageAddress } from "../../utils/plainTextIsImageAddress"
+import { residualTextFromHtml } from "../../utils/residualTextFromHtml"
 
 export interface MarkDownEditorChange {
   content: string
@@ -187,11 +188,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   Array.from(event.dataTransfer?.items ?? []).some((i) => i.kind === "file")
                 if (hasFiles) return true
                 if (/<img[\s/>]/i.test(draggedHtml)) {
-                  const residualText = draggedHtml
-                    .replace(/<img[\s/>][^>]*>/gi, "")
-                    .replace(/<[^>]+>/g, "")
-                    .replace(/&[a-z#0-9]+;/gi, " ")
-                    .trim()
+                  const residualText = residualTextFromHtml(draggedHtml)
                   if (residualText) return false
                   const plain = typeof event.dataTransfer?.getData === "function" ? event.dataTransfer.getData("text/plain") : ""
                   const plainTrim = plain.trim()
