@@ -129,7 +129,7 @@ export function NoteCard(props: NoteCardProps) {
       _handleResizeMouseUp()
       return
     }
-    const newW = Math.max(Math.min(100, canvasDimentsion.value.width - item.value.position.x), Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x))
+    const newW = Math.max(Math.min(110, canvasDimentsion.value.width - item.value.position.x), Math.min(initialResizeW.current + (e.pageX - initialResizeX.current), canvasDimentsion.value.width - item.value.position.x))
     const newH = Math.max(Math.min(80, canvasDimentsion.value.height - item.value.position.y), Math.min(initialResizeH.current + (e.pageY - initialResizeY.current), canvasDimentsion.value.height - item.value.position.y))
     const newDim = { w: newW, h: newH }
 
@@ -409,7 +409,7 @@ export function NoteCard(props: NoteCardProps) {
   function _handleResizeKeyDown(e: KeyboardEvent) {
     if (pressed.value) return
     if (openContextMenu.value) return
-    const newDim = arrowKeyResizeDimensions(e, item.value.dimensions, item.value.position, canvasDimentsion.value)
+    const newDim = arrowKeyResizeDimensions(e, item.value.dimensions, item.value.position, canvasDimentsion.value, 110)
     if (!newDim) return
     e.preventDefault()
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
