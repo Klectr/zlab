@@ -227,6 +227,7 @@ export function ImageCard(props: ImageCardProps) {
     ImagesSignal.default.removeImage(item.value.id)
     try {
       updateLocalStorage(CardTypes.IMAGES, images.images).notify()
+      toast.showToast("success", "Image deleted.")
     } catch {
       if (claimSaveFailureReport()) {
         toast.showToast("error", "Could not save your changes!")
