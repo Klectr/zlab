@@ -91,11 +91,7 @@ export default function InfiniteCanvas() {
         e.preventDefault()
         files = imageFilesFromHtml(html)
         if (!files.length) {
-          const residualText = html
-            .replace(/<img[\s/>][^>]*>/gi, "")
-            .replace(/<[^>]+>/g, "")
-            .replace(/&[a-z#0-9]+;/gi, " ")
-            .trim()
+          const residualText = residualTextFromHtml(html)
           if (residualText) return
           const plain = dt && typeof dt.getData === "function" ? dt.getData("text/plain") : ""
           const plainTrim = plain.trim()
@@ -114,11 +110,7 @@ export default function InfiniteCanvas() {
         }
         if (target?.closest?.(".cm-editor")) {
           if (!allFiles.length && hasDraggedImage && !imageFilesFromHtml(html).length) {
-            const residualText = html
-              .replace(/<img[\s/>][^>]*>/gi, "")
-              .replace(/<[^>]+>/g, "")
-              .replace(/&[a-z#0-9]+;/gi, " ")
-              .trim()
+            const residualText = residualTextFromHtml(html)
             if (residualText) return
             const plain = dt && typeof dt.getData === "function" ? dt.getData("text/plain") : ""
             const plainTrim = plain.trim()
@@ -133,11 +125,7 @@ export default function InfiniteCanvas() {
         if (!files.length) {
           files = imageFilesFromHtml(html)
           if (!files.length) {
-            const residualText = html
-              .replace(/<img[\s/>][^>]*>/gi, "")
-              .replace(/<[^>]+>/g, "")
-              .replace(/&[a-z#0-9]+;/gi, " ")
-              .trim()
+            const residualText = residualTextFromHtml(html)
             if (residualText) return
             const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
             const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
@@ -238,6 +226,12 @@ export default function InfiniteCanvas() {
       </>
     )
   }
+}
+
+function residualTextFromHtml(html: string): string {
+  const template = document.createElement("template")
+  template.innerHTML = html.replace(/<img[\s/>][^>]*>/gi, "")
+  return (template.content.textContent ?? "").trim()
 }
 
 interface ScrollToOptions extends ScrollOptions {
