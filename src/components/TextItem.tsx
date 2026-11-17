@@ -710,8 +710,8 @@ export function TextItem(props: TextCardProps) {
           userSelect: focusedItem.value === itemKey ? 'text' : 'none',
         }}
       >
-        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[-8px] z-10" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
-        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-[-8px] left-[12px] z-10" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass="cursor-pointer w-4 h-4 absolute top-0 left-0 z-10" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-0 left-[20px] z-10" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
 
         <pre
@@ -797,7 +797,7 @@ function CloseIcon({ cb, itemId, label }: CloseIconProps) {
         type="button"
         aria-label={label}
         onclick={cb}
-        className="text-close cursor-pointer w-4 h-4 absolute top-[-8px] right-[-8px] z-10"
+        className="text-close cursor-pointer w-4 h-4 absolute top-0 right-0 z-10"
         style={{
           display: focusedItem.value === itemId ? 'unset' : 'none'
         }}
