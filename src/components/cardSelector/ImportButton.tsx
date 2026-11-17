@@ -73,7 +73,8 @@ function parseImportData(data: unknown): ImportEntry[] | null {
         dimensions: { w: number; h: number }
       },
       canvasDimentsion.value,
-      rest.type === CardTypes.TEXTS
+      rest.type === CardTypes.TEXTS,
+      rest.type === CardTypes.NOTES ? 110 : 100
     )
     entries.push(rest as ImportEntry)
   }

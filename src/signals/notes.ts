@@ -24,7 +24,7 @@ function loadLocalStorage() {
         delete notes.value[key]
         continue
       }
-      clampCardEntryToCanvas(entry, canvasDimentsion.value)
+      clampCardEntryToCanvas(entry, canvasDimentsion.value, false, 110)
       entry.type = CardTypes.NOTES
       const claimedId = claimLoadedCardId(key)
       if (claimedId !== key) {

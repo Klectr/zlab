@@ -54,7 +54,8 @@ export function clampCardEntryToCanvas(
     fontSize?: unknown
   },
   canvas: { width: number; height: number },
-  isText = false
+  isText = false,
+  minW: number = 100
 ) {
   const origW = entry.dimensions.w
   const origH = entry.dimensions.h
@@ -63,7 +64,7 @@ export function clampCardEntryToCanvas(
   if (!isText) {
     entry.dimensions.w = Math.max(
       entry.dimensions.w,
-      Math.min(100, canvas.width)
+      Math.min(minW, canvas.width)
     )
     entry.dimensions.h = Math.max(
       entry.dimensions.h,
