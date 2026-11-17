@@ -240,6 +240,7 @@ export function NoteCard(props: NoteCardProps) {
     NotesSigal.default.removeNote(item.value.id)
     try {
       persistLocalStorage()
+      toast.showToast("success", "Note deleted.")
     } catch {
       if (claimSaveFailureReport()) {
         toast.showToast("error", "Could not save your changes!")

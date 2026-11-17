@@ -374,6 +374,7 @@ export function TextItem(props: TextCardProps) {
     TextSignal.default.removeText(item.value.id)
     try {
       persistLocalStorage()
+      toast.showToast("success", "Text deleted.")
     } catch {
       if (claimSaveFailureReport()) {
         toast.showToast("error", "Could not save your changes!")
