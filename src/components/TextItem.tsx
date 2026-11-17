@@ -505,8 +505,19 @@ export function TextItem(props: TextCardProps) {
     updateLocalStorage()
   }
 
+  function _textFromHtml(html: string): string {
+    const template = document.createElement("template")
+    template.innerHTML = html
+    template.content.querySelectorAll("img, script, style").forEach((el) => el.remove())
+    return _joinChildText(Array.from(template.content.childNodes), true).trim()
+  }
+
   function _insertCompanionText(dt: DataTransfer): boolean {
-    const plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
+    let plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
+    if (!plain) {
+      const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
+      if (/<img[\s/>]/i.test(html)) plain = _textFromHtml(html)
+    }
     if (!plain) return false
     const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
     if (plainTextIsImageAddress(plain, uriList)) return false
