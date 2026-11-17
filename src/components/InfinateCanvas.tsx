@@ -115,7 +115,28 @@ export default function InfiniteCanvas() {
           toast.showToast("error", "Only image files can be dropped.")
           return
         }
-        if (target?.closest?.(".cm-editor")) return
+        if (target?.closest?.(".cm-editor")) {
+          if (!allFiles.length && hasDraggedImage && !imageFilesFromHtml(html).length) {
+            const residualText = html
+              .replace(/<img[\s/>][^>]*>/gi, "")
+              .replace(/<[^>]+>/g, "")
+              .replace(/&[a-z#0-9]+;/gi, " ")
+              .trim()
+            if (residualText) return
+            const plain = dt && typeof dt.getData === "function" ? dt.getData("text/plain") : ""
+            const plainTrim = plain.trim()
+            if (plainTrim) {
+              const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+              const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
+              const isLoneUri = !/[\r\n]/.test(plainTrim) && (plainTrim === firstUri || /^(https?|data|blob):\S+$/i.test(plainTrim))
+              const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
+              const allFileUri = lines.length > 0 && lines.every((l) => l.startsWith("file://"))
+              if (!isLoneUri && !allFileUri) return
+            }
+            toast.showToast("error", "Only image files can be dropped.")
+          }
+          return
+        }
         if (!files.length) {
           files = imageFilesFromHtml(html)
           if (!files.length) {

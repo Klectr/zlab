@@ -182,14 +182,36 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   .map((i) => i.getAsFile())
                   .filter((f): f is File => !!f)
               }
+              let draggedHtml = ""
               if (!files.length && event.dataTransfer && typeof event.dataTransfer.getData === "function") {
-                const html = event.dataTransfer.getData("text/html")
-                if (/<img[\s/>]/i.test(html)) files = imageFilesFromHtml(html)
+                draggedHtml = event.dataTransfer.getData("text/html")
+                if (/<img[\s/>]/i.test(draggedHtml)) files = imageFilesFromHtml(draggedHtml)
               }
               if (!files.length) {
                 const hasFiles = (event.dataTransfer?.files?.length ?? 0) > 0 ||
                   Array.from(event.dataTransfer?.items ?? []).some((i) => i.kind === "file")
-                return hasFiles
+                if (hasFiles) return true
+                if (/<img[\s/>]/i.test(draggedHtml)) {
+                  const residualText = draggedHtml
+                    .replace(/<img[\s/>][^>]*>/gi, "")
+                    .replace(/<[^>]+>/g, "")
+                    .replace(/&[a-z#0-9]+;/gi, " ")
+                    .trim()
+                  if (residualText) return false
+                  const plain = typeof event.dataTransfer?.getData === "function" ? event.dataTransfer.getData("text/plain") : ""
+                  const plainTrim = plain.trim()
+                  if (plainTrim) {
+                    const uriList = typeof event.dataTransfer?.getData === "function" ? event.dataTransfer.getData("text/uri-list") : ""
+                    const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
+                    const isLoneUri = !/[\r\n]/.test(plainTrim) && (plainTrim === firstUri || /^(https?|data|blob):\S+$/i.test(plainTrim))
+                    const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
+                    const allFileUri = lines.length > 0 && lines.every((l) => l.startsWith("file://"))
+                    if (!isLoneUri && !allFileUri) return false
+                  }
+                  event.preventDefault()
+                  return true
+                }
+                return false
               }
               event.preventDefault()
               editorView.focus()
