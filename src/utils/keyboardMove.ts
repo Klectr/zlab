@@ -80,14 +80,15 @@ export function arrowKeyResizeDimensions(
   e: KeyboardEvent,
   dimensions: { w: number; h: number },
   position: { x: number; y: number },
-  canvas: { width: number; height: number }
+  canvas: { width: number; height: number },
+  minW: number = 100
 ): { w: number; h: number } | null {
   const delta = _arrowResizeDelta(e)
   if (!delta) return null
   const availW = canvas.width - position.x
   const availH = canvas.height - position.y
   return {
-    w: Math.max(Math.min(100, availW), Math.min(dimensions.w + delta.dw, availW)),
+    w: Math.max(Math.min(minW, availW), Math.min(dimensions.w + delta.dw, availW)),
     h: Math.max(Math.min(80, availH), Math.min(dimensions.h + delta.dh, availH)),
   }
 }
