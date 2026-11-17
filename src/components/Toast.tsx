@@ -84,12 +84,15 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
     return () => clearInterval(interval)
   })
 
+  let lastToastTs = 0
+
   const showToast = (
     type: Toast["type"],
     message: string,
     duration?: number
   ) => {
-    const ts = Date.now()
+    const ts = Math.max(Date.now(), lastToastTs + 1)
+    lastToastTs = ts
     const toast = {
       ts,
       type,
