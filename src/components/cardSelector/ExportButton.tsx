@@ -21,6 +21,7 @@ export function ExportButton() {
     const name = `Zlab_export`
     const jsonData = JSON.stringify(mergeState)
     createFileAndExport(name, jsonData, "text/json")
+    toast.showToast("success", "Board exported.")
     if (Object.keys(mergeState).length > MAX_IMPORT_ENTRIES)
       toast.showToast("warning", `This board has over ${MAX_IMPORT_ENTRIES} cards. The export is too large to import back.`)
   }

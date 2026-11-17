@@ -267,6 +267,7 @@ export function NoteCard(props: NoteCardProps) {
 
   function _exportFile() {
     createFileAndExport("Note", item.value.contents, "text/markdown")
+    toast.showToast("success", "Note exported.")
   }
 
   function _handleExportClick() {
