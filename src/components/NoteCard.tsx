@@ -361,6 +361,7 @@ export function NoteCard(props: NoteCardProps) {
       return
     }
     if (e.repeat) return
+    if (e.shiftKey) return
     if ((!e.ctrlKey && !e.metaKey) || e.altKey) return
 
     const target = e.target as HTMLElement | null

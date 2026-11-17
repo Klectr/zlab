@@ -587,6 +587,7 @@ export function TextItem(props: TextCardProps) {
       return
     }
     if (e.repeat) return
+    if (e.shiftKey) return
     if ((!e.ctrlKey && !e.metaKey) || e.altKey) return
     if (e.key !== 'Delete' && e.key !== 'Backspace') return
     const target = e.target as HTMLElement | null
