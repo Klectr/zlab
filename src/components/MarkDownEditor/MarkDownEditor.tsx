@@ -8,6 +8,7 @@ import { tags } from "@lezer/highlight"
 import { effect, onCleanup, onMount, ref, setup } from "kiru"
 import { initThemeDetector, isDarkTheme } from "../../utils/useThemeDetector"
 import { imageFilesFromHtml } from "../../utils/createImageCard"
+import { plainTextIsImageAddress } from "../../utils/plainTextIsImageAddress"
 
 export interface MarkDownEditorChange {
   content: string
@@ -154,16 +155,10 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               const plainText = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
               const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
               let text = plainText || uriList
-              if (text && plainText) {
-                const trimmed = plainText.trim()
-                if (trimmed && !/[\r\n]/.test(trimmed)) {
-                  const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
-                  if (trimmed === firstUri || /^(https?|data|blob):\S+$/i.test(trimmed)) {
-                    text = ""
-                  }
-                }
+              if (text && plainText && plainTextIsImageAddress(plainText, uriList)) {
+                text = ""
               }
-              if (text) {
+              if (text && !plainText) {
                 const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
                 if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) {
                   text = ""
@@ -202,11 +197,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   const plainTrim = plain.trim()
                   if (plainTrim) {
                     const uriList = typeof event.dataTransfer?.getData === "function" ? event.dataTransfer.getData("text/uri-list") : ""
-                    const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
-                    const isLoneUri = !/[\r\n]/.test(plainTrim) && (plainTrim === firstUri || /^(https?|data|blob):\S+$/i.test(plainTrim))
-                    const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
-                    const allFileUri = lines.length > 0 && lines.every((l) => l.startsWith("file://"))
-                    if (!isLoneUri && !allFileUri) return false
+                    if (!plainTextIsImageAddress(plain, uriList)) return false
                   }
                   event.preventDefault()
                   return true
@@ -219,9 +210,8 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               let text = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
               if (text) {
                 const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
-                const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
                 const trimmed = text.trim()
-                if ((lines.length > 0 && lines.every((l) => l.startsWith("file://"))) || (!!uriList && trimmed === uriList.trim()) || (!/[\r\n]/.test(trimmed) && /^(https?|data|blob):\S+$/i.test(trimmed))) {
+                if (plainTextIsImageAddress(text, uriList) || (!!uriList && trimmed === uriList.trim())) {
                   text = ""
                 }
               }

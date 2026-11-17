@@ -9,6 +9,7 @@ import { CardSelector } from "./cardSelector/CardSelector"
 import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
 import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
+import { plainTextIsImageAddress } from "../utils/plainTextIsImageAddress"
 import { disarmActiveDrags } from "../utils/activeDrag"
 import { useToast } from "./Toast"
 import { TextItem } from "./TextItem"
@@ -100,11 +101,7 @@ export default function InfiniteCanvas() {
           const plainTrim = plain.trim()
           if (plainTrim) {
             const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-            const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
-            const isLoneUri = !/[\r\n]/.test(plainTrim) && (plainTrim === firstUri || /^(https?|data|blob):\S+$/i.test(plainTrim))
-            const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
-            const allFileUri = lines.length > 0 && lines.every((l) => l.startsWith("file://"))
-            if (!isLoneUri && !allFileUri) return
+            if (!plainTextIsImageAddress(plain, uriList)) return
           }
           toast.showToast("error", "Could not load that image!")
           return
@@ -127,11 +124,7 @@ export default function InfiniteCanvas() {
             const plainTrim = plain.trim()
             if (plainTrim) {
               const uriList = dt && typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-              const firstUri = uriList.split(/\r?\n/).map((l) => l.trim()).find((l) => !!l && !l.startsWith("#")) ?? ""
-              const isLoneUri = !/[\r\n]/.test(plainTrim) && (plainTrim === firstUri || /^(https?|data|blob):\S+$/i.test(plainTrim))
-              const lines = plain.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
-              const allFileUri = lines.length > 0 && lines.every((l) => l.startsWith("file://"))
-              if (!isLoneUri && !allFileUri) return
+              if (!plainTextIsImageAddress(plain, uriList)) return
             }
             toast.showToast("error", "Only image files can be dropped.")
           }
