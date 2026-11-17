@@ -440,6 +440,7 @@ export function NoteCard(props: NoteCardProps) {
     const menuTitle = cardSnippet(cardName) || cardName
 
     const cardPositionStyle = {
+      outline: focusedItem.value === itemKey ? '1px solid' : '',
       zIndex: `${focusedItem.value == itemKey ? LayerEnum.CARD_ELEVATED : LayerEnum.CARD}`,
       width: `${it.dimensions.w}px`,
       height: `${it.dimensions.h}px`,
