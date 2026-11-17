@@ -395,8 +395,6 @@ export function ImageCard(props: ImageCardProps) {
             backgroundPosition: 'center'
           }}
         >
-          <span role="img" aria-label={cardName || "Image"} className="sr-only"></span>
-
           <MenuIcon label={`Image menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-0 top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
 
           <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`image-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show image shortcuts${nameSuffix}`} buttonClass="flex justify-center items-center bg-black/60 hover:bg-blue-500 rounded w-5 h-5 text-white absolute left-[24px] top-0 cursor-pointer" iconClass="w-4 h-4 text-white" />
