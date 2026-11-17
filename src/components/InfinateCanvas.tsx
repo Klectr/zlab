@@ -10,6 +10,7 @@ import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
 import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
 import { plainTextIsImageAddress } from "../utils/plainTextIsImageAddress"
+import { residualTextFromHtml } from "../utils/residualTextFromHtml"
 import { disarmActiveDrags } from "../utils/activeDrag"
 import { useToast } from "./Toast"
 import { TextItem } from "./TextItem"
@@ -226,12 +227,6 @@ export default function InfiniteCanvas() {
       </>
     )
   }
-}
-
-function residualTextFromHtml(html: string): string {
-  const template = document.createElement("template")
-  template.innerHTML = html.replace(/<img[\s/>][^>]*>/gi, "")
-  return (template.content.textContent ?? "").trim()
 }
 
 interface ScrollToOptions extends ScrollOptions {
