@@ -7,7 +7,7 @@ import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } fr
 import { tags } from "@lezer/highlight"
 import { effect, onCleanup, onMount, ref, setup } from "kiru"
 import { initThemeDetector, isDarkTheme } from "../../utils/useThemeDetector"
-import { imageFilesFromHtml } from "../../utils/createImageCard"
+import { imageFilesFromHtml, isImageFileCandidate } from "../../utils/createImageCard"
 import { plainTextIsImageAddress } from "../../utils/plainTextIsImageAddress"
 import { residualTextFromHtml } from "../../utils/residualTextFromHtml"
 
@@ -133,12 +133,12 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           EditorView.domEventHandlers({
             paste: (event) => {
               if (!onPasteImage) return false
-              let files = Array.from(event.clipboardData?.files ?? []).filter((f) => f.type.startsWith("image/"))
+              let files = Array.from(event.clipboardData?.files ?? []).filter(isImageFileCandidate)
               if (!files.length && event.clipboardData) {
                 files = Array.from(event.clipboardData.items)
-                  .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
+                  .filter((i) => i.kind === "file" && (i.type.startsWith("image/") || i.type === ""))
                   .map((i) => i.getAsFile())
-                  .filter((f): f is File => !!f)
+                  .filter((f): f is File => !!f && isImageFileCandidate(f))
               }
               if (!files.length && event.clipboardData && typeof event.clipboardData.getData === "function") {
                 const html = event.clipboardData.getData("text/html")
@@ -171,12 +171,12 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
             },
             drop: (event, editorView) => {
               if (!onPasteImage) return false
-              let files = Array.from(event.dataTransfer?.files ?? []).filter((f) => f.type.startsWith("image/"))
+              let files = Array.from(event.dataTransfer?.files ?? []).filter(isImageFileCandidate)
               if (!files.length && event.dataTransfer) {
                 files = Array.from(event.dataTransfer.items)
-                  .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
+                  .filter((i) => i.kind === "file" && (i.type.startsWith("image/") || i.type === ""))
                   .map((i) => i.getAsFile())
-                  .filter((f): f is File => !!f)
+                  .filter((f): f is File => !!f && isImageFileCandidate(f))
               }
               let draggedHtml = ""
               if (!files.length && event.dataTransfer && typeof event.dataTransfer.getData === "function") {

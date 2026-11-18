@@ -8,7 +8,7 @@ import images from "../signals/images"
 import { CardSelector } from "./cardSelector/CardSelector"
 import { Logo } from "./Logo"
 import { useThemeDetector } from "../utils/useThemeDetector"
-import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
+import { createImageCardFromFile, imageFilesFromHtml, isImageFileCandidate } from "../utils/createImageCard"
 import { plainTextIsImageAddress } from "../utils/plainTextIsImageAddress"
 import { residualTextFromHtml } from "../utils/residualTextFromHtml"
 import { disarmActiveDrags } from "../utils/activeDrag"
@@ -84,7 +84,7 @@ export default function InfiniteCanvas() {
           .map((i) => i.getAsFile())
           .filter((f): f is File => !!f)
       }
-      let files = allFiles.filter((f) => f.type.startsWith("image/"))
+      let files = allFiles.filter(isImageFileCandidate)
       const html = !allFiles.length && dt && typeof dt.getData === "function" ? dt.getData("text/html") : ""
       const hasDraggedImage = /<img[\s/>]/i.test(html)
       if (!allFiles.length && target?.closest?.(".text-p")) {

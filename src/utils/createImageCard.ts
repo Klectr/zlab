@@ -6,6 +6,34 @@ import { CardTypes } from "../types"
 import { cascadeSpawnPosition } from "./cascadeSpawnPosition"
 import { isValidImageContents, updateLocalStorage } from "./localStorage"
 
+const IMAGE_MIME_BY_EXTENSION: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  avif: "image/avif",
+  svg: "image/svg+xml",
+  bmp: "image/bmp",
+  ico: "image/x-icon",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+  heic: "image/heic",
+  heif: "image/heif",
+}
+
+export function imageMimeTypeForFileName(name: string): string | null {
+  const dot = name.lastIndexOf(".")
+  if (dot < 0) return null
+  return IMAGE_MIME_BY_EXTENSION[name.slice(dot + 1).toLowerCase()] ?? null
+}
+
+export function isImageFileCandidate(file: File): boolean {
+  if (file.type.startsWith("image/")) return true
+  if (file.type !== "") return false
+  return imageMimeTypeForFileName(file.name) !== null
+}
+
 export function imageFileFromDataUrl(dataUrl: string): File | null {
   const match = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl.replace(/\s/g, ""))
   if (match) {
@@ -59,6 +87,12 @@ export function createImageCardFromFile(
     onLoadError()
   }
   reader.onload = function (readerEvent) {
+    let result = readerEvent.target?.result
+    if (typeof result === "string" && file.type === "") {
+      const mime = imageMimeTypeForFileName(file.name)
+      const bare = /^data:[^,]*;base64,/.exec(result)
+      if (mime && bare && !result.startsWith("data:image/")) result = `data:${mime};base64,${result.slice(bare[0].length)}`
+    }
     const image = document.createElement("img")
     image.onerror = function () {
       onLoadError()
@@ -80,7 +114,7 @@ export function createImageCardFromFile(
         Math.min(80, canvasDimentsion.value.height)
       )
 
-      const content = readerEvent.target?.result
+      const content = result
       if (typeof content !== "string" || !isValidImageContents(content)) {
         onLoadError()
         return
@@ -131,6 +165,6 @@ export function createImageCardFromFile(
         }
       }
     }
-    image.src = readerEvent.target?.result as string
+    image.src = result as string
   }
 }
