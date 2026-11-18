@@ -555,18 +555,7 @@ export function TextItem(props: TextCardProps) {
     }
   }
 
-  function _handleDrop(e: DragEvent) {
-    const dt = e.dataTransfer
-    if (!dt) return
-    if ((dt.files ?? []).length) return
-    if (Array.from(dt.items ?? []).some((i) => i.kind === "file")) return
-    const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
-    if (!/<img[\s/>]/i.test(html)) return
-    const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
-    if (plain) {
-      const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-      if (plainTextIsImageAddress(plain, uriList)) return
-    }
+  function _placeCaretAtDropPoint(e: DragEvent) {
     const el = pRef.current
     const sel = document.getSelection()
     if (el && sel) {
@@ -589,6 +578,24 @@ export function TextItem(props: TextCardProps) {
       sel.removeAllRanges()
       if (range && el.contains(range.startContainer)) sel.addRange(range)
     }
+  }
+
+  function _handleDrop(e: DragEvent) {
+    const dt = e.dataTransfer
+    if (!dt) return
+    if ((dt.files ?? []).length || Array.from(dt.items ?? []).some((i) => i.kind === "file")) {
+      _placeCaretAtDropPoint(e)
+      _insertCompanionText(dt)
+      return
+    }
+    const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
+    if (!/<img[\s/>]/i.test(html)) return
+    const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
+    if (plain) {
+      const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+      if (plainTextIsImageAddress(plain, uriList)) return
+    }
+    _placeCaretAtDropPoint(e)
     _insertCompanionText(dt)
   }
 
