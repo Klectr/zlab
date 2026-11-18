@@ -23,6 +23,7 @@ interface MarkDownEditorProps {
   onChange: (e: MarkDownEditorChange) => void
   onFocus?: () => void
   onPasteImage?: (files: File[]) => void
+  onPasteRejected?: () => void
 }
 
 const editorThemeSpec = {
@@ -71,7 +72,7 @@ const highlightStyleFor = (dark: boolean) => HighlightStyle.define([
 ])
 
 export function MarkDownEditor(props: MarkDownEditorProps) {
-  const { initial, onChange, onFocus, onPasteImage, autoFocus, autoFocusCheck } = props
+  const { initial, onChange, onFocus, onPasteImage, onPasteRejected, autoFocus, autoFocusCheck } = props
   const $ = setup<MarkDownEditorProps>()
   const titleProp = $.derive((p) => p.title)
   const labelFor = (t?: string) => {
@@ -148,6 +149,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 const hasFiles = (event.clipboardData?.files?.length ?? 0) > 0 ||
                   Array.from(event.clipboardData?.items ?? []).some((i) => i.kind === "file")
                 if (!hasFiles) return false
+                onPasteRejected?.()
                 event.preventDefault()
                 return true
               }

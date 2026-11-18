@@ -265,6 +265,10 @@ export function NoteCard(props: NoteCardProps) {
     })
   }
 
+  function _handlePasteRejected() {
+    toast.showToast("error", "Only image files can be pasted.")
+  }
+
   function _exportFile() {
     createFileAndExport("Note", item.value.contents, "text/markdown")
     toast.showToast("success", "Note exported.")
@@ -490,7 +494,7 @@ export function NoteCard(props: NoteCardProps) {
             <hr className="border dark:border-[#2c2c2c] border-[#ddd]" />
 
             {/* Content Body */}
-            <MarkDownEditor initial={it.contents} title={cardName || undefined} autoFocus={autoFocusEditor} autoFocusCheck={() => focusedItem.value === itemKey} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} />
+            <MarkDownEditor initial={it.contents} title={cardName || undefined} autoFocus={autoFocusEditor} autoFocusCheck={() => focusedItem.value === itemKey} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} onPasteRejected={_handlePasteRejected} />
             <ExpandIcon cb={_handleResizeMouseDown} label={`Resize note${nameSuffix}`} />
           </div>
 
