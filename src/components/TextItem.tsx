@@ -542,7 +542,14 @@ export function TextItem(props: TextCardProps) {
       return
     }
     const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
-    if (!/<img[\s/>]/i.test(html)) return
+    if (!/<img[\s/>]/i.test(html)) {
+      const hasFiles = (dt.files ?? []).length > 0 || Array.from(dt.items ?? []).some((i) => i.kind === "file")
+      if (hasFiles) {
+        e.preventDefault()
+        toast.showToast("error", "Only image files can be pasted.")
+      }
+      return
+    }
     e.preventDefault()
     const dataFiles = imageFilesFromHtml(html)
     if (dataFiles.length) {
