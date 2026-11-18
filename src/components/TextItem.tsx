@@ -593,6 +593,14 @@ export function TextItem(props: TextCardProps) {
     const dt = e.dataTransfer
     if (!dt) return
     if ((dt.files ?? []).length || Array.from(dt.items ?? []).some((i) => i.kind === "file")) {
+      let files = Array.from(dt.files ?? []).filter(isImageFileCandidate)
+      if (!files.length) {
+        files = Array.from(dt.items ?? [])
+          .filter((i) => i.kind === "file" && (i.type.startsWith("image/") || i.type === ""))
+          .map((i) => i.getAsFile())
+          .filter((f): f is File => !!f && isImageFileCandidate(f))
+      }
+      if (!files.length) return
       _placeCaretAtDropPoint(e)
       _insertCompanionText(dt)
       return
