@@ -29,7 +29,7 @@ export function ImageCard(props: ImageCardProps) {
   const $ = setup<ImageCardProps>()
   const itemKey = props.itemKey
   const item = $.derive((p) => p.data)
-  const { debounce } = createDebounce()
+  const { debounce, cancel } = createDebounce()
   const pressed = signal(false)
   const cardRef = ref<HTMLDivElement>(null)
   const newX = ref(0)
@@ -216,6 +216,7 @@ export function ImageCard(props: ImageCardProps) {
     document.removeEventListener('focusin', _handleFocusIn)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
+    cancel()
   })
 
   function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
