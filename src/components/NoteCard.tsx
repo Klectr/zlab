@@ -54,7 +54,7 @@ export function NoteCard(props: NoteCardProps) {
   const autoFocusEditor = consumeEditorFocus(itemKey)
   const cardRef = ref<HTMLDivElement>(null)
 
-  const { debounce } = createDebounce()
+  const { debounce, cancel } = createDebounce()
   const toast = useToast()
 
   function updateLocalStorage(time?: number) {
@@ -223,6 +223,7 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('keydown', _handleDragEscape, true)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
+    cancel()
   })
 
   function _handleMdChange(e: MarkDownEditorChange) {

@@ -8,5 +8,10 @@ export function createDebounce() {
     }, timeout)
   }
 
-  return { debounce }
+  function cancel() {
+    clearTimeout(timer)
+    timer = undefined
+  }
+
+  return { debounce, cancel }
 }

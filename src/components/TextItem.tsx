@@ -106,7 +106,7 @@ export function TextItem(props: TextCardProps) {
   const $ = setup<TextCardProps>()
   const itemKey = props.itemKey
   const item = $.derive((p) => p.data)
-  const { debounce } = createDebounce()
+  const { debounce, cancel } = createDebounce()
   const pressed = signal(false)
   const newX = ref(0)
   const newY = ref(0)
@@ -362,6 +362,7 @@ export function TextItem(props: TextCardProps) {
     window.removeEventListener('keydown', _handleDragEscape, true)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
+    cancel()
   })
 
   function _handleClose(e?: Kiru.MouseEvent<HTMLButtonElement>) {
