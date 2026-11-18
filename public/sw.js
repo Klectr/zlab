@@ -1,7 +1,6 @@
-const CACHE_NAME = "zlab-v31"
+const CACHE_NAME = "zlab-v32"
 
 async function isHtmlForAsset(pathname, response) {
-  if (!/\.(?:js|css|woff2|png|webmanifest)$/.test(pathname)) return false
   let contentType = ""
   try {
     contentType = response.headers?.get?.("content-type") ?? ""
