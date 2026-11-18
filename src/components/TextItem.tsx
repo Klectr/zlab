@@ -601,7 +601,10 @@ export function TextItem(props: TextCardProps) {
     const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
     if (plain) {
       const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-      if (plainTextIsImageAddress(plain, uriList) && !_textFromHtml(html)) return
+      if (plainTextIsImageAddress(plain, uriList)) {
+        const derived = _textFromHtml(html)
+        if (!derived || plainTextIsImageAddress(derived, uriList)) return
+      }
     }
     _placeCaretAtDropPoint(e)
     _insertCompanionText(dt)
