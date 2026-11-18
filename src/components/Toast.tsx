@@ -99,7 +99,14 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
       message,
       expires: ts + (duration ?? defaultDuration),
     }
-    toasts.value = [...toasts.value, toast]
+    const next = [...toasts.value, toast]
+    const stackTop = window.innerWidth <= 640 ? 52 : 16
+    const maxToasts = Math.max(1, Math.floor((window.innerHeight - stackTop - 64) / 70) + 1)
+    while (next.length > maxToasts) {
+      const evicted = next.shift()!
+      pauseSources.delete(evicted.ts)
+    }
+    toasts.value = next
   }
 
   return () => (
