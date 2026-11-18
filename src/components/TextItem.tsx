@@ -514,12 +514,13 @@ export function TextItem(props: TextCardProps) {
 
   function _insertCompanionText(dt: DataTransfer): boolean {
     let plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
+    const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
+    if (plain && plainTextIsImageAddress(plain, uriList)) plain = ""
     if (!plain) {
       const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
       if (/<img[\s/>]/i.test(html)) plain = _textFromHtml(html)
     }
     if (!plain) return false
-    const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
     if (plainTextIsImageAddress(plain, uriList)) return false
     _insertPlainText(plain)
     return true
@@ -600,7 +601,10 @@ export function TextItem(props: TextCardProps) {
     const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
     if (plain) {
       const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-      if (plainTextIsImageAddress(plain, uriList)) return
+      if (plainTextIsImageAddress(plain, uriList)) {
+        const derived = _textFromHtml(html)
+        if (!derived || plainTextIsImageAddress(derived, uriList)) return
+      }
     }
     _placeCaretAtDropPoint(e)
     _insertCompanionText(dt)
