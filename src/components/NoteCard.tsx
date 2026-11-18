@@ -492,7 +492,7 @@ export function NoteCard(props: NoteCardProps) {
               </div>
             </div>
 
-            <hr className="border dark:border-[#2c2c2c] border-[#ddd]" />
+            <hr className="border border-[#ddd]" />
 
             {/* Content Body */}
             <MarkDownEditor initial={it.contents} title={cardName || undefined} autoFocus={autoFocusEditor} autoFocusCheck={() => focusedItem.value === itemKey} onChange={_handleMdChange} onFocus={_handleFocusCard} onPasteImage={_handlePasteImage} onPasteRejected={_handlePasteRejected} />
