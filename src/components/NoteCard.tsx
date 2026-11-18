@@ -367,8 +367,8 @@ export function NoteCard(props: NoteCardProps) {
     if ((!e.ctrlKey && !e.metaKey) || e.altKey) return
 
     const target = e.target as HTMLElement | null
-    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal")
-    const inTextTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor")
+    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal, #card-selector")
+    const inTextTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #card-selector")
 
     // TODO: add modal popup
 
