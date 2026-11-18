@@ -28,7 +28,7 @@ export function arrowKeyMovePosition(
   if (!target || typeof target.closest !== "function") return null
   if (
     target.closest(
-      "input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal"
+      "input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal, #card-selector"
     )
   )
     return null
@@ -69,7 +69,7 @@ function _arrowResizeDelta(e: KeyboardEvent): { dw: number; dh: number } | null 
   if (!target || typeof target.closest !== "function") return null
   if (
     target.closest(
-      "input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal"
+      "input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal, #card-selector"
     )
   )
     return null
