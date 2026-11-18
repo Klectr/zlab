@@ -13,7 +13,7 @@ import { arrowKeyMovePosition, arrowKeyResizeFontSize, scrollCardIntoView } from
 import { consumeEditorFocus } from "../utils/editorFocus"
 import { useToast } from "./Toast"
 import { cardSnippet, textCardName } from "../utils/cardName"
-import { createImageCardFromFile, imageFilesFromHtml } from "../utils/createImageCard"
+import { createImageCardFromFile, imageFilesFromHtml, isImageFileCandidate } from "../utils/createImageCard"
 import { plainTextIsImageAddress } from "../utils/plainTextIsImageAddress"
 import { MenuIcon } from "./icons/MenuIcon"
 import { HelpIcon } from "./icons/HelpIcon"
@@ -528,12 +528,12 @@ export function TextItem(props: TextCardProps) {
   function _handlePaste(e: ClipboardEvent) {
     const dt = e.clipboardData
     if (!dt) return
-    let files = Array.from(dt.files ?? []).filter((f) => f.type.startsWith("image/"))
+    let files = Array.from(dt.files ?? []).filter(isImageFileCandidate)
     if (!files.length) {
       files = Array.from(dt.items ?? [])
-        .filter((i) => i.kind === "file" && i.type.startsWith("image/"))
+        .filter((i) => i.kind === "file" && (i.type.startsWith("image/") || i.type === ""))
         .map((i) => i.getAsFile())
-        .filter((f): f is File => !!f)
+        .filter((f): f is File => !!f && isImageFileCandidate(f))
     }
     if (files.length) {
       e.preventDefault()
