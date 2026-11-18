@@ -1,4 +1,4 @@
-import { ImagesSignal, canvasDimentsion, focusedItem } from "../signals"
+import { ImagesSignal, canvasDimentsion, focusedItem, getBoardEpoch } from "../signals"
 import images from "../signals/images"
 import notes from "../signals/notes"
 import texts from "../signals/texts"
@@ -75,6 +75,7 @@ export function createImageCardFromFile(
     onPersistError()
     return
   }
+  const epochAtStart = getBoardEpoch()
   const focusAtStart = focusedItem.value
   const idsAtStart = new Set([
     ...Object.keys(notes.notes.value),
@@ -98,6 +99,7 @@ export function createImageCardFromFile(
       onLoadError()
     }
     image.onload = function () {
+      if (getBoardEpoch() !== epochAtStart) return
       const { width, height } = image
       if (!(width > 0) || !(height > 0)) {
         onLoadError()
