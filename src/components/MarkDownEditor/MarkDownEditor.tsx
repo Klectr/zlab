@@ -258,7 +258,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (text) {
                 editorView.dispatch({
                   changes: { from: pos, insert: text },
-                  selection: { anchor: pos, head: pos + text.length },
+                  selection: { anchor: pos + text.length },
                   userEvent: "input.drop",
                 })
               }
