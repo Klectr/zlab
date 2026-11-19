@@ -62,7 +62,7 @@ export function ContextMenuPortal({
   menuId,
 }: ContextMenuPortalProps) {
   initMouseTracking()
-  let dismissedByOutsidePointerDown = false
+  let dismissedWithoutFocusRestore = false
   const pos = signal({ x: 0, y: 0 })
   const ready = signal(false)
   const elRef = ref<HTMLDivElement>(null)
@@ -82,7 +82,7 @@ export function ContextMenuPortal({
       pointerStartedInsideMenu = !!el && e.composedPath().includes(el)
       pointerStartedOutside = !!el && !pointerStartedInsideMenu
       if (el && pointerStartedOutside) {
-        dismissedByOutsidePointerDown = true
+        dismissedWithoutFocusRestore = true
         closeAction?.()
       }
     }
@@ -147,7 +147,7 @@ export function ContextMenuPortal({
       ready.value = false
       return
     }
-    dismissedByOutsidePointerDown = false
+    dismissedWithoutFocusRestore = false
     const activeAtOpen = document.activeElement as HTMLElement | null
     const chainedRestore =
       !!lastMenuRestore &&
@@ -236,16 +236,19 @@ export function ContextMenuPortal({
       items[next].focus({ preventScroll: true })
     }
     function _handleViewportChange() {
+      dismissedWithoutFocusRestore = true
       closeAction?.()
     }
     function _handleScroll(e: Event) {
       const el = elRef.current
       if (el && e.target instanceof Node && el.contains(e.target)) return
+      dismissedWithoutFocusRestore = true
       closeAction?.()
     }
     function _handleWheel(e: Event) {
       const el = elRef.current
       if (el && e.target instanceof Node && el.contains(e.target)) return
+      dismissedWithoutFocusRestore = true
       closeAction?.()
     }
     function _handleFocusIn(e: FocusEvent) {
@@ -312,8 +315,8 @@ export function ContextMenuPortal({
         (!!elRef.current?.contains(active) ||
           !!active.closest?.("#context-menu-portal"))
       const activeIsBody = !active || active === document.body
-      const skipRestore = dismissedByOutsidePointerDown
-      dismissedByOutsidePointerDown = false
+      const skipRestore = dismissedWithoutFocusRestore
+      dismissedWithoutFocusRestore = false
       if (
         !skipRestore &&
         previouslyFocused &&
