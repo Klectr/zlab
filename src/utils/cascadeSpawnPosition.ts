@@ -13,5 +13,21 @@ export function cascadeSpawnPosition(
     if (!isOccupied(base.x + offset, base.y + offset))
       return { x: base.x + offset, y: base.y + offset }
   }
+  for (let offset = 24; base.x + offset <= max.x; offset += 24) {
+    if (!isOccupied(base.x + offset, base.y))
+      return { x: base.x + offset, y: base.y }
+  }
+  for (let offset = -24; base.x + offset >= 0; offset -= 24) {
+    if (!isOccupied(base.x + offset, base.y))
+      return { x: base.x + offset, y: base.y }
+  }
+  for (let offset = 24; base.y + offset <= max.y; offset += 24) {
+    if (!isOccupied(base.x, base.y + offset))
+      return { x: base.x, y: base.y + offset }
+  }
+  for (let offset = -24; base.y + offset >= 0; offset -= 24) {
+    if (!isOccupied(base.x, base.y + offset))
+      return { x: base.x, y: base.y + offset }
+  }
   return { x: base.x, y: base.y }
 }
