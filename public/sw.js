@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v32"
+const CACHE_NAME = "zlab-v33"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -242,6 +242,8 @@ self.addEventListener("fetch", (event) => {
         .then(async (response) => {
           if (!response.ok) {
             if (response.type === "opaqueredirect") return response
+            const cachedExact = await matchOwnCache(request)
+            if (cachedExact) return cachedExact
             const cachedShell = await matchOwnCache("/index.html")
             if (cachedShell) return cachedShell
             return response
@@ -326,7 +328,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response
         })
-        .catch(async () => (await matchOwnCache("/index.html")) ?? offlinePageResponse())
+        .catch(async () => (await matchOwnCache(request)) ?? (await matchOwnCache("/index.html")) ?? offlinePageResponse())
     )
     return
   }
