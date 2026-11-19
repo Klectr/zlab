@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v33"
+const CACHE_NAME = "zlab-v34"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -254,6 +254,17 @@ self.addEventListener("fetch", (event) => {
             const finalPath = new URL(response.url || request.url).pathname
             isShellPath = finalPath === "/" || finalPath === "/index.html"
           } catch {}
+          if (response.ok && !isShellPath && response.type !== "opaqueredirect") {
+            const copy = response.clone()
+            const put = (async () => {
+              if (await isHtmlForAsset(url.pathname, response)) return
+              const cache = await caches.open(CACHE_NAME)
+              await cache.put(request, copy)
+            })().catch(() => {})
+            try {
+              event.waitUntil(put)
+            } catch {}
+          }
           if (response.ok && isShellPath && contentType.includes("text/html")) {
             const copy = response.clone()
             const rootCopy = response.clone()
