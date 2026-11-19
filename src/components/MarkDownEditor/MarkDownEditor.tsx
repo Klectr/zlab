@@ -173,7 +173,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 const htmlText = pastedHtml || (typeof dt?.getData === "function" ? dt.getData("text/html") : "")
                 if (/<img[\s/>]/i.test(htmlText)) {
                   const residual = residualTextFromHtml(htmlText)
-                  if (residual) {
+                  if (residual && !plainTextIsImageAddress(residual, uriList)) {
                     text = residual
                     fromHtml = true
                   }
@@ -240,7 +240,11 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               }
               if (!text) {
                 const htmlText = draggedHtml || (typeof dt?.getData === "function" ? dt.getData("text/html") : "")
-                if (/<img[\s/>]/i.test(htmlText)) text = residualTextFromHtml(htmlText)
+                if (/<img[\s/>]/i.test(htmlText)) {
+                  const residual = residualTextFromHtml(htmlText)
+                  const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                  if (residual && !plainTextIsImageAddress(residual, uriList)) text = residual
+                }
               }
               let pos = editorView.state.selection.main.head
               if (text && typeof event.clientX === "number" && typeof event.clientY === "number") {
