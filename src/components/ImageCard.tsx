@@ -467,6 +467,7 @@ function ExpandIcon({ cb, label }: {
       <button
         type="button"
         aria-label={label}
+        tabIndex={-1}
         onmousedown={cb}
         className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none bg-black/60 rounded-full"
       >
