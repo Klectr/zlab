@@ -341,11 +341,25 @@ export function TextItem(props: TextCardProps) {
     _handleResizeMouseUp()
   }
 
+  function _handleFocusIn(e: FocusEvent) {
+    const el = elRef.current
+    if (!el) return
+    const target = e.target as HTMLElement | null
+    if (target && el.contains(target)) {
+      focusedItem.value = itemKey
+      return
+    }
+    if (focusedItem.value !== itemKey) return
+    if (target?.closest?.("#context-menu-portal")) return
+    focusedItem.value = null
+  }
+
   activeDragDisarmers.add(_disarmDrag)
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('keydown', _handleDragEscape, true)
   window.addEventListener('beforeunload', flushLocalStorage)
   window.addEventListener('pagehide', flushLocalStorage)
+  document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
     if (measureFrame !== null) cancelAnimationFrame(measureFrame)
@@ -360,6 +374,7 @@ export function TextItem(props: TextCardProps) {
     window.removeEventListener('pagehide', flushLocalStorage)
     window.removeEventListener('blur', _disarmDrag)
     window.removeEventListener('keydown', _handleDragEscape, true)
+    document.removeEventListener('focusin', _handleFocusIn)
     activeDragDisarmers.delete(_disarmDrag)
     flushLocalStorage()
     cancel()
@@ -703,22 +718,9 @@ export function TextItem(props: TextCardProps) {
       document.removeEventListener('mousedown', _handleClick)
     }
 
-    function _handleFocusIn(e: FocusEvent) {
-      if (focusedItem.value !== itemKey) return
-      const target = e.target as HTMLElement | null
-      if (!target) return
-      if (target === elRef.current) return
-      if (elRef.current?.contains(target)) return
-      if (target.closest?.('#context-menu-portal')) return
-
-      focusedItem.value = null
-    }
-
     document.addEventListener('mousedown', _handleClick)
-    document.addEventListener('focusin', _handleFocusIn)
     return () => {
       document.removeEventListener('mousedown', _handleClick)
-      document.removeEventListener('focusin', _handleFocusIn)
     }
   })
 
