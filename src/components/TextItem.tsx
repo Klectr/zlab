@@ -840,6 +840,7 @@ function CloseIcon({ cb, itemId, label }: CloseIconProps) {
         className={`text-close cursor-pointer w-4 h-4 absolute top-0 right-0 z-10${focusedItem.value === itemId ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`}
       >
         <svg
+          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
@@ -877,6 +878,7 @@ function ExpandIcon({ cb, itemId, label }: ExpandIconProps) {
         className={`h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize touch-none${focusedItem.value === itemId ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`}
       >
         <svg
+          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"

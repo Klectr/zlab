@@ -24,6 +24,7 @@ export function MenuIcon({ label, expanded, controls, onClick, onKeyDown, button
       style={style}
     >
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"

@@ -193,6 +193,7 @@ export function ImportButton() {
     <Tooltip message="Import Json File">
       <button type="button" aria-label="Import Json File" onclick={_handleImport} className="flex items-center">
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
