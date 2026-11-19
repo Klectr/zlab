@@ -132,7 +132,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           EditorView.lineWrapping,
           labelCompartment.of(contentAttributesFor(ariaLabel)),
           EditorView.domEventHandlers({
-            paste: (event) => {
+            paste: (event, editorView) => {
               if (!onPasteImage) return false
               let files = Array.from(event.clipboardData?.files ?? []).filter(isImageFileCandidate)
               if (!files.length && event.clipboardData) {
@@ -141,9 +141,10 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   .map((i) => i.getAsFile())
                   .filter((f): f is File => !!f && isImageFileCandidate(f))
               }
+              let pastedHtml = ""
               if (!files.length && event.clipboardData && typeof event.clipboardData.getData === "function") {
-                const html = event.clipboardData.getData("text/html")
-                if (/<img[\s/>]/i.test(html)) files = imageFilesFromHtml(html)
+                pastedHtml = event.clipboardData.getData("text/html")
+                if (/<img[\s/>]/i.test(pastedHtml)) files = imageFilesFromHtml(pastedHtml)
               }
               if (!files.length) {
                 const hasFiles = (event.clipboardData?.files?.length ?? 0) > 0 ||
@@ -167,9 +168,32 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   text = ""
                 }
               }
-              if (text) return false
-              event.preventDefault()
-              return true
+              let fromHtml = false
+              if (!text) {
+                const htmlText = pastedHtml || (typeof dt?.getData === "function" ? dt.getData("text/html") : "")
+                if (/<img[\s/>]/i.test(htmlText)) {
+                  const residual = residualTextFromHtml(htmlText)
+                  if (residual && !plainTextIsImageAddress(residual, uriList)) {
+                    text = residual
+                    fromHtml = true
+                  }
+                }
+              }
+              if (!text) {
+                event.preventDefault()
+                return true
+              }
+              if (fromHtml) {
+                event.preventDefault()
+                const sel = editorView.state.selection.main
+                editorView.dispatch({
+                  changes: { from: sel.from, to: sel.to, insert: text },
+                  selection: { anchor: sel.from + text.length },
+                  userEvent: "input.paste",
+                })
+                return true
+              }
+              return false
             },
             drop: (event, editorView) => {
               if (!onPasteImage) return false
@@ -212,6 +236,14 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 const trimmed = text.trim()
                 if (plainTextIsImageAddress(text, uriList) || (!!uriList && trimmed === uriList.trim())) {
                   text = ""
+                }
+              }
+              if (!text) {
+                const htmlText = draggedHtml || (typeof dt?.getData === "function" ? dt.getData("text/html") : "")
+                if (/<img[\s/>]/i.test(htmlText)) {
+                  const residual = residualTextFromHtml(htmlText)
+                  const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                  if (residual && !plainTextIsImageAddress(residual, uriList)) text = residual
                 }
               }
               let pos = editorView.state.selection.main.head
