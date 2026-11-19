@@ -41,6 +41,7 @@ export function ImageCardButton() {
     <Tooltip message="Create an Image">
       <button type="button" aria-label="Create an Image" onclick={_handleClick} className="flex items-center">
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"

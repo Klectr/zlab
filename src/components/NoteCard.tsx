@@ -569,6 +569,7 @@ function ExpandIcon({ cb, label }: {
         className="cursor-[se-resize] absolute right-0 bottom-0 rotate-[225deg] flex touch-none"
       >
         <svg
+          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
