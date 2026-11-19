@@ -874,6 +874,7 @@ function ExpandIcon({ cb, itemId, label }: ExpandIconProps) {
       <button
         type="button"
         aria-label={label}
+        tabIndex={-1}
         onmousedown={cb}
         className={`h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize touch-none${focusedItem.value === itemId ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`}
       >
