@@ -800,8 +800,8 @@ export function TextItem(props: TextCardProps) {
           </div>
         </ContextMenuPortal>
 
-        {showHelp.value &&
-          <div
+        <div
+            hidden={!showHelp.value}
             id={`text-shortcuts-${itemKey}`}
             className={"dark:text-white absolute dark:bg-[#1c1c1c] bg-[#fff] rounded-md p-1 z-[1000] border border-blue-500 pointer-events-none"}
             style={{
@@ -816,8 +816,7 @@ export function TextItem(props: TextCardProps) {
               <small>arrow keys = move card (shift = 50px)</small>
               <small>alt + arrow keys = resize font (shift = 50px)</small>
             </div>
-          </div>
-        }
+        </div>
       </>
     )
   }

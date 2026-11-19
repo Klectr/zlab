@@ -433,8 +433,8 @@ export function ImageCard(props: ImageCardProps) {
           </div>
         </ContextMenuPortal>
 
-        {showHelp.value &&
-          <div
+        <div
+            hidden={!showHelp.value}
             id={`image-shortcuts-${itemKey}`}
             className={"dark:text-white absolute dark:bg-[#1c1c1c] bg-[#fff] rounded-md p-1 z-[1000] border border-blue-500 pointer-events-none"}
             style={{
@@ -449,8 +449,7 @@ export function ImageCard(props: ImageCardProps) {
               <small>arrow keys = move card (shift = 50px)</small>
               <small>alt + arrow keys = resize card (shift = 50px)</small>
             </div>
-          </div>
-        }
+        </div>
       </>
 
     )
