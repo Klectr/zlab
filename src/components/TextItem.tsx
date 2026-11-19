@@ -750,8 +750,8 @@ export function TextItem(props: TextCardProps) {
           userSelect: focusedItem.value === itemKey ? 'text' : 'none',
         }}
       >
-        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass="cursor-pointer w-4 h-4 absolute top-0 left-0 z-10" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
-        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass="cursor-pointer w-4 h-4 absolute top-0 left-[20px] z-10" iconClass="w-4 h-4 block" style={{ display: focusedItem.value === itemKey ? "unset" : "none" }} />
+        <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass={`cursor-pointer w-4 h-4 absolute top-0 left-0 z-10${focusedItem.value === itemKey ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`} iconClass="w-4 h-4 block" />
+        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass={`cursor-pointer w-4 h-4 absolute top-0 left-[20px] z-10${focusedItem.value === itemKey ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`} iconClass="w-4 h-4 block" />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
 
         <pre
@@ -837,10 +837,7 @@ function CloseIcon({ cb, itemId, label }: CloseIconProps) {
         type="button"
         aria-label={label}
         onclick={cb}
-        className="text-close cursor-pointer w-4 h-4 absolute top-0 right-0 z-10"
-        style={{
-          display: focusedItem.value === itemId ? 'unset' : 'none'
-        }}
+        className={`text-close cursor-pointer w-4 h-4 absolute top-0 right-0 z-10${focusedItem.value === itemId ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -877,10 +874,7 @@ function ExpandIcon({ cb, itemId, label }: ExpandIconProps) {
         type="button"
         aria-label={label}
         onmousedown={cb}
-        className="h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize touch-none"
-        style={{
-          display: focusedItem.value === itemId ? 'unset' : 'none'
-        }}
+        className={`h-4 w-4 absolute right-[-6px] bottom-[-6px] cursor-se-resize touch-none${focusedItem.value === itemId ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
