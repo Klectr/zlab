@@ -18,7 +18,30 @@
   <body>
     <div id="root"></div>
     <noscript><p>Zlab needs JavaScript to run. Enable JavaScript and reload the page.</p></noscript>
+    <div id="load-fallback" hidden>
+      <p>Zlab could not load. Check your connection and <button type="button" id="load-fallback-reload">reload the page</button>.</p>
+    </div>
     <div id="toast-root"></div>
     <script type="module" src="/src/main.ts" defer></script>
+    <script>
+      (function () {
+        var root = document.getElementById("root")
+        var fallback = document.getElementById("load-fallback")
+        document.getElementById("load-fallback-reload").addEventListener("click", function () {
+          location.reload()
+        })
+        var timer = setTimeout(function () {
+          if (root.childElementCount === 0) fallback.hidden = false
+        }, 8000)
+        var observer = new MutationObserver(function () {
+          if (root.childElementCount > 0) {
+            clearTimeout(timer)
+            fallback.hidden = true
+            observer.disconnect()
+          }
+        })
+        observer.observe(root, { childList: true })
+      })()
+    </script>
   </body>
 </html>
