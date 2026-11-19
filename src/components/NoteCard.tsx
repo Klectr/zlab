@@ -364,7 +364,7 @@ export function NoteCard(props: NoteCardProps) {
   })
 
   function _handleKeyDown(e: KeyboardEvent) {
-    if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 's' || e.key === 'S')) {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 's' || e.key === 'S')) {
       e.preventDefault()
       flushLocalStorage()
       return
