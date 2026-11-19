@@ -515,7 +515,7 @@ export function TextItem(props: TextCardProps) {
     return _joinChildText(Array.from(template.content.childNodes), true).trim()
   }
 
-  function _insertCompanionText(dt: DataTransfer): boolean {
+  function _companionText(dt: DataTransfer): string | null {
     let plain = typeof dt.getData === "function" ? dt.getData("text/plain") : ""
     const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
     if (plain && plainTextIsImageAddress(plain, uriList)) plain = ""
@@ -523,8 +523,14 @@ export function TextItem(props: TextCardProps) {
       const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
       if (/<img[\s/>]/i.test(html)) plain = _textFromHtml(html)
     }
+    if (!plain) return null
+    if (plainTextIsImageAddress(plain, uriList)) return null
+    return plain
+  }
+
+  function _insertCompanionText(dt: DataTransfer): boolean {
+    const plain = _companionText(dt)
     if (!plain) return false
-    if (plainTextIsImageAddress(plain, uriList)) return false
     _insertPlainText(plain)
     return true
   }
@@ -603,22 +609,18 @@ export function TextItem(props: TextCardProps) {
           .filter((f): f is File => !!f && isImageFileCandidate(f))
       }
       if (!files.length) return
+      const companion = _companionText(dt)
+      if (!companion) return
       _placeCaretAtDropPoint(e)
-      _insertCompanionText(dt)
+      _insertPlainText(companion)
       return
     }
     const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
     if (!/<img[\s/>]/i.test(html)) return
-    const plain = typeof dt.getData === "function" ? dt.getData("text/plain").trim() : ""
-    if (plain) {
-      const uriList = typeof dt.getData === "function" ? dt.getData("text/uri-list") : ""
-      if (plainTextIsImageAddress(plain, uriList)) {
-        const derived = _textFromHtml(html)
-        if (!derived || plainTextIsImageAddress(derived, uriList)) return
-      }
-    }
+    const companion = _companionText(dt)
+    if (!companion) return
     _placeCaretAtDropPoint(e)
-    _insertCompanionText(dt)
+    _insertPlainText(companion)
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
