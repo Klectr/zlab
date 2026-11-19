@@ -416,8 +416,10 @@ export function TextItem(props: TextCardProps) {
     if (!showHelp.value) return
     let searchPanelOpen = false
     let editorSelectionOpen = false
+    let composingEscape = false
     function _noteSearchPanelEscape(e: KeyboardEvent) {
       if (e.key !== "Escape") return
+      composingEscape = e.isComposing
       const target = e.target as Element | null
       const editor = target?.closest?.(".cm-editor")
       searchPanelOpen = !!target?.closest?.(".cm-panel.cm-search") || !!target?.closest?.(".cm-goto-line") || !!(editor && (editor.querySelector(".cm-panel.cm-search") || editor.querySelector(".cm-goto-line")))
@@ -426,7 +428,7 @@ export function TextItem(props: TextCardProps) {
       editorSelectionOpen = !!selection && (selection.ranges.length > 1 || !selection.main.empty)
     }
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !searchPanelOpen && !editorSelectionOpen && !isAnyContextMenuOpen()) {
+      if (e.key === "Escape" && !composingEscape && !searchPanelOpen && !editorSelectionOpen && !isAnyContextMenuOpen()) {
         helpPinned.value = false
         showHelp.value = false
       }
