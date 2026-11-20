@@ -149,7 +149,19 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (!files.length) {
                 const hasFiles = (event.clipboardData?.files?.length ?? 0) > 0 ||
                   Array.from(event.clipboardData?.items ?? []).some((i) => i.kind === "file")
-                if (!hasFiles) return false
+                if (!hasFiles) {
+                  if (!/<img[\s/>]/i.test(pastedHtml)) return false
+                  if (residualTextFromHtml(pastedHtml)) return false
+                  const dt = event.clipboardData
+                  const plain = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
+                  if (plain.trim()) {
+                    const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                    if (!plainTextIsImageAddress(plain, uriList)) return false
+                  }
+                  onPasteRejected?.()
+                  event.preventDefault()
+                  return true
+                }
                 onPasteRejected?.()
                 event.preventDefault()
                 return true
