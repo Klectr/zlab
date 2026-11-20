@@ -412,7 +412,10 @@ export function TextItem(props: TextCardProps) {
       x: e.clientX !== 0 ? e.clientX : rect.left,
       y: e.clientY !== 0 ? e.clientY : rect.top,
     }
-    openContextMenu.value = !openContextMenu.value
+    const willOpen = !openContextMenu.value
+    if (willOpen && e.clientX === 0 && e.clientY === 0)
+      requestMenuItemFocus(menuId, "first")
+    openContextMenu.value = willOpen
   }
 
   function _handleContextClose() {
