@@ -66,7 +66,27 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
     )
   }
 
+  const toastCapacity = () => {
+    const stackTop = window.innerWidth <= 640 ? 52 : 16
+    return Math.max(1, Math.floor((window.innerHeight - stackTop - 64) / 70) + 1)
+  }
+
+  const evictOverflowToasts = (list: Toast[]) => {
+    const maxToasts = toastCapacity()
+    while (list.length > maxToasts) {
+      const evicted = list.shift()!
+      pauseSources.delete(evicted.ts)
+    }
+    return list
+  }
+
   onMount(() => {
+    const handleResize = () => {
+      if (toasts.value.length > toastCapacity()) {
+        toasts.value = evictOverflowToasts([...toasts.value])
+      }
+    }
+    window.addEventListener("resize", handleResize)
     const interval = setInterval(() => {
       const next = toasts.value.map((toast) => {
         if (toast.expired || pauseSources.has(toast.ts)) {
@@ -81,7 +101,10 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
         toasts.value = next
       }
     }, 500)
-    return () => clearInterval(interval)
+    return () => {
+      window.removeEventListener("resize", handleResize)
+      clearInterval(interval)
+    }
   })
 
   let lastToastTs = 0
@@ -99,14 +122,7 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
       message,
       expires: ts + (duration ?? defaultDuration),
     }
-    const next = [...toasts.value, toast]
-    const stackTop = window.innerWidth <= 640 ? 52 : 16
-    const maxToasts = Math.max(1, Math.floor((window.innerHeight - stackTop - 64) / 70) + 1)
-    while (next.length > maxToasts) {
-      const evicted = next.shift()!
-      pauseSources.delete(evicted.ts)
-    }
-    toasts.value = next
+    toasts.value = evictOverflowToasts([...toasts.value, toast])
   }
 
   return () => (
