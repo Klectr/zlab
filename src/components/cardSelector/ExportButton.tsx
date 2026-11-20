@@ -1,7 +1,7 @@
 import { ImagesSignal, NotesSigal, TextSignal } from "../../signals"
 import { createFileAndExport } from "../../utils/createFileAndExport"
 import { useToast } from "../Toast"
-import { MAX_IMPORT_ENTRIES } from "./ImportButton"
+import { MAX_IMPORT_BYTES, MAX_IMPORT_ENTRIES } from "./ImportButton"
 import { Tooltip } from "./Tooltip"
 import { defaultClassName } from "./utils"
 
@@ -24,6 +24,8 @@ export function ExportButton() {
     toast.showToast("success", "Board exported.")
     if (Object.keys(mergeState).length > MAX_IMPORT_ENTRIES)
       toast.showToast("warning", `This board has over ${MAX_IMPORT_ENTRIES} cards. The export is too large to import back.`)
+    if (new Blob([jsonData]).size > MAX_IMPORT_BYTES)
+      toast.showToast("warning", "This export is over 32 MB. It is too large to import back.")
   }
 
   return (

@@ -50,6 +50,7 @@ function isValidEntry(item: unknown): item is ImportEntry {
 }
 
 export const MAX_IMPORT_ENTRIES = 1000
+export const MAX_IMPORT_BYTES = 32 * 1024 * 1024
 
 let latestImportId = 0
 
@@ -102,7 +103,7 @@ export function ImportButton() {
       if (!el.files?.length) return
       const file = el.files[0]
 
-      if (file.size > 32 * 1024 * 1024) {
+      if (file.size > MAX_IMPORT_BYTES) {
         toast.showToast("error", "Could not import that file.")
         return
       }
