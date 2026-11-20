@@ -159,10 +159,17 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('mouseup', _handleResizeMouseUp)
   }
 
-  function flushLocalStorage() {
+  function flushLocalStorageOnUnload() {
+    flushLocalStorage()
+  }
+
+  function flushLocalStorage(reportFailure?: boolean) {
     try {
       persistLocalStorage()
     } catch {
+      if (reportFailure === true && claimSaveFailureReport()) {
+        toast.showToast("error", "Could not save your changes!")
+      }
       return
     }
   }
@@ -207,8 +214,8 @@ export function NoteCard(props: NoteCardProps) {
   activeDragDisarmers.add(_disarmDrag)
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('keydown', _handleDragEscape, true)
-  window.addEventListener('beforeunload', flushLocalStorage)
-  window.addEventListener('pagehide', flushLocalStorage)
+  window.addEventListener('beforeunload', flushLocalStorageOnUnload)
+  window.addEventListener('pagehide', flushLocalStorageOnUnload)
   document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
@@ -216,8 +223,8 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('mouseup', _handleMouseUp)
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
-    window.removeEventListener('beforeunload', flushLocalStorage)
-    window.removeEventListener('pagehide', flushLocalStorage)
+    window.removeEventListener('beforeunload', flushLocalStorageOnUnload)
+    window.removeEventListener('pagehide', flushLocalStorageOnUnload)
     document.removeEventListener('focusin', _handleFocusIn)
     window.removeEventListener('blur', _disarmDrag)
     window.removeEventListener('keydown', _handleDragEscape, true)
@@ -368,7 +375,7 @@ export function NoteCard(props: NoteCardProps) {
   function _handleKeyDown(e: KeyboardEvent) {
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 's' || e.key === 'S')) {
       e.preventDefault()
-      flushLocalStorage()
+      flushLocalStorage(true)
       return
     }
     if (pressed.value) return
