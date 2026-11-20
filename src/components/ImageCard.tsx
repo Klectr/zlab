@@ -242,6 +242,7 @@ export function ImageCard(props: ImageCardProps) {
       flushLocalStorage()
       return
     }
+    if (pressed.value) return
     if (e.repeat) return
     if (e.shiftKey) return
     if ((!e.ctrlKey && !e.metaKey) || e.altKey) return
