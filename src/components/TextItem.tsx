@@ -476,7 +476,7 @@ export function TextItem(props: TextCardProps) {
 
   function _handleMenuButtonKeyDown(e: Kiru.KeyboardEvent<HTMLButtonElement>) {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
-    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
     if (openContextMenu.value) return
     e.preventDefault()
     e.stopPropagation()
