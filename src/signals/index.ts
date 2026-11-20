@@ -11,6 +11,9 @@ export function getBoardEpoch() {
 export function advanceBoardEpoch() {
   boardEpochValue++
 }
+export function restoreBoardEpoch(epoch: number) {
+  boardEpochValue = epoch
+}
 
 export * as NotesSigal from "./notes"
 export * as ImagesSignal from "./images"

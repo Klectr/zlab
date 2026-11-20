@@ -2,7 +2,7 @@ import images, { ImageCardType } from "../../signals/images"
 import notes, { NoteCardType } from "../../signals/notes"
 import texts, { TextCardType } from "../../signals/texts"
 import { Card, CardTypes } from "../../types"
-import { advanceBoardEpoch, canvasDimentsion, focusedItem } from "../../signals"
+import { advanceBoardEpoch, canvasDimentsion, focusedItem, getBoardEpoch, restoreBoardEpoch } from "../../signals"
 import { convertBase64ToJson } from "../../utils/convertBase64ToJson"
 import {
   clampCardEntryToCanvas,
@@ -133,6 +133,7 @@ export function ImportButton() {
         const prevNotes = JSON.parse(JSON.stringify(notes.notes.value))
         const prevImages = JSON.parse(JSON.stringify(images.images.value))
         const prevTexts = JSON.parse(JSON.stringify(texts.texts.value))
+        const epochBeforeImport = getBoardEpoch()
         advanceBoardEpoch()
         notes.notes.value = {}
         notes.notes.notify()
@@ -167,6 +168,7 @@ export function ImportButton() {
           images.images.notify()
           texts.texts.value = prevTexts
           texts.texts.notify()
+          restoreBoardEpoch(epochBeforeImport)
           let restoreFailed = false
           for (const [key, raw] of [
             [CardTypes.NOTES, rawNotes],
