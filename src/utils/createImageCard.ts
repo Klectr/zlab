@@ -85,6 +85,7 @@ export function createImageCardFromFile(
   const reader = new FileReader()
   reader.readAsDataURL(file)
   reader.onerror = function () {
+    if (getBoardEpoch() !== epochAtStart) return
     onLoadError()
   }
   reader.onload = function (readerEvent) {
@@ -96,6 +97,7 @@ export function createImageCardFromFile(
     }
     const image = document.createElement("img")
     image.onerror = function () {
+      if (getBoardEpoch() !== epochAtStart) return
       onLoadError()
     }
     image.onload = function () {
