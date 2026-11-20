@@ -227,7 +227,28 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 if (hasFiles) return true
                 if (/<img[\s/>]/i.test(draggedHtml)) {
                   const residualText = residualTextFromHtml(draggedHtml)
-                  if (residualText) return false
+                  if (residualText) {
+                    const dt = event.dataTransfer
+                    const plain = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
+                    const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                    if (plain.trim() && !plainTextIsImageAddress(plain, uriList)) return false
+                    if (plainTextIsImageAddress(residualText, uriList)) return false
+                    event.preventDefault()
+                    let pos = editorView.state.selection.main.head
+                    if (typeof event.clientX === "number" && typeof event.clientY === "number") {
+                      try {
+                        pos = editorView.posAtCoords({ x: event.clientX, y: event.clientY }) ?? pos
+                      } catch {
+                        pos = editorView.state.selection.main.head
+                      }
+                    }
+                    editorView.dispatch({
+                      changes: { from: pos, insert: residualText },
+                      selection: { anchor: pos + residualText.length },
+                      userEvent: "input.drop",
+                    })
+                    return true
+                  }
                   const plain = typeof event.dataTransfer?.getData === "function" ? event.dataTransfer.getData("text/plain") : ""
                   const plainTrim = plain.trim()
                   if (plainTrim) {
