@@ -170,15 +170,19 @@ export function ImportButton() {
           texts.texts.notify()
           restoreBoardEpoch(epochBeforeImport)
           let restoreFailed = false
-          for (const [key, raw] of [
-            [CardTypes.NOTES, rawNotes],
-            [CardTypes.IMAGES, rawImages],
-            [CardTypes.TEXTS, rawTexts],
+          for (const [key, store, raw] of [
+            [CardTypes.NOTES, notes.notes, rawNotes],
+            [CardTypes.IMAGES, images.images, rawImages],
+            [CardTypes.TEXTS, texts.texts, rawTexts],
           ] as const) {
             try {
-              localStorage.setItem(key, raw ?? "{}")
+              updateLocalStorage(key, store)
             } catch {
-              restoreFailed = true
+              try {
+                localStorage.setItem(key, raw ?? "{}")
+              } catch {
+                restoreFailed = true
+              }
             }
           }
           if (restoreFailed) {
