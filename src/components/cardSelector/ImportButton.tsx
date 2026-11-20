@@ -128,9 +128,17 @@ export function ImportButton() {
           toast.showToast("error", "Could not import that file.")
           return
         }
-        const rawNotes = localStorage.getItem(CardTypes.NOTES)
-        const rawImages = localStorage.getItem(CardTypes.IMAGES)
-        const rawTexts = localStorage.getItem(CardTypes.TEXTS)
+        let rawNotes: string | null
+        let rawImages: string | null
+        let rawTexts: string | null
+        try {
+          rawNotes = localStorage.getItem(CardTypes.NOTES)
+          rawImages = localStorage.getItem(CardTypes.IMAGES)
+          rawTexts = localStorage.getItem(CardTypes.TEXTS)
+        } catch {
+          toast.showToast("error", "Could not import that file.")
+          return
+        }
         const prevNotes = JSON.parse(JSON.stringify(notes.notes.value))
         const prevImages = JSON.parse(JSON.stringify(images.images.value))
         const prevTexts = JSON.parse(JSON.stringify(texts.texts.value))
