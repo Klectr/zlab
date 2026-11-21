@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v34"
+const CACHE_NAME = "zlab-v35"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -132,7 +132,7 @@ self.addEventListener("install", (event) => {
         if (rootHtml && rootHtml !== newHtml)
           throw new Error("root shell differs from index shell")
         await Promise.all(assets.map((a) => staging.add(a)))
-        for (const asset of assets.filter((a) => /\.(?:js|css)$/.test(a))) {
+        for (const asset of assets) {
           const staged = await staging.match(asset)
           if (staged && (await isHtmlForAsset(asset, staged)))
             throw new Error("asset served as html: " + asset)
