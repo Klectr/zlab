@@ -2,6 +2,7 @@ import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
 import { canvasDimentsion, focusedItem } from "."
 import {
+  canonicalImageContents,
   claimLoadedCardId,
   clampCardEntryToCanvas,
   isValidCardEntry,
@@ -25,6 +26,7 @@ function loadLocalStorage() {
         continue
       }
       clampCardEntryToCanvas(entry, canvasDimentsion.value)
+      entry.contents = canonicalImageContents(entry.contents)
       entry.type = CardTypes.IMAGES
       const claimedId = claimLoadedCardId(key)
       if (claimedId !== key) {
