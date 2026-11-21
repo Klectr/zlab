@@ -16,6 +16,8 @@ import { useToast } from "./Toast"
 import { TextItem } from "./TextItem"
 import texts from "../signals/texts"
 import { createDebounce } from "../utils/useDebounce"
+import { CardTypes } from "../types"
+import { claimSaveFailureReport, updateLocalStorage } from "../utils/localStorage"
 
 export default function InfiniteCanvas() {
   const containerRef = ref<HTMLDivElement>(null)
@@ -54,6 +56,22 @@ export default function InfiniteCanvas() {
         }))
       } catch {
         return
+      }
+    }
+
+    function _handleGlobalSave(e: KeyboardEvent) {
+      if (focusedItem.value !== null) return
+      if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return
+      if (e.key !== "s" && e.key !== "S") return
+      e.preventDefault()
+      try {
+        updateLocalStorage(CardTypes.NOTES, notes.notes)
+        updateLocalStorage(CardTypes.IMAGES, images.images)
+        updateLocalStorage(CardTypes.TEXTS, texts.texts)
+      } catch {
+        if (claimSaveFailureReport()) {
+          toast.showToast("error", "Could not save your changes!")
+        }
       }
     }
 
@@ -160,6 +178,7 @@ export default function InfiniteCanvas() {
     window.addEventListener("drop", _handleFileDrop)
     window.addEventListener("beforeunload", _flushPosition)
     window.addEventListener("pagehide", _flushPosition)
+    window.addEventListener("keydown", _handleGlobalSave)
     notes.loadLocalStorage()
     images.loadLocalStorage()
     texts.loadLocalStorage()
@@ -172,6 +191,7 @@ export default function InfiniteCanvas() {
       window.removeEventListener("drop", _handleFileDrop)
       window.removeEventListener("beforeunload", _flushPosition)
       window.removeEventListener("pagehide", _flushPosition)
+      window.removeEventListener("keydown", _handleGlobalSave)
       _flushPosition()
     }
   })
