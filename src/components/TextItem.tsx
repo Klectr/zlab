@@ -153,10 +153,12 @@ export function TextItem(props: TextCardProps) {
     if (pRef.current) {
       pRef.current.textContent = item.value.contents
       pRef.current.addEventListener('paste', _handlePaste)
-      pRef.current.addEventListener('drop', _handleDrop)
       if (autoFocusText && focusedItem.value === itemKey) {
         pRef.current.focus()
       }
+    }
+    if (elRef.current) {
+      elRef.current.addEventListener('drop', _handleDrop)
     }
     lastMeasuredFontSize = item.value.fontSize
     _measureAndStoreDimensions()
@@ -371,7 +373,7 @@ export function TextItem(props: TextCardProps) {
   onCleanup(() => {
     if (measureFrame !== null) cancelAnimationFrame(measureFrame)
     pRef.current?.removeEventListener('paste', _handlePaste)
-    pRef.current?.removeEventListener('drop', _handleDrop)
+    elRef.current?.removeEventListener('drop', _handleDrop)
     resizeObserver?.disconnect()
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
