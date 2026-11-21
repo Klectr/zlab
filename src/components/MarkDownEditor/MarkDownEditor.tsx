@@ -1,5 +1,5 @@
 import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor, placeholder } from "@codemirror/view"
-import { Compartment, EditorState } from "@codemirror/state"
+import { Compartment, EditorSelection, EditorState } from "@codemirror/state"
 import { defaultKeymap, history, historyKeymap, redo } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { highlightSelectionMatches, search, searchKeymap } from "@codemirror/search"
@@ -10,6 +10,17 @@ import { initThemeDetector, isDarkTheme } from "../../utils/useThemeDetector"
 import { imageFilesFromHtml, isImageFileCandidate } from "../../utils/createImageCard"
 import { plainTextIsImageAddress } from "../../utils/plainTextIsImageAddress"
 import { residualTextFromHtml } from "../../utils/residualTextFromHtml"
+
+const selectionAfterPointInsert = (state: EditorState, pos: number, insertLength: number) => {
+  const desc = state.changes({ from: pos, insert: " ".repeat(insertLength) }).desc
+  const ranges = [EditorSelection.cursor(pos + insertLength)]
+  for (const range of state.selection.ranges) {
+    if (range === state.selection.main) continue
+    if (range.from < pos && range.to > pos) continue
+    ranges.push(range.map(desc))
+  }
+  return EditorSelection.create(ranges, 0)
+}
 
 export interface MarkDownEditorChange {
   content: string
@@ -197,10 +208,11 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               }
               if (fromHtml) {
                 event.preventDefault()
-                const sel = editorView.state.selection.main
                 editorView.dispatch({
-                  changes: { from: sel.from, to: sel.to, insert: text },
-                  selection: { anchor: sel.from + text.length },
+                  ...editorView.state.changeByRange((range) => ({
+                    changes: { from: range.from, to: range.to, insert: text },
+                    range: EditorSelection.cursor(range.from + text.length),
+                  })),
                   userEvent: "input.paste",
                 })
                 return true
@@ -245,7 +257,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                     }
                     editorView.dispatch({
                       changes: { from: pos, insert: residualText },
-                      selection: { anchor: pos + residualText.length },
+                      selection: selectionAfterPointInsert(editorView.state, pos, residualText.length),
                       userEvent: "input.drop",
                     })
                     return true
@@ -292,7 +304,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (text) {
                 editorView.dispatch({
                   changes: { from: pos, insert: text },
-                  selection: { anchor: pos + text.length },
+                  selection: selectionAfterPointInsert(editorView.state, pos, text.length),
                   userEvent: "input.drop",
                 })
               }
