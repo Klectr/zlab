@@ -34,6 +34,7 @@ interface MarkDownEditorProps {
   onFocus?: () => void
   onPasteImage?: (files: File[]) => void
   onPasteRejected?: () => void
+  onDropRejected?: () => void
 }
 
 const editorThemeSpec = {
@@ -82,7 +83,7 @@ const highlightStyleFor = (dark: boolean) => HighlightStyle.define([
 ])
 
 export function MarkDownEditor(props: MarkDownEditorProps) {
-  const { initial, onChange, onFocus, onPasteImage, onPasteRejected, autoFocus, autoFocusCheck } = props
+  const { initial, onChange, onFocus, onPasteImage, onPasteRejected, onDropRejected, autoFocus, autoFocusCheck } = props
   const $ = setup<MarkDownEditorProps>()
   const titleProp = $.derive((p) => p.title)
   const labelFor = (t?: string) => {
@@ -235,7 +236,12 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               if (!files.length) {
                 const hasFiles = (event.dataTransfer?.files?.length ?? 0) > 0 ||
                   Array.from(event.dataTransfer?.items ?? []).some((i) => i.kind === "file")
-                if (hasFiles) return true
+                if (hasFiles) {
+                  onDropRejected?.()
+                  event.preventDefault()
+                  event.stopPropagation()
+                  return true
+                }
                 if (/<img[\s/>]/i.test(draggedHtml)) {
                   const residualText = residualTextFromHtml(draggedHtml)
                   if (residualText) {
