@@ -36,6 +36,8 @@ export function NoteCard(props: NoteCardProps) {
   const itemKey = props.itemKey
   const item = $.derive((p) => p.data)
   const saved = signal(true)
+  const savedPosition = signal({ x: props.data.position.x, y: props.data.position.y })
+  const savedDimensions = signal({ w: props.data.dimensions.w, h: props.data.dimensions.h })
   const pressed = signal(false)
   const newX = ref(0)
   const newY = ref(0)
@@ -69,6 +71,8 @@ export function NoteCard(props: NoteCardProps) {
       }
       clearSaveFailureReport()
       saved.value = true
+      savedPosition.value = { x: item.value.position.x, y: item.value.position.y }
+      savedDimensions.value = { w: item.value.dimensions.w, h: item.value.dimensions.h }
     }, time)
   }
 
@@ -76,6 +80,8 @@ export function NoteCard(props: NoteCardProps) {
     localStorage.setItem("notes", JSON.stringify(notes.notes.value))
     clearSaveFailureReport()
     saved.value = true
+    savedPosition.value = { x: item.value.position.x, y: item.value.position.y }
+    savedDimensions.value = { w: item.value.dimensions.w, h: item.value.dimensions.h }
   }
 
   function _handleMouseMove(e: MouseEvent) {
@@ -472,8 +478,14 @@ export function NoteCard(props: NoteCardProps) {
       left: `${it.position.x}px`,
     }
 
+    const isUnsaved = !saved.value ||
+      it.position.x !== savedPosition.value.x ||
+      it.position.y !== savedPosition.value.y ||
+      it.dimensions.w !== savedDimensions.value.w ||
+      it.dimensions.h !== savedDimensions.value.h
+
     const saveIndicatorStyle = {
-      opacity: saved.value ? '0' : '100'
+      opacity: isUnsaved ? '100' : '0'
     }
 
     return (
@@ -494,7 +506,7 @@ export function NoteCard(props: NoteCardProps) {
                 <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`note-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show note shortcuts${nameSuffix}`} />
                 {/* Save indicator*/}
                 <div style={saveIndicatorStyle} className="rounded-full w-1 h-1 dark:bg-white bg-green-500"></div>
-                <span role="status" className="sr-only">{saved.value ? "" : "Unsaved changes"}</span>
+                <span role="status" className="sr-only">{isUnsaved ? "Unsaved changes" : ""}</span>
               </div>
               <div className="flex gap-2">
                 <MenuIcon label={`Note menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} />
