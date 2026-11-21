@@ -1,6 +1,6 @@
 import { EditorView, keymap, highlightSpecialChars, drawSelection, dropCursor, placeholder } from "@codemirror/view"
 import { Compartment, EditorState } from "@codemirror/state"
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
+import { defaultKeymap, history, historyKeymap, redo } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { highlightSelectionMatches, search, searchKeymap } from "@codemirror/search"
 import { HighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching } from "@codemirror/language"
@@ -122,7 +122,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           EditorState.allowMultipleSelections.of(true),
           indentOnInput(),
           bracketMatching(),
-          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+          keymap.of([{ key: "Mod-Shift-z", run: redo, preventDefault: true }, ...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           search(),
           highlightSelectionMatches(),
           placeholder("Type here…"),
