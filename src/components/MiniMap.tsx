@@ -5,6 +5,7 @@ import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
 import texts, { TextCardType } from "../signals/texts"
 import { imageCardName, noteCardName } from "../utils/cardName"
+import { activeDragDisarmers } from "../utils/activeDrag"
 
 const _MAP_OFFSET = 20
 const _MAP_SCALE_FACTOR = 10
@@ -17,6 +18,11 @@ export function MiniMap() {
   const scrollX = signal(0)
   const scrollY = signal(0)
   const resizeTick = signal(0)
+  let dragEnd: (() => void) | null = null
+
+  function _disarmMinimapDrag() {
+    if (dragEnd) dragEnd()
+  }
 
   onMount(() => {
     function _handleScroll() {
@@ -29,10 +35,15 @@ export function MiniMap() {
     _handleScroll()
     window.addEventListener('scroll', _handleScroll)
     window.addEventListener('resize', _handleResize)
+    activeDragDisarmers.add(_disarmMinimapDrag)
+    window.addEventListener('blur', _disarmMinimapDrag)
 
     return () => {
       window.removeEventListener('scroll', _handleScroll)
       window.removeEventListener('resize', _handleResize)
+      window.removeEventListener('blur', _disarmMinimapDrag)
+      activeDragDisarmers.delete(_disarmMinimapDrag)
+      _disarmMinimapDrag()
     }
   })
 
@@ -85,9 +96,11 @@ export function MiniMap() {
           }
           function _handleMouseUp(ev?: MouseEvent) {
             if (ev && ev.button !== 0 && ev.buttons !== 0) return
+            dragEnd = null
             window.removeEventListener('mousemove', _handleMouseMove)
             window.removeEventListener('mouseup', _handleMouseUp)
           }
+          dragEnd = () => _handleMouseUp()
           window.addEventListener('mousemove', _handleMouseMove)
           window.addEventListener('mouseup', _handleMouseUp)
         }}
