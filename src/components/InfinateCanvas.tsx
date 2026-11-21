@@ -64,14 +64,20 @@ export default function InfiniteCanvas() {
       if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return
       if (e.key !== "s" && e.key !== "S") return
       e.preventDefault()
-      try {
-        updateLocalStorage(CardTypes.NOTES, notes.notes)
-        updateLocalStorage(CardTypes.IMAGES, images.images)
-        updateLocalStorage(CardTypes.TEXTS, texts.texts)
-      } catch {
-        if (claimSaveFailureReport()) {
-          toast.showToast("error", "Could not save your changes!")
+      let saveFailed = false
+      for (const [key, store] of [
+        [CardTypes.NOTES, notes.notes],
+        [CardTypes.IMAGES, images.images],
+        [CardTypes.TEXTS, texts.texts],
+      ] as const) {
+        try {
+          updateLocalStorage(key, store)
+        } catch {
+          saveFailed = true
         }
+      }
+      if (saveFailed && claimSaveFailureReport()) {
+        toast.showToast("error", "Could not save your changes!")
       }
     }
 

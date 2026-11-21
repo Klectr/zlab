@@ -166,12 +166,22 @@ export function ImportButton() {
         }
         focusedItem.value = null
 
-        try {
-          updateLocalStorage(CardTypes.NOTES, notes.notes).notify()
-          updateLocalStorage(CardTypes.IMAGES, images.images).notify()
-          updateLocalStorage(CardTypes.TEXTS, texts.texts).notify()
+        let persistError: unknown = null
+        for (const [key, store] of [
+          [CardTypes.NOTES, notes.notes],
+          [CardTypes.IMAGES, images.images],
+          [CardTypes.TEXTS, texts.texts],
+        ] as const) {
+          try {
+            updateLocalStorage(key, store).notify()
+          } catch (err: unknown) {
+            if (persistError === null) persistError = err
+          }
+        }
+        if (persistError === null) {
           toast.showToast("success", "Board imported.")
-        } catch (err: unknown) {
+        } else {
+          const err = persistError
           if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
           toast.showToast("error", "Could not save the imported cards!")
           notes.notes.value = prevNotes
