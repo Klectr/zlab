@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v35"
+const CACHE_NAME = "zlab-v36"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -106,6 +106,33 @@ async function pruneSupersededAssets(previousHtml, newHtml) {
   } catch {}
 }
 
+async function restoreShellPair(cache, previousHtml, newHtml) {
+  let currentHtml
+  try {
+    const current = await cache.match("/index.html")
+    currentHtml = current ? await current.text() : ""
+  } catch {
+    return
+  }
+  if (currentHtml !== previousHtml && currentHtml !== newHtml) return
+  if (previousHtml) {
+    const headers = { "content-type": "text/html" }
+    try {
+      await cache.put("/index.html", new Response(previousHtml, { headers }))
+    } catch {}
+    try {
+      await cache.put("/", new Response(previousHtml, { headers }))
+    } catch {}
+  } else {
+    try {
+      await cache.delete("/index.html")
+    } catch {}
+    try {
+      await cache.delete("/")
+    } catch {}
+  }
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
@@ -184,6 +211,7 @@ self.addEventListener("install", (event) => {
           if (response) await live.put(request, response)
         }
       } catch (err) {
+        await restoreShellPair(live, previousHtml, newHtml)
         await caches.delete(stagingName).catch(() => {})
         throw err
       }
@@ -323,9 +351,13 @@ self.addEventListener("fetch", (event) => {
                 const current = await cache.match("/index.html")
                 const currentHtml = current ? await current.text() : ""
                 if (currentHtml !== previousHtml) return
-                await cache.put("/index.html", copy)
-                await cache.put("/", rootCopy)
-                shellOk = true
+                try {
+                  await cache.put("/index.html", copy)
+                  await cache.put("/", rootCopy)
+                  shellOk = true
+                } catch {
+                  await restoreShellPair(cache, previousHtml, newHtml)
+                }
               } catch {}
               const previousRefs = assetRefs(previousHtml)
               const changed =
