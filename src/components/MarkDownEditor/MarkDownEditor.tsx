@@ -234,6 +234,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                     if (plain.trim() && !plainTextIsImageAddress(plain, uriList)) return false
                     if (plainTextIsImageAddress(residualText, uriList)) return false
                     event.preventDefault()
+                    editorView.focus()
                     let pos = editorView.state.selection.main.head
                     if (typeof event.clientX === "number" && typeof event.clientY === "number") {
                       try {
