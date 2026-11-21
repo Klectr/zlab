@@ -113,6 +113,15 @@ export function isValidImageContents(contents: string): boolean {
   }
 }
 
+export function canonicalImageContents(contents: string): string {
+  const commaIndex = contents.indexOf(",")
+  if (commaIndex < 0) return contents
+  return (
+    contents.slice(0, commaIndex + 1) +
+    contents.slice(commaIndex + 1).replace(/\s/g, "")
+  )
+}
+
 export function isValidCardEntry(
   value: unknown,
   needsFontSize: boolean,

@@ -5,6 +5,7 @@ import { Card, CardTypes } from "../../types"
 import { advanceBoardEpoch, canvasDimentsion, focusedItem, getBoardEpoch, restoreBoardEpoch } from "../../signals"
 import { convertBase64ToJson } from "../../utils/convertBase64ToJson"
 import {
+  canonicalImageContents,
   clampCardEntryToCanvas,
   isValidImageContents,
   updateLocalStorage,
@@ -62,8 +63,10 @@ function parseImportData(data: unknown): ImportEntry[] | null {
     const item: unknown = data[key]
     if (!isValidEntry(item)) return null
     const { id: _, ...rest } = item as Record<string, unknown>
-    if (item.type === CardTypes.IMAGES || item.type === "image")
+    if (item.type === CardTypes.IMAGES || item.type === "image") {
       rest.type = CardTypes.IMAGES
+      rest.contents = canonicalImageContents(item.contents as string)
+    }
     else if (item.type === CardTypes.NOTES || item.type === "note")
       rest.type = CardTypes.NOTES
     else if (item.type === CardTypes.TEXTS || item.type === "text")
