@@ -180,7 +180,6 @@ function ToastItem({
   const translateY = i * 70
   return (
     <div
-      role={toast.type === "error" ? "alert" : "status"}
       style={{
         transform: `translate(${translateX}px, ${translateY}px)`,
       }}
@@ -188,7 +187,7 @@ function ToastItem({
       onmouseenter={() => onPause("hover")}
       onmouseleave={() => onResume("hover")}
     >
-      <span className="toast-message pr-4">{toast.message}</span>
+      <span role={toast.type === "error" ? "alert" : "status"} className="toast-message pr-4">{toast.message}</span>
       <button
         type="button"
         aria-label={`Dismiss notification: ${toast.message}`}
