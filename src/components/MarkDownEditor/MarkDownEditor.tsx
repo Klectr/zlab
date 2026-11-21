@@ -16,7 +16,6 @@ const selectionAfterPointInsert = (state: EditorState, pos: number, insertLength
   const ranges = [EditorSelection.cursor(pos + insertLength)]
   for (const range of state.selection.ranges) {
     if (range === state.selection.main) continue
-    if (range.from < pos && range.to > pos) continue
     ranges.push(range.map(desc))
   }
   return EditorSelection.create(ranges, 0)
