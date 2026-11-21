@@ -65,7 +65,31 @@ export function MiniMap() {
         aria-label="Minimap"
         onmousedown={(e: Kiru.MouseEvent<HTMLDivElement>) => {
           if (e.button !== 0) return
-          if (e.target === e.currentTarget) focusedItem.value = null
+          if (e.target !== e.currentTarget) return
+          focusedItem.value = null
+          const rect = e.currentTarget.getBoundingClientRect()
+          function _navigate(clientX: number, clientY: number, behavior: ScrollBehavior) {
+            window.scrollTo({
+              left: (clientX - rect.left - 1) * scaleX - viewportWidth / 2,
+              top: (clientY - rect.top - 1) * scaleY - viewportHeight / 2,
+              behavior
+            })
+          }
+          _navigate(e.clientX, e.clientY, _scrollBehavior())
+          function _handleMouseMove(ev: MouseEvent) {
+            if ((ev.buttons & 1) === 0) {
+              _handleMouseUp()
+              return
+            }
+            _navigate(ev.clientX, ev.clientY, "auto")
+          }
+          function _handleMouseUp(ev?: MouseEvent) {
+            if (ev && ev.button !== 0 && ev.buttons !== 0) return
+            window.removeEventListener('mousemove', _handleMouseMove)
+            window.removeEventListener('mouseup', _handleMouseUp)
+          }
+          window.addEventListener('mousemove', _handleMouseMove)
+          window.addEventListener('mouseup', _handleMouseUp)
         }}
         className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded border border-[#5c5c5c]"
         style={{
