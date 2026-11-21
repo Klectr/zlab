@@ -208,6 +208,21 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               }
               if (fromHtml) {
                 event.preventDefault()
+                const lines = text.split("\n").map((l) => l.endsWith("\r") ? l.slice(0, -1) : l)
+                if (lines.length > 1 && lines.length === editorView.state.selection.ranges.length) {
+                  let i = 0
+                  editorView.dispatch({
+                    ...editorView.state.changeByRange((range) => {
+                      const line = lines[i++]
+                      return {
+                        changes: { from: range.from, to: range.to, insert: line },
+                        range: EditorSelection.cursor(range.from + line.length),
+                      }
+                    }),
+                    userEvent: "input.paste",
+                  })
+                  return true
+                }
                 editorView.dispatch({
                   ...editorView.state.changeByRange((range) => ({
                     changes: { from: range.from, to: range.to, insert: text },
