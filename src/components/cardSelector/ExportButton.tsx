@@ -21,13 +21,13 @@ export function ExportButton() {
     const name = `Zlab_export`
     const jsonData = JSON.stringify(mergeState)
     createFileAndExport(name, jsonData, "text/json")
-    toast.showToast("success", "Board exported.")
     if (Object.keys(mergeState).length === 0)
       toast.showToast("warning", "This board is empty. The export contains no cards and cannot be imported back.")
-    if (Object.keys(mergeState).length > MAX_IMPORT_ENTRIES)
+    else if (Object.keys(mergeState).length > MAX_IMPORT_ENTRIES)
       toast.showToast("warning", `This board has over ${MAX_IMPORT_ENTRIES} cards. The export is too large to import back.`)
-    if (new Blob([jsonData]).size > MAX_IMPORT_BYTES)
+    else if (new Blob([jsonData]).size > MAX_IMPORT_BYTES)
       toast.showToast("warning", "This export is over 32 MB. It is too large to import back.")
+    else toast.showToast("success", "Board exported.")
   }
 
   return (
