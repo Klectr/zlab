@@ -114,7 +114,7 @@ export function MiniMap() {
           window.addEventListener('mousemove', _handleMouseMove)
           window.addEventListener('mouseup', _handleMouseUp)
         }}
-        className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded border border-[#5c5c5c]"
+        className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded border border-[#5c5c5c] touch-none"
         style={{
           width: `${width}px`,
           height: `${height}px`,
