@@ -2,7 +2,10 @@ import { signal } from "kiru"
 
 /** this should be an ID of some card/item */
 export const focusedItem = signal<string | null>(null)
-export const canvasDimentsion = signal({ width: 3000, height: 3000 })
+export const canvasDimentsion = signal({
+  width: Math.max(3000, typeof window !== "undefined" ? window.innerWidth : 0),
+  height: Math.max(3000, typeof window !== "undefined" ? window.innerHeight : 0),
+})
 
 let boardEpochValue = 0
 export function getBoardEpoch() {
