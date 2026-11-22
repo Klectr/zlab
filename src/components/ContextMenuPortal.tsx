@@ -63,6 +63,8 @@ export function ContextMenuPortal({
 }: ContextMenuPortalProps) {
   initMouseTracking()
   let dismissedWithoutFocusRestore = false
+  let pointerStartedOutside = true
+  let pointerStartedInsideMenu = false
   const pos = signal({ x: 0, y: 0 })
   const ready = signal(false)
   const elRef = ref<HTMLDivElement>(null)
@@ -70,8 +72,6 @@ export function ContextMenuPortal({
 
   onMount(() => {
     closeHandlers.add(closeSelf)
-    let pointerStartedOutside = true
-    let pointerStartedInsideMenu = false
     function _handlePointerDown(e: PointerEvent) {
       if (eventHitsOwnMenuTrigger(e, menuId)) {
         pointerStartedOutside = true
@@ -148,6 +148,8 @@ export function ContextMenuPortal({
       return
     }
     dismissedWithoutFocusRestore = false
+    pointerStartedOutside = true
+    pointerStartedInsideMenu = false
     const activeAtOpen = document.activeElement as HTMLElement | null
     const chainedRestore =
       !!lastMenuRestore &&
