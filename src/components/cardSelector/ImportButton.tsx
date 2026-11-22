@@ -62,25 +62,33 @@ function parseImportData(data: unknown): ImportEntry[] | null {
   for (const key in data) {
     const item: unknown = data[key]
     if (!isValidEntry(item)) return null
-    const { id: _, ...rest } = item as Record<string, unknown>
-    if (item.type === CardTypes.IMAGES || item.type === "image") {
-      rest.type = CardTypes.IMAGES
-      rest.contents = canonicalImageContents(item.contents as string)
+    const type =
+      item.type === CardTypes.IMAGES || item.type === "image"
+        ? CardTypes.IMAGES
+        : item.type === CardTypes.NOTES || item.type === "note"
+          ? CardTypes.NOTES
+          : CardTypes.TEXTS
+    const entry: Record<string, unknown> = {
+      type,
+      title: item.title,
+      contents:
+        type === CardTypes.IMAGES
+          ? canonicalImageContents(item.contents as string)
+          : item.contents,
+      position: { x: item.position.x, y: item.position.y },
+      dimensions: { w: item.dimensions.w, h: item.dimensions.h },
     }
-    else if (item.type === CardTypes.NOTES || item.type === "note")
-      rest.type = CardTypes.NOTES
-    else if (item.type === CardTypes.TEXTS || item.type === "text")
-      rest.type = CardTypes.TEXTS
+    if (type === CardTypes.TEXTS) entry.fontSize = item.fontSize
     clampCardEntryToCanvas(
-      rest as {
+      entry as {
         position: { x: number; y: number }
         dimensions: { w: number; h: number }
       },
       canvasDimentsion.value,
-      rest.type === CardTypes.TEXTS,
-      rest.type === CardTypes.NOTES ? 110 : 100
+      type === CardTypes.TEXTS,
+      type === CardTypes.NOTES ? 110 : 100
     )
-    entries.push(rest as ImportEntry)
+    entries.push(entry as ImportEntry)
   }
   if (entries.length === 0) return null
   return entries
