@@ -62,8 +62,8 @@ export function MiniMap() {
     const innerHeight = Math.max(1, height - 2)
     const scaleX = canvasDimentsion.value.width / innerWidth
     const scaleY = canvasDimentsion.value.height / innerHeight
-    const xPos = Math.max(0, viewportWidth - width - _MAP_OFFSET)
-    const yPos = Math.max(0, viewportHeight - height - _MAP_OFFSET)
+    const xPos = Math.max(0, window.innerWidth - width - _MAP_OFFSET)
+    const yPos = Math.max(0, window.innerHeight - height - _MAP_OFFSET)
     const indicatorWidth = Math.min(viewportWidth / scaleX, innerWidth)
     const indicatorHeight = Math.min(viewportHeight / scaleY, innerHeight)
     const indicatorTop = Math.max(0, Math.min(scrollY.value / scaleY, innerHeight - indicatorHeight))
