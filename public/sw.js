@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v36"
+const CACHE_NAME = "zlab-v37"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -117,12 +117,25 @@ async function restoreShellPair(cache, previousHtml, newHtml) {
   if (currentHtml !== previousHtml && currentHtml !== newHtml) return
   if (previousHtml) {
     const headers = { "content-type": "text/html" }
+    let restored = true
     try {
       await cache.put("/index.html", new Response(previousHtml, { headers }))
-    } catch {}
+    } catch {
+      restored = false
+    }
     try {
       await cache.put("/", new Response(previousHtml, { headers }))
-    } catch {}
+    } catch {
+      restored = false
+    }
+    if (!restored) {
+      try {
+        await cache.delete("/index.html")
+      } catch {}
+      try {
+        await cache.delete("/")
+      } catch {}
+    }
   } else {
     try {
       await cache.delete("/index.html")
