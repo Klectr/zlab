@@ -181,8 +181,6 @@ export function ImportButton() {
         if (persistError === null) {
           toast.showToast("success", "Board imported.")
         } else {
-          const err = persistError
-          if (!(err instanceof DOMException) || err.name !== 'LocalStorageError') return
           toast.showToast("error", "Could not save the imported cards!")
           notes.notes.value = prevNotes
           notes.notes.notify()
