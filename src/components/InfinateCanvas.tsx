@@ -185,9 +185,14 @@ export default function InfiniteCanvas() {
     window.addEventListener("beforeunload", _flushPosition)
     window.addEventListener("pagehide", _flushPosition)
     window.addEventListener("keydown", _handleGlobalSave)
-    notes.loadLocalStorage()
-    images.loadLocalStorage()
-    texts.loadLocalStorage()
+    const hadCorruptStore = [
+      notes.loadLocalStorage(),
+      images.loadLocalStorage(),
+      texts.loadLocalStorage(),
+    ].some((corrupt) => corrupt)
+    if (hadCorruptStore) {
+      toast.showToast("error", "Some saved cards could not be loaded.")
+    }
 
     return () => {
       window.removeEventListener("mousedown", _disarmDragsOnMouseDown, true)

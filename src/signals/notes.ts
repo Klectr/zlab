@@ -2,6 +2,7 @@ import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
 import { canvasDimentsion, focusedItem } from "."
 import {
+  backupCorruptStoredValue,
   claimLoadedCardId,
   clampCardEntryToCanvas,
   isValidCardEntry,
@@ -12,9 +13,11 @@ export type NoteCardType = Card<CardTypes.NOTES>
 
 const notes = signal<Record<NoteCardType["id"], NoteCardType>>({})
 
-function loadLocalStorage() {
+function loadLocalStorage(): boolean {
+  let raw: string | null = null
   try {
-    const parsed = JSON.parse(localStorage.getItem("notes") ?? "{}")
+    raw = localStorage.getItem("notes")
+    const parsed = JSON.parse(raw ?? "{}")
     notes.value =
       parsed && typeof parsed === "object" && !Array.isArray(parsed)
         ? parsed
@@ -33,8 +36,12 @@ function loadLocalStorage() {
         delete notes.value[key]
       }
     }
+    return false
   } catch {
     notes.value = {}
+    if (raw === null) return false
+    backupCorruptStoredValue("notes", raw)
+    return true
   }
 }
 
