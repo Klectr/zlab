@@ -78,11 +78,21 @@ export function MiniMap() {
           if (e.button !== 0) return
           if (e.target !== e.currentTarget) return
           focusedItem.value = null
-          const rect = e.currentTarget.getBoundingClientRect()
+          const mapEl = e.currentTarget
           function _navigate(clientX: number, clientY: number, behavior: ScrollBehavior) {
+            const rect = mapEl.getBoundingClientRect()
+            const vw = document.documentElement.clientWidth || window.innerWidth
+            const vh = document.documentElement.clientHeight || window.innerHeight
+            const sf = Math.max(
+              _MAP_SCALE_FACTOR,
+              canvasDimentsion.value.width / (vw / 2),
+              canvasDimentsion.value.height / (vh / 2)
+            )
+            const liveScaleX = canvasDimentsion.value.width / Math.max(1, canvasDimentsion.value.width / sf - 2)
+            const liveScaleY = canvasDimentsion.value.height / Math.max(1, canvasDimentsion.value.height / sf - 2)
             window.scrollTo({
-              left: (clientX - rect.left - 1) * scaleX - viewportWidth / 2,
-              top: (clientY - rect.top - 1) * scaleY - viewportHeight / 2,
+              left: (clientX - rect.left - 1) * liveScaleX - vw / 2,
+              top: (clientY - rect.top - 1) * liveScaleY - vh / 2,
               behavior
             })
           }
