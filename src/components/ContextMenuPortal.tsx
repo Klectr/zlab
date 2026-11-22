@@ -187,6 +187,7 @@ export function ContextMenuPortal({
         ).find(
           (t) => t.getAttribute("data-menu-trigger") === menuId
         ) as HTMLElement | undefined
+        closeAction?.()
         if (trigger) trigger.focus({ preventScroll: true })
         e.preventDefault()
         return
