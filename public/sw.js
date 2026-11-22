@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v37"
+const CACHE_NAME = "zlab-v38"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -106,7 +106,28 @@ async function pruneSupersededAssets(previousHtml, newHtml) {
   } catch {}
 }
 
-async function restoreShellPair(cache, previousHtml, newHtml) {
+function shellResponseInit(response) {
+  const headers = {}
+  try {
+    if (typeof response?.headers?.forEach === "function") {
+      response.headers.forEach((value, key) => {
+        headers[key] = value
+      })
+    } else {
+      const contentType = response?.headers?.get?.("content-type")
+      if (contentType) headers["content-type"] = contentType
+    }
+  } catch {}
+  if (!headers["content-type"]) headers["content-type"] = "text/html"
+  const init = { headers }
+  try {
+    if (response?.status) init.status = response.status
+    if (response?.statusText) init.statusText = response.statusText
+  } catch {}
+  return init
+}
+
+async function restoreShellPair(cache, previousHtml, newHtml, previousInit) {
   let currentHtml
   try {
     const current = await cache.match("/index.html")
@@ -116,15 +137,15 @@ async function restoreShellPair(cache, previousHtml, newHtml) {
   }
   if (currentHtml !== previousHtml && currentHtml !== newHtml) return
   if (previousHtml) {
-    const headers = { "content-type": "text/html" }
+    const init = previousInit ?? { headers: { "content-type": "text/html" } }
     let restored = true
     try {
-      await cache.put("/index.html", new Response(previousHtml, { headers }))
+      await cache.put("/index.html", new Response(previousHtml, init))
     } catch {
       restored = false
     }
     try {
-      await cache.put("/", new Response(previousHtml, { headers }))
+      await cache.put("/", new Response(previousHtml, init))
     } catch {
       restored = false
     }
@@ -202,9 +223,11 @@ self.addEventListener("install", (event) => {
       }
       const live = await caches.open(CACHE_NAME)
       let previousHtml = ""
+      let previousInit
       try {
         const previous = await live.match("/index.html")
         previousHtml = previous ? await previous.text() : ""
+        if (previous) previousInit = shellResponseInit(previous)
       } catch {}
       const requests = await staging.keys()
       const isShellEntry = (request) => {
@@ -224,7 +247,7 @@ self.addEventListener("install", (event) => {
           if (response) await live.put(request, response)
         }
       } catch (err) {
-        await restoreShellPair(live, previousHtml, newHtml)
+        await restoreShellPair(live, previousHtml, newHtml, previousInit)
         await caches.delete(stagingName).catch(() => {})
         throw err
       }
@@ -312,12 +335,14 @@ self.addEventListener("fetch", (event) => {
             const textCopy = response.clone()
             const lifetime = (async () => {
               let previousHtml = ""
+              let previousInit
               let newHtml = ""
               try {
                 newHtml = await textCopy.text()
                 const cache = await caches.open(CACHE_NAME)
                 const previous = await cache.match("/index.html")
                 previousHtml = previous ? await previous.text() : ""
+                if (previous) previousInit = shellResponseInit(previous)
               } catch {}
               if (!newHtml) return
               const newRefs = assetRefs(newHtml)
@@ -369,7 +394,7 @@ self.addEventListener("fetch", (event) => {
                   await cache.put("/", rootCopy)
                   shellOk = true
                 } catch {
-                  await restoreShellPair(cache, previousHtml, newHtml)
+                  await restoreShellPair(cache, previousHtml, newHtml, previousInit)
                 }
               } catch {}
               const previousRefs = assetRefs(previousHtml)
