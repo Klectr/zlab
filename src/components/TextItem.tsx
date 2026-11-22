@@ -773,8 +773,8 @@ export function TextItem(props: TextCardProps) {
         <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass={`cursor-pointer w-4 h-4 absolute top-0 left-[20px] z-10${focusedItem.value === itemKey ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`} iconClass="w-4 h-4 block" />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
 
-        <pre
-          className={'text-pre px-2 w-full select-none drop-shadow relative'}
+        <div
+          className={'text-pre px-2 w-full select-none drop-shadow relative whitespace-pre font-mono'}
           style={{
             maxWidth: `${Math.max(0, canvasDimentsion.value.width - it.position.x)}px`,
             maxHeight: `${Math.max(0, canvasDimentsion.value.height - it.position.y)}px`,
@@ -792,7 +792,7 @@ export function TextItem(props: TextCardProps) {
             aria-multiline="true"
             className={'text-p inline-block px-2 w-full select-none drop-shadow relative'}>
           </p>
-        </pre>
+        </div>
 
         <ExpandIcon cb={_handleResizeMouseDown} itemId={it.id} label={`Resize text${nameSuffix}`} />
       </div >
