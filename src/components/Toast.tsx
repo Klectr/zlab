@@ -7,6 +7,7 @@ import {
   signal,
   type TransitionState,
 } from "kiru"
+import { canvasDimentsion } from "../signals"
 
 type Toast = {
   ts: number
@@ -68,7 +69,18 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
 
   const toastCapacity = () => {
     const stackTop = window.innerWidth <= 640 ? 52 : 16
-    return Math.max(1, Math.floor((window.innerHeight - stackTop - 64) / 70) + 1)
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth
+    const viewportHeight = document.documentElement.clientHeight || window.innerHeight
+    const scaleFactor = Math.max(
+      10,
+      canvasDimentsion.value.width / (viewportWidth / 2),
+      canvasDimentsion.value.height / (viewportHeight / 2)
+    )
+    const minimapReserve = canvasDimentsion.value.height / scaleFactor + 20 + 64
+    return Math.max(
+      1,
+      Math.floor((window.innerHeight - stackTop - minimapReserve) / 70) + 1
+    )
   }
 
   const evictOverflowToasts = (list: Toast[]) => {
