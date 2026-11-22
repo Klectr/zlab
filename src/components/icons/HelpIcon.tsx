@@ -18,7 +18,6 @@ export function HelpIcon({ onMouseOver, onMouseOut, onClick, describedBy, expand
       aria-label={label ?? "Show note shortcuts"}
       aria-expanded={expanded ? "true" : "false"}
       aria-controls={describedBy}
-      aria-describedby={describedBy}
       onmouseout={onMouseOut}
       onclick={onClick}
       onmouseover={onMouseOver}
