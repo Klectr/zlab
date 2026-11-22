@@ -2,6 +2,7 @@ import { signal } from "kiru"
 import { Card, CardTypes } from "../types"
 import { canvasDimentsion, focusedItem } from "."
 import {
+  backupCorruptStoredValue,
   canonicalImageContents,
   claimLoadedCardId,
   clampCardEntryToCanvas,
@@ -13,9 +14,11 @@ export type ImageCardType = Card<CardTypes.IMAGES>
 
 const images = signal<Record<ImageCardType["id"], ImageCardType>>({})
 
-function loadLocalStorage() {
+function loadLocalStorage(): boolean {
+  let raw: string | null = null
   try {
-    const parsed = JSON.parse(localStorage.getItem("images") ?? "{}")
+    raw = localStorage.getItem("images")
+    const parsed = JSON.parse(raw ?? "{}")
     images.value =
       parsed && typeof parsed === "object" && !Array.isArray(parsed)
         ? parsed
@@ -35,8 +38,12 @@ function loadLocalStorage() {
         delete images.value[key]
       }
     }
+    return false
   } catch {
     images.value = {}
+    if (raw === null) return false
+    backupCorruptStoredValue("images", raw)
+    return true
   }
 }
 

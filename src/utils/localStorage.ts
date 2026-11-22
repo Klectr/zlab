@@ -27,6 +27,14 @@ export function updateLocalStorage(
   return collection
 }
 
+export function backupCorruptStoredValue(key: string, raw: string) {
+  try {
+    localStorage.setItem(`${key}.corrupt`, raw)
+  } catch {
+    return
+  }
+}
+
 let saveFailureReported = false
 
 export function claimSaveFailureReport() {
