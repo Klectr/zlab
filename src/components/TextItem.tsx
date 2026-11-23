@@ -666,6 +666,7 @@ export function TextItem(props: TextCardProps) {
     const target = e.target as HTMLElement | null
     const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal, #card-selector")
     if (inEditableTarget) return
+    if (openContextMenu.value) return
     e.preventDefault()
     _handleClose()
   }
