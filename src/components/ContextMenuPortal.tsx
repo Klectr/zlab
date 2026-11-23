@@ -176,11 +176,13 @@ export function ContextMenuPortal({
     }))
     function _handleMenuKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
+        if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
         closeAction?.()
         e.stopImmediatePropagation()
         return
       }
       if (e.key === "Tab") {
+        if (e.ctrlKey || e.metaKey || e.altKey) return
         const el = elRef.current
         const active = document.activeElement as HTMLElement | null
         if (!el || !active || !el.contains(active)) return
@@ -210,7 +212,7 @@ export function ContextMenuPortal({
         e.key !== "End"
       )
         return
-      if (e.ctrlKey || e.metaKey || e.altKey) return
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
       const el = elRef.current
       if (!el) return
       const active = document.activeElement as HTMLElement | null
