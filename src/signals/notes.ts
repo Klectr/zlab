@@ -25,9 +25,11 @@ function loadLocalStorage(): boolean {
       return true
     }
     notes.value = parsed
+    let droppedAny = false
     for (const [key, entry] of Object.entries(notes.value)) {
       if (!isValidCardEntry(entry, false, key)) {
         delete notes.value[key]
+        droppedAny = true
         continue
       }
       clampCardEntryToCanvas(entry, canvasDimentsion.value, false, 110)
@@ -38,6 +40,10 @@ function loadLocalStorage(): boolean {
         notes.value[claimedId] = entry
         delete notes.value[key]
       }
+    }
+    if (droppedAny && raw !== null) {
+      backupCorruptStoredValue("notes", raw)
+      return true
     }
     return false
   } catch {
