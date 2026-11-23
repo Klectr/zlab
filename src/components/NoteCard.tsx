@@ -76,12 +76,18 @@ export function NoteCard(props: NoteCardProps) {
     }, time)
   }
 
+  function markSavedPosition() {
+    const current = item.value
+    if (!current) return
+    savedPosition.value = { x: current.position.x, y: current.position.y }
+    savedDimensions.value = { w: current.dimensions.w, h: current.dimensions.h }
+  }
+
   function persistLocalStorage() {
     localStorage.setItem("notes", JSON.stringify(notes.notes.value))
     clearSaveFailureReport()
     saved.value = true
-    savedPosition.value = { x: item.value.position.x, y: item.value.position.y }
-    savedDimensions.value = { w: item.value.dimensions.w, h: item.value.dimensions.h }
+    markSavedPosition()
   }
 
   function _handleMouseMove(e: MouseEvent) {
