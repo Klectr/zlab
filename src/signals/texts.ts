@@ -20,10 +20,13 @@ function loadLocalStorage(): boolean {
   try {
     raw = localStorage.getItem("texts")
     const parsed = JSON.parse(raw ?? "{}")
-    texts.value =
-      parsed && typeof parsed === "object" && !Array.isArray(parsed)
-        ? parsed
-        : {}
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      texts.value = {}
+      if (raw === null) return false
+      backupCorruptStoredValue("texts", raw)
+      return true
+    }
+    texts.value = parsed
     for (const [key, entry] of Object.entries(texts.value)) {
       if (!isValidCardEntry(entry, true, key)) {
         delete texts.value[key]
