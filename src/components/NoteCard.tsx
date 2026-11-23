@@ -405,11 +405,13 @@ export function NoteCard(props: NoteCardProps) {
     switch (e.key) {
       case 'Delete':
         if (inEditableTarget) return
+        if (openContextMenu.value) return
         e.preventDefault()
         _handleClose()
         break
       case 'Backspace':
         if (inEditableTarget) return
+        if (openContextMenu.value) return
         e.preventDefault()
         _handleClose()
         break
