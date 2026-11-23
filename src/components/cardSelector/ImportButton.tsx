@@ -153,6 +153,7 @@ export function ImportButton() {
         const prevNotes = JSON.parse(JSON.stringify(notes.notes.value))
         const prevImages = JSON.parse(JSON.stringify(images.images.value))
         const prevTexts = JSON.parse(JSON.stringify(texts.texts.value))
+        const prevFocusedItem = focusedItem.value
         const epochBeforeImport = getBoardEpoch()
         advanceBoardEpoch()
         notes.notes.value = {}
@@ -197,6 +198,13 @@ export function ImportButton() {
           texts.texts.value = prevTexts
           texts.texts.notify()
           restoreBoardEpoch(epochBeforeImport)
+          focusedItem.value =
+            prevFocusedItem !== null &&
+            (prevFocusedItem in prevNotes ||
+              prevFocusedItem in prevImages ||
+              prevFocusedItem in prevTexts)
+              ? prevFocusedItem
+              : null
           for (const key of [CardTypes.NOTES, CardTypes.IMAGES, CardTypes.TEXTS]) {
             try {
               localStorage.removeItem(key)
