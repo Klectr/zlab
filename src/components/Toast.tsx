@@ -141,7 +141,7 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
     <ToastContext value={{ showToast }}>
       {children}
       <Portal container={() => document.getElementById("toast-root")!}>
-        {toasts.value.map((toast, i) => (
+        {toasts.value.map((toast) => (
           <Transition
             key={toast.ts}
             in={!toast.expired}
@@ -159,7 +159,6 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
               <ToastItem
                 toast={toast}
                 state={state}
-                i={i}
                 onDismiss={() => dismissToast(toast.ts)}
                 onPause={(source) => pauseToast(toast.ts, source)}
                 onResume={(source) => resumeToast(toast.ts, source)}
@@ -175,25 +174,22 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
 function ToastItem({
   toast,
   state,
-  i,
   onDismiss,
   onPause,
   onResume,
 }: {
   toast: Toast
   state: TransitionState
-  i: number
   onDismiss: () => void
   onPause: (source: string) => void
   onResume: (source: string) => void
 }) {
   if (state == "exited") return null
   const translateX = state === "entered" ? 0 : 250
-  const translateY = i * 70
   return (
     <div
       style={{
-        transform: `translate(${translateX}px, ${translateY}px)`,
+        transform: `translate(${translateX}px, 0px)`,
       }}
       className={`toast toast-${toast.type}`}
       onmouseenter={() => onPause("hover")}

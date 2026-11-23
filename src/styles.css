@@ -61,14 +61,26 @@ body {
   }
 }
 
+#toast-root {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 50;
+  pointer-events: none;
+}
+
 .toast {
   @apply flex flex-col items-center justify-center;
-  @apply fixed right-4 top-4 w-52 px-4;
-  @apply transition-all duration-300 rounded z-50;
+  @apply w-52 px-4 min-h-16 py-2;
+  @apply transition-all duration-300 rounded;
+  pointer-events: auto;
 }
 
 @media (max-width: 640px) {
-  .toast {
+  #toast-root {
     top: 52px;
   }
 }
