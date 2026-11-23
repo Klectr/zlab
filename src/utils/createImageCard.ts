@@ -150,6 +150,8 @@ export function createImageCardFromFile(
           Math.max(clampedPosition.y, viewTop),
           Math.max(viewTop, viewTop + viewportH - normalizedH)
         )
+        clampedPosition.x = Math.min(clampedPosition.x, maxPosition.x)
+        clampedPosition.y = Math.min(clampedPosition.y, maxPosition.y)
       }
 
       const focusBeforeAdd = focusedItem.value
