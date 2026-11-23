@@ -145,6 +145,30 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           EditorView.domEventHandlers({
             paste: (event, editorView) => {
               if (!onPasteImage) return false
+              const dispatchPastedText = (text: string) => {
+                const lines = text.split("\n").map((l) => l.endsWith("\r") ? l.slice(0, -1) : l)
+                if (lines.length > 1 && lines.length === editorView.state.selection.ranges.length) {
+                  let i = 0
+                  editorView.dispatch({
+                    ...editorView.state.changeByRange((range) => {
+                      const line = lines[i++]
+                      return {
+                        changes: { from: range.from, to: range.to, insert: line },
+                        range: EditorSelection.cursor(range.from + line.length),
+                      }
+                    }),
+                    userEvent: "input.paste",
+                  })
+                  return
+                }
+                editorView.dispatch({
+                  ...editorView.state.changeByRange((range) => ({
+                    changes: { from: range.from, to: range.to, insert: text },
+                    range: EditorSelection.cursor(range.from + text.length),
+                  })),
+                  userEvent: "input.paste",
+                })
+              }
               let files = Array.from(event.clipboardData?.files ?? []).filter(isImageFileCandidate)
               if (!files.length && event.clipboardData) {
                 files = Array.from(event.clipboardData.items)
@@ -162,13 +186,17 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                   Array.from(event.clipboardData?.items ?? []).some((i) => i.kind === "file")
                 if (!hasFiles) {
                   if (!/<img[\s/>]/i.test(pastedHtml)) return false
-                  if (residualTextFromHtml(pastedHtml)) return false
                   const dt = event.clipboardData
                   const plain = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
-                  if (plain.trim()) {
-                    const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
-                    if (!plainTextIsImageAddress(plain, uriList)) return false
+                  const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                  const residual = residualTextFromHtml(pastedHtml)
+                  if (residual && !plainTextIsImageAddress(residual, uriList)) {
+                    if (plain.trim() && !plainTextIsImageAddress(plain, uriList)) return false
+                    event.preventDefault()
+                    dispatchPastedText(residual)
+                    return true
                   }
+                  if (plain.trim() && !plainTextIsImageAddress(plain, uriList)) return false
                   onPasteRejected?.()
                   event.preventDefault()
                   return true
@@ -208,28 +236,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               }
               if (fromHtml) {
                 event.preventDefault()
-                const lines = text.split("\n").map((l) => l.endsWith("\r") ? l.slice(0, -1) : l)
-                if (lines.length > 1 && lines.length === editorView.state.selection.ranges.length) {
-                  let i = 0
-                  editorView.dispatch({
-                    ...editorView.state.changeByRange((range) => {
-                      const line = lines[i++]
-                      return {
-                        changes: { from: range.from, to: range.to, insert: line },
-                        range: EditorSelection.cursor(range.from + line.length),
-                      }
-                    }),
-                    userEvent: "input.paste",
-                  })
-                  return true
-                }
-                editorView.dispatch({
-                  ...editorView.state.changeByRange((range) => ({
-                    changes: { from: range.from, to: range.to, insert: text },
-                    range: EditorSelection.cursor(range.from + text.length),
-                  })),
-                  userEvent: "input.paste",
-                })
+                dispatchPastedText(text)
                 return true
               }
               return false
