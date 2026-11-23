@@ -69,7 +69,8 @@ export function createImageCardFromFile(
   onPersistError: () => void,
   onLoadError: () => void,
   onSuccess?: () => void,
-  onPersisted?: () => void
+  onPersisted?: () => void,
+  clampToViewport?: boolean
 ) {
   if (file.size > 10 * 1024 * 1024) {
     onPersistError()
@@ -136,6 +137,20 @@ export function createImageCardFromFile(
         Object.values(images.images.value).map((card) => card.position),
         maxPosition
       )
+      if (clampToViewport) {
+        const viewportW = document.documentElement.clientWidth || window.innerWidth
+        const viewportH = document.documentElement.clientHeight || window.innerHeight
+        const viewLeft = window.scrollX
+        const viewTop = window.scrollY
+        clampedPosition.x = Math.min(
+          Math.max(clampedPosition.x, viewLeft),
+          Math.max(viewLeft, viewLeft + viewportW - normalizedW)
+        )
+        clampedPosition.y = Math.min(
+          Math.max(clampedPosition.y, viewTop),
+          Math.max(viewTop, viewTop + viewportH - normalizedH)
+        )
+      }
 
       const focusBeforeAdd = focusedItem.value
       const imgId = ImagesSignal.default.addImage({
