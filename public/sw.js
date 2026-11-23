@@ -22,7 +22,7 @@ async function isHtmlForAsset(pathname, response) {
 
 function offlinePageResponse() {
   return new Response(
-    "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"color-scheme\" content=\"light dark\"><title>Zlab offline</title><style>@media (prefers-color-scheme: dark){body{background:#000;color:#fff}}</style></head><body><h1>Zlab is offline</h1><p>Reconnect and reload to open your board.</p></body></html>",
+    "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"color-scheme\" content=\"light dark\"><title>Zlab offline</title><style>@media (prefers-color-scheme: dark){body{background:#000;color:#fff}}</style></head><body><h1>Zlab is offline</h1><p>Reconnect and reload to open your board.</p></body></html>",
     { status: 503, headers: { "content-type": "text/html" } }
   )
 }
