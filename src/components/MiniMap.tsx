@@ -79,6 +79,8 @@ export function MiniMap() {
           if (e.target !== e.currentTarget) return
           focusedItem.value = null
           const mapEl = e.currentTarget
+          const startScrollX = window.scrollX
+          const startScrollY = window.scrollY
           function _navigate(clientX: number, clientY: number, behavior: ScrollBehavior) {
             const rect = mapEl.getBoundingClientRect()
             const vw = document.documentElement.clientWidth || window.innerWidth
@@ -104,15 +106,24 @@ export function MiniMap() {
             }
             _navigate(ev.clientX, ev.clientY, "auto")
           }
+          function _handleDragEscape(ev: KeyboardEvent) {
+            if (ev.key !== "Escape") return
+            ev.preventDefault()
+            ev.stopPropagation()
+            window.scrollTo({ left: startScrollX, top: startScrollY, behavior: "auto" })
+            _handleMouseUp()
+          }
           function _handleMouseUp(ev?: MouseEvent) {
             if (ev && ev.button !== 0 && ev.buttons !== 0) return
             dragEnd = null
             window.removeEventListener('mousemove', _handleMouseMove)
             window.removeEventListener('mouseup', _handleMouseUp)
+            window.removeEventListener('keydown', _handleDragEscape, true)
           }
           dragEnd = () => _handleMouseUp()
           window.addEventListener('mousemove', _handleMouseMove)
           window.addEventListener('mouseup', _handleMouseUp)
+          window.addEventListener('keydown', _handleDragEscape, true)
         }}
         className="dark:bg-[#ffffff11] bg-[#0001] fixed rounded border border-[#5c5c5c] touch-none"
         style={{
