@@ -71,8 +71,7 @@ export function NoteCard(props: NoteCardProps) {
       }
       clearSaveFailureReport()
       saved.value = true
-      savedPosition.value = { x: item.value.position.x, y: item.value.position.y }
-      savedDimensions.value = { w: item.value.dimensions.w, h: item.value.dimensions.h }
+      markSavedPosition()
     }, time)
   }
 
