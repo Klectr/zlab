@@ -121,6 +121,7 @@ export function ImageCard(props: ImageCardProps) {
     }
 
     ImagesSignal.default.updateImageProperty(itemKey, 'dimensions', newDim)
+    debounceLSUpdate()
   }
 
 

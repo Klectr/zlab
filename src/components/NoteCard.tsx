@@ -140,6 +140,7 @@ export function NoteCard(props: NoteCardProps) {
     const newDim = { w: newW, h: newH }
 
     NotesSigal.default.updateNoteProperty(itemKey, 'dimensions', newDim)
+    updateLocalStorage()
   }
 
 
