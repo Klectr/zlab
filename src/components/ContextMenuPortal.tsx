@@ -96,6 +96,7 @@ export function ContextMenuPortal({
         return
       }
       pointerStartedInsideMenu = false
+      dismissedWithoutFocusRestore = true
       closeAction?.()
     }
     function _handleContextMenuOutside(e: MouseEvent) {
@@ -104,6 +105,7 @@ export function ContextMenuPortal({
         e.preventDefault()
         return
       }
+      dismissedWithoutFocusRestore = true
       closeAction?.()
     }
     document.addEventListener("click", _handleClickOutside, {
