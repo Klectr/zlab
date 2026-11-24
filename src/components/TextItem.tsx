@@ -132,8 +132,9 @@ export function TextItem(props: TextCardProps) {
 
   function _measureAndStoreDimensions() {
     const elDems = elRef.current?.getBoundingClientRect()
-    const elW = Math.min(elDems?.width ?? 100, canvasDimentsion.value.width)
-    const elH = Math.min(elDems?.height ?? 100, canvasDimentsion.value.height)
+    if (!elDems) return false
+    const elW = Math.min(elDems.width, canvasDimentsion.value.width)
+    const elH = Math.min(elDems.height, canvasDimentsion.value.height)
     if (elW <= 0 || elH <= 0) return false
     const newDems: Card<CardTypes.TEXTS>['dimensions'] = { w: elW, h: elH }
     const pos = item.value.position
