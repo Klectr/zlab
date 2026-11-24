@@ -309,6 +309,7 @@ export function NoteCard(props: NoteCardProps) {
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
+    if (pressed.value) return
     const rect = e.currentTarget.getBoundingClientRect()
     mouse.value = {
       x: e.clientX !== 0 ? e.clientX : rect.left,
