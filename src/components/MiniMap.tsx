@@ -5,7 +5,7 @@ import { LayerEnum } from "../utils/enums"
 import images, { ImageCardType } from "../signals/images"
 import texts, { TextCardType } from "../signals/texts"
 import { imageCardName, noteCardName } from "../utils/cardName"
-import { activeDragDisarmers } from "../utils/activeDrag"
+import { activeDragChecks, activeDragDisarmers } from "../utils/activeDrag"
 
 const _MAP_OFFSET = 20
 const _MAP_SCALE_FACTOR = 10
@@ -24,6 +24,10 @@ export function MiniMap() {
     if (dragEnd) dragEnd()
   }
 
+  function _isMinimapDragArmed() {
+    return dragEnd !== null
+  }
+
   onMount(() => {
     function _handleScroll() {
       scrollX.value = window.scrollX
@@ -36,6 +40,7 @@ export function MiniMap() {
     window.addEventListener('scroll', _handleScroll)
     window.addEventListener('resize', _handleResize)
     activeDragDisarmers.add(_disarmMinimapDrag)
+    activeDragChecks.add(_isMinimapDragArmed)
     window.addEventListener('blur', _disarmMinimapDrag)
 
     return () => {
@@ -43,6 +48,7 @@ export function MiniMap() {
       window.removeEventListener('resize', _handleResize)
       window.removeEventListener('blur', _disarmMinimapDrag)
       activeDragDisarmers.delete(_disarmMinimapDrag)
+      activeDragChecks.delete(_isMinimapDragArmed)
       _disarmMinimapDrag()
     }
   })
