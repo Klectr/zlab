@@ -32,7 +32,7 @@ export function CardSelector() {
       if (index >= 0) _setActiveButton(index)
     }
     const _handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
       const buttons = _toolbarButtons()
       const index = buttons.indexOf(e.target as HTMLButtonElement)
       if (index < 0) return
