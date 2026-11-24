@@ -198,7 +198,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleDragEscape(e: KeyboardEvent) {
-    if (e.key !== "Escape" || !pressed.value) return
+    if (e.key !== "Escape" || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || !pressed.value) return
     e.preventDefault()
     e.stopPropagation()
     _cancelDrag()

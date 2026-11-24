@@ -111,7 +111,7 @@ export function MiniMap() {
             _navigate(ev.clientX, ev.clientY, "auto")
           }
           function _handleDragEscape(ev: KeyboardEvent) {
-            if (ev.key !== "Escape") return
+            if (ev.key !== "Escape" || ev.ctrlKey || ev.metaKey || ev.altKey || ev.shiftKey) return
             ev.preventDefault()
             ev.stopPropagation()
             window.scrollTo({ left: startScrollX, top: startScrollY, behavior: "auto" })
