@@ -378,7 +378,7 @@ export function NoteCard(props: NoteCardProps) {
       editorSelectionOpen = !!selection && (selection.ranges.length > 1 || !selection.main.empty)
     }
     function _handleHelpEscape(e: KeyboardEvent) {
-      if (e.key === "Escape" && !composingEscape && !searchPanelOpen && !editorSelectionOpen && !isAnyContextMenuOpen()) {
+      if (e.key === "Escape" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey && !composingEscape && !searchPanelOpen && !editorSelectionOpen && !isAnyContextMenuOpen()) {
         helpPinned.value = false
         showHelp.value = false
       }
