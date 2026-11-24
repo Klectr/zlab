@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v39"
+const CACHE_NAME = "zlab-v40"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -441,18 +441,21 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     fetch(request)
-      .then((response) => {
-        if (response.ok) {
-          const copy = response.clone()
-          const put = (async () => {
-            if (await isHtmlForAsset(url.pathname, response)) return
-            const cache = await caches.open(CACHE_NAME)
-            await cache.put(request, copy)
-          })().catch(() => {})
-          try {
-            event.waitUntil(put)
-          } catch {}
+      .then(async (response) => {
+        if (!response.ok) {
+          const cached = await matchOwnCache(request)
+          if (cached) return cached
+          return response
         }
+        const copy = response.clone()
+        const put = (async () => {
+          if (await isHtmlForAsset(url.pathname, response)) return
+          const cache = await caches.open(CACHE_NAME)
+          await cache.put(request, copy)
+        })().catch(() => {})
+        try {
+          event.waitUntil(put)
+        } catch {}
         return response
       })
       .catch(async () => (await matchOwnCache(request)) ?? Response.error())
