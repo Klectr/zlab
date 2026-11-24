@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v38"
+const CACHE_NAME = "zlab-v39"
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -6,6 +6,7 @@ async function isHtmlForAsset(pathname, response) {
     contentType = response.headers?.get?.("content-type") ?? ""
   } catch {}
   if (contentType.includes("text/html")) return true
+  if ((pathname.endsWith(".js") || pathname.endsWith(".css")) && (contentType.includes("text/plain") || contentType.includes("application/json"))) return true
   if (pathname.endsWith(".css") && contentType.includes("text/css")) return false
   if (pathname.endsWith(".woff2") && (contentType.includes("font") || contentType.includes("woff2"))) return false
   if (pathname.endsWith(".js") && contentType.includes("javascript")) return false
