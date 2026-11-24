@@ -16,7 +16,7 @@ import { consumeEditorFocus } from "../utils/editorFocus"
 import { arrowKeyMovePosition, arrowKeyResizeDimensions, scrollCardIntoView } from "../utils/keyboardMove"
 import { ContextMenuPortal, isAnyContextMenuOpen, requestMenuItemFocus } from "./ContextMenuPortal"
 import { mouse } from "../utils/mouse"
-import { activeDragDisarmers, disarmActiveDrags } from "../utils/activeDrag"
+import { activeDragChecks, activeDragDisarmers, disarmActiveDrags, isAnyDragArmed } from "../utils/activeDrag"
 import { HelpIcon } from "./icons/HelpIcon"
 import { MenuIcon } from "./icons/MenuIcon"
 import { cardSnippet, noteCardName } from "../utils/cardName"
@@ -223,7 +223,12 @@ export function NoteCard(props: NoteCardProps) {
     focusedItem.value = null
   }
 
+  function _isDragArmed() {
+    return pressed.value
+  }
+
   activeDragDisarmers.add(_disarmDrag)
+  activeDragChecks.add(_isDragArmed)
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('keydown', _handleDragEscape, true)
   window.addEventListener('beforeunload', flushLocalStorageOnUnload)
@@ -241,6 +246,7 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('blur', _disarmDrag)
     window.removeEventListener('keydown', _handleDragEscape, true)
     activeDragDisarmers.delete(_disarmDrag)
+    activeDragChecks.delete(_isDragArmed)
     flushLocalStorage()
     cancel()
   })
@@ -309,7 +315,7 @@ export function NoteCard(props: NoteCardProps) {
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
-    if (pressed.value) return
+    if (pressed.value || isAnyDragArmed()) return
     const rect = e.currentTarget.getBoundingClientRect()
     mouse.value = {
       x: e.clientX !== 0 ? e.clientX : rect.left,
@@ -326,7 +332,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
-    if (pressed.value) return
+    if (pressed.value || isAnyDragArmed()) return
     const rect = e.currentTarget.getBoundingClientRect()
     mouse.value = {
       x: e.clientX !== 0 ? e.clientX : rect.left,
@@ -338,7 +344,7 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMenuButtonKeyDown(e: Kiru.KeyboardEvent<HTMLButtonElement>) {
-    if (pressed.value) return
+    if (pressed.value || isAnyDragArmed()) return
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
     if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
     if (openContextMenu.value) return
