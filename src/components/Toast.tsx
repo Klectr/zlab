@@ -67,7 +67,12 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
     )
   }
 
-  const toastCapacity = () => {
+  const estimateToastHeight = (message: string) => {
+    const lines = Math.max(1, Math.ceil(message.length / 20))
+    return Math.max(64, lines * 24 + 16)
+  }
+
+  const toastStackBudget = () => {
     const stackTop = window.innerWidth <= 640 ? 52 : 16
     const viewportWidth = document.documentElement.clientWidth || window.innerWidth
     const viewportHeight = document.documentElement.clientHeight || window.innerHeight
@@ -77,15 +82,18 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
       canvasDimentsion.value.height / (viewportHeight / 2)
     )
     const minimapReserve = canvasDimentsion.value.height / scaleFactor + 20 + 64
-    return Math.max(
-      1,
-      Math.floor((window.innerHeight - stackTop - minimapReserve) / 70) + 1
-    )
+    return window.innerHeight - stackTop - minimapReserve + 64
   }
 
+  const stackHeight = (list: Toast[]) =>
+    list.reduce(
+      (total, toast) => total + estimateToastHeight(toast.message) + 6,
+      0
+    ) - (list.length > 0 ? 6 : 0)
+
   const evictOverflowToasts = (list: Toast[]) => {
-    const maxToasts = toastCapacity()
-    while (list.length > maxToasts) {
+    const budget = toastStackBudget()
+    while (list.length > 1 && stackHeight(list) > budget) {
       const evicted = list.shift()!
       pauseSources.delete(evicted.ts)
     }
@@ -94,7 +102,7 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
 
   onMount(() => {
     const handleResize = () => {
-      if (toasts.value.length > toastCapacity()) {
+      if (stackHeight(toasts.value) > toastStackBudget()) {
         toasts.value = evictOverflowToasts([...toasts.value])
       }
     }
