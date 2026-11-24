@@ -262,7 +262,7 @@ export function ImageCard(props: ImageCardProps) {
     if ((!e.ctrlKey && !e.metaKey) || e.altKey) return
     if (e.key !== 'Delete' && e.key !== 'Backspace') return
     const target = e.target as HTMLElement | null
-    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal, #card-selector")
+    const inEditableTarget = !!target && typeof target.closest === "function" && !!target.closest("input, textarea, select, [contenteditable], .cm-editor, #context-menu-portal, #card-selector, #toast-root")
     if (inEditableTarget) return
     if (openContextMenu.value) return
     e.preventDefault()
