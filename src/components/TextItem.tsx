@@ -781,7 +781,7 @@ export function TextItem(props: TextCardProps) {
         }}
       >
         <MenuIcon label={`Text menu${nameSuffix}`} controls={menuId} expanded={openContextMenu.value} onClick={_handleMenuButtonClick} onKeyDown={_handleMenuButtonKeyDown} buttonClass={`cursor-pointer w-4 h-4 absolute top-0 left-0 z-10${focusedItem.value === itemKey ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`} iconClass="w-4 h-4 block" />
-        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass={`cursor-pointer w-4 h-4 absolute top-0 left-[20px] z-10${focusedItem.value === itemKey ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`} iconClass="w-4 h-4 block" />
+        <HelpIcon onMouseOver={_handleHelpHover} onMouseOut={_handleHelpOut} onClick={_handleHelpClick} describedBy={`text-shortcuts-${itemKey}`} expanded={showHelp.value} label={`Show text shortcuts${nameSuffix}`} buttonClass={`cursor-pointer w-4 h-4 absolute top-0 left-[24px] z-10${focusedItem.value === itemKey ? "" : " opacity-0 pointer-events-none focus-visible:opacity-100 focus-visible:pointer-events-auto"}`} iconClass="w-4 h-4 block" />
         <CloseIcon cb={_handleClose} itemId={it.id} label={`Delete text${nameSuffix}`} />
 
         <div
