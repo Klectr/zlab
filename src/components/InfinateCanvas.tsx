@@ -268,9 +268,11 @@ interface ScrollToOptions extends ScrollOptions {
 }
 
 function getInitialPosition(canvasDimensions: typeof canvasDimentsion): ScrollToOptions {
+  const viewportWidth = document.documentElement.clientWidth || window.innerWidth
+  const viewportHeight = document.documentElement.clientHeight || window.innerHeight
   const defaultScroll: ScrollToOptions = {
-    left: (canvasDimensions.value.width / 2) - (window.innerWidth / 2),
-    top: (canvasDimensions.value.height / 2) - (window.innerHeight / 2)
+    left: (canvasDimensions.value.width / 2) - (viewportWidth / 2),
+    top: (canvasDimensions.value.height / 2) - (viewportHeight / 2)
   }
 
   let initPosition;
