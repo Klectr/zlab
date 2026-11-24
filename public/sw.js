@@ -1,4 +1,14 @@
-const CACHE_NAME = "zlab-v40"
+const CACHE_NAME = "zlab-v41"
+
+async function bodyLooksHtml(response) {
+  try {
+    const text = await response.clone().text()
+    const start = text.replace(/^\uFEFF/, "").trimStart().toLowerCase()
+    return start.startsWith("<!doctype html") || start.startsWith("<html") || start.startsWith("<head")
+  } catch {
+    return false
+  }
+}
 
 async function isHtmlForAsset(pathname, response) {
   let contentType = ""
@@ -7,18 +17,17 @@ async function isHtmlForAsset(pathname, response) {
   } catch {}
   if (contentType.includes("text/html")) return true
   if ((pathname.endsWith(".js") || pathname.endsWith(".css")) && (contentType.includes("text/plain") || contentType.includes("application/json"))) return true
-  if (pathname.endsWith(".css") && contentType.includes("text/css")) return false
-  if (pathname.endsWith(".woff2") && (contentType.includes("font") || contentType.includes("woff2"))) return false
-  if (pathname.endsWith(".js") && contentType.includes("javascript")) return false
-  if (pathname.endsWith(".png") && contentType.includes("image/png")) return false
-  if (pathname.endsWith(".webmanifest") && (contentType.includes("manifest") || contentType.includes("json"))) return false
-  try {
-    const text = await response.clone().text()
-    const start = text.replace(/^\uFEFF/, "").trimStart().toLowerCase()
-    return start.startsWith("<!doctype html") || start.startsWith("<html") || start.startsWith("<head")
-  } catch {
+  const isTextAsset = pathname.endsWith(".js") || pathname.endsWith(".css") || pathname.endsWith(".webmanifest")
+  if (isTextAsset) {
+    if (await bodyLooksHtml(response)) return true
+    if (pathname.endsWith(".css") && contentType.includes("text/css")) return false
+    if (pathname.endsWith(".js") && contentType.includes("javascript")) return false
+    if (pathname.endsWith(".webmanifest") && (contentType.includes("manifest") || contentType.includes("json"))) return false
     return false
   }
+  if (pathname.endsWith(".woff2") && (contentType.includes("font") || contentType.includes("woff2"))) return false
+  if (pathname.endsWith(".png") && contentType.includes("image/png")) return false
+  return bodyLooksHtml(response)
 }
 
 function offlinePageResponse() {
