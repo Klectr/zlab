@@ -470,6 +470,7 @@ export function TextItem(props: TextCardProps) {
   })
 
   function _handleMenuButtonClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
+    if (pressed.value) return
     const rect = e.currentTarget.getBoundingClientRect()
     mouse.value = {
       x: e.clientX !== 0 ? e.clientX : rect.left,
@@ -481,6 +482,7 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleMenuButtonKeyDown(e: Kiru.KeyboardEvent<HTMLButtonElement>) {
+    if (pressed.value) return
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
     if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
     if (openContextMenu.value) return
