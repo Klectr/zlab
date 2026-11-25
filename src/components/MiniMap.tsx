@@ -42,11 +42,13 @@ export function MiniMap() {
     activeDragDisarmers.add(_disarmMinimapDrag)
     activeDragChecks.add(_isMinimapDragArmed)
     window.addEventListener('blur', _disarmMinimapDrag)
+    window.addEventListener('touchcancel', _disarmMinimapDrag)
 
     return () => {
       window.removeEventListener('scroll', _handleScroll)
       window.removeEventListener('resize', _handleResize)
       window.removeEventListener('blur', _disarmMinimapDrag)
+      window.removeEventListener('touchcancel', _disarmMinimapDrag)
       activeDragDisarmers.delete(_disarmMinimapDrag)
       activeDragChecks.delete(_isMinimapDragArmed)
       _disarmMinimapDrag()
