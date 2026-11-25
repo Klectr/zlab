@@ -11,14 +11,20 @@ import { imageFilesFromHtml, isImageFileCandidate } from "../../utils/createImag
 import { plainTextIsImageAddress } from "../../utils/plainTextIsImageAddress"
 import { residualTextFromHtml } from "../../utils/residualTextFromHtml"
 
-const selectionAfterPointInsert = (state: EditorState, pos: number, insertLength: number) => {
-  const desc = state.changes({ from: pos, insert: " ".repeat(insertLength) }).desc
-  const ranges = [EditorSelection.cursor(pos + insertLength)]
+const selectionAfterDropInsert = (state: EditorState, from: number, to: number, insertLength: number) => {
+  const desc = state.changes({ from, to, insert: " ".repeat(insertLength) }).desc
+  const ranges = [EditorSelection.cursor(from + insertLength)]
   for (const range of state.selection.ranges) {
     if (range === state.selection.main) continue
     ranges.push(range.map(desc))
   }
   return EditorSelection.create(ranges, 0)
+}
+
+const dropInsertRange = (state: EditorState, pos: number) => {
+  const main = state.selection.main
+  if (!main.empty && pos >= main.from && pos <= main.to) return { from: main.from, to: main.to }
+  return { from: pos, to: pos }
 }
 
 export interface MarkDownEditorChange {
@@ -282,9 +288,10 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                         pos = editorView.state.selection.main.head
                       }
                     }
+                    const range = dropInsertRange(editorView.state, pos)
                     editorView.dispatch({
-                      changes: { from: pos, insert: residualText },
-                      selection: selectionAfterPointInsert(editorView.state, pos, residualText.length),
+                      changes: { from: range.from, to: range.to, insert: residualText },
+                      selection: selectionAfterDropInsert(editorView.state, range.from, range.to, residualText.length),
                       userEvent: "input.drop",
                     })
                     return true
@@ -329,9 +336,10 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               }
               onPasteImage(files)
               if (text) {
+                const range = dropInsertRange(editorView.state, pos)
                 editorView.dispatch({
-                  changes: { from: pos, insert: text },
-                  selection: selectionAfterPointInsert(editorView.state, pos, text.length),
+                  changes: { from: range.from, to: range.to, insert: text },
+                  selection: selectionAfterDropInsert(editorView.state, range.from, range.to, text.length),
                   userEvent: "input.drop",
                 })
               }
