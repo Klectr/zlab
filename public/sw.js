@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v45"
+const CACHE_NAME = "zlab-v46"
 
 async function bodyLooksHtml(response) {
   try {
@@ -312,14 +312,15 @@ self.addEventListener("activate", (event) => {
     (async () => {
       try {
         const keys = await caches.keys()
+        const prefix = CACHE_NAME.replace(/\d+$/, "")
+        const currentVersion = Number(CACHE_NAME.match(/\d+$/)?.[0] ?? 0)
+        const releasePattern = new RegExp("^" + prefix + "(\\d+)$")
         await Promise.all(
           keys
-            .filter(
-              (key) =>
-                key !== CACHE_NAME &&
-                new RegExp("^" + CACHE_NAME.replace(/\d+$/, "") + "\\d+$").test(key) &&
-                !key.endsWith("-staging")
-            )
+            .filter((key) => {
+              const match = releasePattern.exec(key)
+              return match !== null && Number(match[1]) < currentVersion
+            })
             .map((key) => caches.delete(key).catch(() => {}))
         )
       } catch {}
