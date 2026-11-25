@@ -1,10 +1,29 @@
-const CACHE_NAME = "zlab-v46"
+const CACHE_NAME = "zlab-v47"
 
 async function bodyLooksHtml(response) {
   try {
     const text = await response.clone().text()
     const start = text.replace(/^\uFEFF/, "").trimStart().toLowerCase()
     return start.startsWith("<!doctype html") || start.startsWith("<html") || start.startsWith("<head")
+  } catch {
+    return false
+  }
+}
+
+function redirectedToDifferentPath(requestPathname, response) {
+  try {
+    if (!response.redirected) return false
+    return new URL(response.url).pathname !== requestPathname
+  } catch {
+    return false
+  }
+}
+
+function redirectedOutsideShellPair(response) {
+  try {
+    if (!response.redirected) return false
+    const path = new URL(response.url).pathname
+    return path !== "/" && path !== "/index.html"
   } catch {
     return false
   }
@@ -227,7 +246,7 @@ self.addEventListener("install", (event) => {
           OPTIONAL_SHELL.map(async (u) => {
             await staging.add(u).catch(() => {})
             const staged = await staging.match(u).catch(() => undefined)
-            if (staged && (cacheForbidden(staged) || (await isHtmlForAsset(u, staged)) || !(await stableAssetBodyOk(u, staged))))
+            if (staged && (cacheForbidden(staged) || redirectedToDifferentPath(u, staged) || (await isHtmlForAsset(u, staged)) || !(await stableAssetBodyOk(u, staged))))
               await staging.delete(u).catch(() => {})
           })
         )
@@ -235,8 +254,12 @@ self.addEventListener("install", (event) => {
         newHtml = shell ? await shell.text() : ""
         const assets = [...assetRefs(newHtml)]
         if (assets.length === 0) throw new Error("shell has no bundle assets")
+        if (shell && redirectedOutsideShellPair(shell))
+          throw new Error("shell redirected: /index.html")
         const root = await staging.match("/")
         const rootHtml = root ? await root.text() : ""
+        if (root && redirectedOutsideShellPair(root))
+          throw new Error("shell redirected: /")
         if (rootHtml && rootHtml !== newHtml)
           throw new Error("root shell differs from index shell")
         await Promise.all(assets.map((a) => staging.add(a)))
@@ -244,6 +267,8 @@ self.addEventListener("install", (event) => {
           const staged = await staging.match(asset)
           if (staged && cacheForbidden(staged))
             throw new Error("asset forbids caching: " + asset)
+          if (staged && redirectedToDifferentPath(asset, staged))
+            throw new Error("asset redirected: " + asset)
           if (staged && (await isHtmlForAsset(asset, staged)))
             throw new Error("asset served as html: " + asset)
         }
@@ -260,7 +285,7 @@ self.addEventListener("install", (event) => {
               refs.map(async (r) => {
                 await staging.add(r).catch(() => {})
                 const stagedRef = await staging.match(r).catch(() => undefined)
-                if (stagedRef && (cacheForbidden(stagedRef) || (await isHtmlForAsset(r, stagedRef))))
+                if (stagedRef && (cacheForbidden(stagedRef) || redirectedToDifferentPath(r, stagedRef) || (await isHtmlForAsset(r, stagedRef))))
                   await staging.delete(r).catch(() => {})
               })
             )
@@ -373,6 +398,7 @@ self.addEventListener("fetch", (event) => {
             const copy = response.clone()
             const put = (async () => {
               if (cacheForbidden(response)) return
+              if (redirectedToDifferentPath(url.pathname, response)) return
               if (await isHtmlForAsset(url.pathname, response)) return
               if (!(await stableAssetBodyOk(url.pathname, response))) return
               const cache = await caches.open(CACHE_NAME)
@@ -414,7 +440,7 @@ self.addEventListener("fetch", (event) => {
                   if (await cache.match(ref)) continue
                   try {
                     const fetched = await fetch(ref)
-                    if (!fetched.ok || cacheForbidden(fetched) || (await isHtmlForAsset(ref, fetched))) {
+                    if (!fetched.ok || cacheForbidden(fetched) || redirectedToDifferentPath(ref, fetched) || (await isHtmlForAsset(ref, fetched))) {
                       assetsOk = false
                     } else {
                       await cache.put(ref, fetched)
@@ -435,7 +461,7 @@ self.addEventListener("fetch", (event) => {
                       if (await cache.match(ref)) return
                       try {
                         const fetched = await fetch(ref)
-                        if (fetched.ok && !cacheForbidden(fetched) && !(await isHtmlForAsset(ref, fetched)))
+                        if (fetched.ok && !cacheForbidden(fetched) && !redirectedToDifferentPath(ref, fetched) && !(await isHtmlForAsset(ref, fetched)))
                           await cache.put(ref, fetched)
                       } catch {}
                     })
@@ -484,6 +510,7 @@ self.addEventListener("fetch", (event) => {
               const copy = response.clone()
               const put = (async () => {
                 if (cacheForbidden(response)) return
+                if (redirectedToDifferentPath(url.pathname, response)) return
                 if (await isHtmlForAsset(url.pathname, response)) return
                 if (!(await stableAssetBodyOk(url.pathname, response))) return
                 const cache = await caches.open(CACHE_NAME)
@@ -512,6 +539,7 @@ self.addEventListener("fetch", (event) => {
         const copy = response.clone()
         const put = (async () => {
           if (cacheForbidden(response)) return
+          if (redirectedToDifferentPath(url.pathname, response)) return
           if (await isHtmlForAsset(url.pathname, response)) return
           if (!(await stableAssetBodyOk(url.pathname, response))) return
           const cache = await caches.open(CACHE_NAME)
