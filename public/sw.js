@@ -1,10 +1,19 @@
-const CACHE_NAME = "zlab-v44"
+const CACHE_NAME = "zlab-v45"
 
 async function bodyLooksHtml(response) {
   try {
     const text = await response.clone().text()
     const start = text.replace(/^\uFEFF/, "").trimStart().toLowerCase()
     return start.startsWith("<!doctype html") || start.startsWith("<html") || start.startsWith("<head")
+  } catch {
+    return false
+  }
+}
+
+function cacheForbidden(response) {
+  try {
+    const cc = response.headers?.get?.("cache-control") ?? ""
+    return /(?:^|,)\s*(?:no-store|private)\b/i.test(cc)
   } catch {
     return false
   }
@@ -218,7 +227,7 @@ self.addEventListener("install", (event) => {
           OPTIONAL_SHELL.map(async (u) => {
             await staging.add(u).catch(() => {})
             const staged = await staging.match(u).catch(() => undefined)
-            if (staged && ((await isHtmlForAsset(u, staged)) || !(await stableAssetBodyOk(u, staged))))
+            if (staged && (cacheForbidden(staged) || (await isHtmlForAsset(u, staged)) || !(await stableAssetBodyOk(u, staged))))
               await staging.delete(u).catch(() => {})
           })
         )
@@ -233,6 +242,8 @@ self.addEventListener("install", (event) => {
         await Promise.all(assets.map((a) => staging.add(a)))
         for (const asset of assets) {
           const staged = await staging.match(asset)
+          if (staged && cacheForbidden(staged))
+            throw new Error("asset forbids caching: " + asset)
           if (staged && (await isHtmlForAsset(asset, staged)))
             throw new Error("asset served as html: " + asset)
         }
@@ -249,7 +260,7 @@ self.addEventListener("install", (event) => {
               refs.map(async (r) => {
                 await staging.add(r).catch(() => {})
                 const stagedRef = await staging.match(r).catch(() => undefined)
-                if (stagedRef && (await isHtmlForAsset(r, stagedRef)))
+                if (stagedRef && (cacheForbidden(stagedRef) || (await isHtmlForAsset(r, stagedRef))))
                   await staging.delete(r).catch(() => {})
               })
             )
@@ -282,7 +293,7 @@ self.addEventListener("install", (event) => {
       try {
         for (const request of ordered) {
           const response = await staging.match(request)
-          if (response) await live.put(request, response)
+          if (response && !cacheForbidden(response)) await live.put(request, response)
         }
       } catch (err) {
         await restoreShellPair(live, previousHtml, newHtml, previousInit)
@@ -360,6 +371,7 @@ self.addEventListener("fetch", (event) => {
           if (response.ok && !isShellPath && response.type !== "opaqueredirect" && isStableCacheable(url)) {
             const copy = response.clone()
             const put = (async () => {
+              if (cacheForbidden(response)) return
               if (await isHtmlForAsset(url.pathname, response)) return
               if (!(await stableAssetBodyOk(url.pathname, response))) return
               const cache = await caches.open(CACHE_NAME)
@@ -380,6 +392,7 @@ self.addEventListener("fetch", (event) => {
             const rootCopy = response.clone()
             const textCopy = response.clone()
             const lifetime = (async () => {
+              if (cacheForbidden(response)) return
               let previousHtml = ""
               let previousInit
               let newHtml = ""
@@ -400,7 +413,7 @@ self.addEventListener("fetch", (event) => {
                   if (await cache.match(ref)) continue
                   try {
                     const fetched = await fetch(ref)
-                    if (!fetched.ok || (await isHtmlForAsset(ref, fetched))) {
+                    if (!fetched.ok || cacheForbidden(fetched) || (await isHtmlForAsset(ref, fetched))) {
                       assetsOk = false
                     } else {
                       await cache.put(ref, fetched)
@@ -421,7 +434,7 @@ self.addEventListener("fetch", (event) => {
                       if (await cache.match(ref)) return
                       try {
                         const fetched = await fetch(ref)
-                        if (fetched.ok && !(await isHtmlForAsset(ref, fetched)))
+                        if (fetched.ok && !cacheForbidden(fetched) && !(await isHtmlForAsset(ref, fetched)))
                           await cache.put(ref, fetched)
                       } catch {}
                     })
@@ -469,6 +482,7 @@ self.addEventListener("fetch", (event) => {
             if (response.ok) {
               const copy = response.clone()
               const put = (async () => {
+                if (cacheForbidden(response)) return
                 if (await isHtmlForAsset(url.pathname, response)) return
                 if (!(await stableAssetBodyOk(url.pathname, response))) return
                 const cache = await caches.open(CACHE_NAME)
@@ -496,6 +510,7 @@ self.addEventListener("fetch", (event) => {
         if (!isStableCacheable(url)) return response
         const copy = response.clone()
         const put = (async () => {
+          if (cacheForbidden(response)) return
           if (await isHtmlForAsset(url.pathname, response)) return
           if (!(await stableAssetBodyOk(url.pathname, response))) return
           const cache = await caches.open(CACHE_NAME)
