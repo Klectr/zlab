@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v47"
+const CACHE_NAME = "zlab-v48"
 
 async function bodyLooksHtml(response) {
   try {
@@ -271,6 +271,8 @@ self.addEventListener("install", (event) => {
             throw new Error("asset redirected: " + asset)
           if (staged && (await isHtmlForAsset(asset, staged)))
             throw new Error("asset served as html: " + asset)
+          if (staged && !(await stableAssetBodyOk(asset, staged)))
+            throw new Error("asset failed shape check: " + asset)
         }
         try {
           for (const asset of assets.filter((a) => a.endsWith(".css"))) {
@@ -285,7 +287,7 @@ self.addEventListener("install", (event) => {
               refs.map(async (r) => {
                 await staging.add(r).catch(() => {})
                 const stagedRef = await staging.match(r).catch(() => undefined)
-                if (stagedRef && (cacheForbidden(stagedRef) || redirectedToDifferentPath(r, stagedRef) || (await isHtmlForAsset(r, stagedRef))))
+                if (stagedRef && (cacheForbidden(stagedRef) || redirectedToDifferentPath(r, stagedRef) || (await isHtmlForAsset(r, stagedRef)) || !(await stableAssetBodyOk(r, stagedRef))))
                   await staging.delete(r).catch(() => {})
               })
             )
@@ -440,7 +442,7 @@ self.addEventListener("fetch", (event) => {
                   if (await cache.match(ref)) continue
                   try {
                     const fetched = await fetch(ref)
-                    if (!fetched.ok || cacheForbidden(fetched) || redirectedToDifferentPath(ref, fetched) || (await isHtmlForAsset(ref, fetched))) {
+                    if (!fetched.ok || cacheForbidden(fetched) || redirectedToDifferentPath(ref, fetched) || (await isHtmlForAsset(ref, fetched)) || !(await stableAssetBodyOk(ref, fetched))) {
                       assetsOk = false
                     } else {
                       await cache.put(ref, fetched)
@@ -461,7 +463,7 @@ self.addEventListener("fetch", (event) => {
                       if (await cache.match(ref)) return
                       try {
                         const fetched = await fetch(ref)
-                        if (fetched.ok && !cacheForbidden(fetched) && !redirectedToDifferentPath(ref, fetched) && !(await isHtmlForAsset(ref, fetched)))
+                        if (fetched.ok && !cacheForbidden(fetched) && !redirectedToDifferentPath(ref, fetched) && !(await isHtmlForAsset(ref, fetched)) && (await stableAssetBodyOk(ref, fetched)))
                           await cache.put(ref, fetched)
                       } catch {}
                     })
