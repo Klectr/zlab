@@ -74,7 +74,8 @@ body {
 
 .toast {
   @apply flex flex-col items-center justify-center;
-  @apply w-52 px-4 min-h-16 py-2;
+  @apply px-4 min-h-16 py-2;
+  width: min(13rem, calc(100vw - 2rem));
   @apply transition-all duration-300 rounded;
   position: relative;
   pointer-events: auto;
