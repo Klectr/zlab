@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v42"
+const CACHE_NAME = "zlab-v43"
 
 async function bodyLooksHtml(response) {
   try {
@@ -74,6 +74,12 @@ const OPTIONAL_SHELL = [
   "/icons/icon-maskable-512.png",
   "/icons/apple-touch-icon.png",
 ]
+
+const STABLE_CACHEABLE = new Set(OPTIONAL_SHELL)
+
+function isStableCacheable(url) {
+  return url.search === "" && STABLE_CACHEABLE.has(url.pathname)
+}
 
 function assetRefs(html) {
   return new Set(
@@ -350,7 +356,7 @@ self.addEventListener("fetch", (event) => {
             const finalPath = new URL(response.url || request.url).pathname
             isShellPath = finalPath === "/" || finalPath === "/index.html"
           } catch {}
-          if (response.ok && !isShellPath && response.type !== "opaqueredirect") {
+          if (response.ok && !isShellPath && response.type !== "opaqueredirect" && isStableCacheable(url)) {
             const copy = response.clone()
             const put = (async () => {
               if (await isHtmlForAsset(url.pathname, response)) return
@@ -480,6 +486,7 @@ self.addEventListener("fetch", (event) => {
           if (cached) return cached
           return response
         }
+        if (!isStableCacheable(url)) return response
         const copy = response.clone()
         const put = (async () => {
           if (await isHtmlForAsset(url.pathname, response)) return
