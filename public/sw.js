@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v41"
+const CACHE_NAME = "zlab-v42"
 
 async function bodyLooksHtml(response) {
   try {
@@ -28,6 +28,28 @@ async function isHtmlForAsset(pathname, response) {
   if (pathname.endsWith(".woff2") && (contentType.includes("font") || contentType.includes("woff2"))) return false
   if (pathname.endsWith(".png") && contentType.includes("image/png")) return false
   return bodyLooksHtml(response)
+}
+
+async function stableAssetBodyOk(pathname, response) {
+  try {
+    if (pathname.endsWith(".png")) {
+      const bytes = new Uint8Array(await response.clone().arrayBuffer())
+      const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+      return bytes.length >= signature.length && signature.every((b, i) => bytes[i] === b)
+    }
+    if (pathname.endsWith(".webmanifest")) {
+      const parsed = JSON.parse(await response.clone().text())
+      return (
+        parsed !== null &&
+        typeof parsed === "object" &&
+        (typeof parsed.name === "string" || typeof parsed.short_name === "string") &&
+        Array.isArray(parsed.icons)
+      )
+    }
+  } catch {
+    return false
+  }
+  return true
 }
 
 function offlinePageResponse() {
@@ -190,7 +212,7 @@ self.addEventListener("install", (event) => {
           OPTIONAL_SHELL.map(async (u) => {
             await staging.add(u).catch(() => {})
             const staged = await staging.match(u).catch(() => undefined)
-            if (staged && (await isHtmlForAsset(u, staged)))
+            if (staged && ((await isHtmlForAsset(u, staged)) || !(await stableAssetBodyOk(u, staged))))
               await staging.delete(u).catch(() => {})
           })
         )
@@ -332,6 +354,7 @@ self.addEventListener("fetch", (event) => {
             const copy = response.clone()
             const put = (async () => {
               if (await isHtmlForAsset(url.pathname, response)) return
+              if (!(await stableAssetBodyOk(url.pathname, response))) return
               const cache = await caches.open(CACHE_NAME)
               await cache.put(request, copy)
             })().catch(() => {})
@@ -434,6 +457,7 @@ self.addEventListener("fetch", (event) => {
               const copy = response.clone()
               const put = (async () => {
                 if (await isHtmlForAsset(url.pathname, response)) return
+                if (!(await stableAssetBodyOk(url.pathname, response))) return
                 const cache = await caches.open(CACHE_NAME)
                 await cache.put(request, copy)
               })().catch(() => {})
@@ -459,6 +483,7 @@ self.addEventListener("fetch", (event) => {
         const copy = response.clone()
         const put = (async () => {
           if (await isHtmlForAsset(url.pathname, response)) return
+          if (!(await stableAssetBodyOk(url.pathname, response))) return
           const cache = await caches.open(CACHE_NAME)
           await cache.put(request, copy)
         })().catch(() => {})
