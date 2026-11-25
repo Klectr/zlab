@@ -186,6 +186,15 @@ export function ContextMenuPortal({
         const el = elRef.current
         const active = document.activeElement as HTMLElement | null
         if (!el || !active || !el.contains(active)) return
+        if (e.shiftKey) {
+          const items = Array.from(el.querySelectorAll("button"))
+          const idx = items.indexOf(active as HTMLButtonElement)
+          if (idx > 0) {
+            items[idx - 1].focus({ preventScroll: true })
+            e.preventDefault()
+            return
+          }
+        }
         const trigger = Array.from(
           document.querySelectorAll("[data-menu-trigger]")
         ).find(
