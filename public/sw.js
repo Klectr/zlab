@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v48"
+const CACHE_NAME = "zlab-v49"
 
 async function bodyLooksHtml(response) {
   try {
@@ -320,6 +320,8 @@ self.addEventListener("install", (event) => {
       try {
         for (const request of ordered) {
           const response = await staging.match(request)
+          if (response && cacheForbidden(response) && isShellEntry(request))
+            throw new Error("shell forbids caching: " + new URL(request.url).pathname)
           if (response && !cacheForbidden(response)) await live.put(request, response)
         }
       } catch (err) {
