@@ -27,6 +27,39 @@ export function updateLocalStorage(
   return collection
 }
 
+const unloadFlushes = new Map<string, Set<() => void>>()
+let unloadListenersInstalled = false
+
+function flushStoresOnUnload() {
+  for (const flushes of unloadFlushes.values()) {
+    const flush = flushes.values().next().value
+    if (flush) flush()
+  }
+}
+
+export function registerUnloadFlush(location: string, flush: () => void) {
+  let flushes = unloadFlushes.get(location)
+  if (!flushes) {
+    flushes = new Set()
+    unloadFlushes.set(location, flushes)
+  }
+  flushes.add(flush)
+  if (!unloadListenersInstalled) {
+    window.addEventListener("beforeunload", flushStoresOnUnload)
+    window.addEventListener("pagehide", flushStoresOnUnload)
+    unloadListenersInstalled = true
+  }
+  return () => {
+    flushes.delete(flush)
+    if (flushes.size === 0) unloadFlushes.delete(location)
+    if (unloadFlushes.size === 0 && unloadListenersInstalled) {
+      window.removeEventListener("beforeunload", flushStoresOnUnload)
+      window.removeEventListener("pagehide", flushStoresOnUnload)
+      unloadListenersInstalled = false
+    }
+  }
+}
+
 export function backupCorruptStoredValue(key: string, raw: string) {
   try {
     localStorage.setItem(`${key}.corrupt`, raw)

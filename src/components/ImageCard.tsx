@@ -6,6 +6,7 @@ import images, { ImageCardType } from "../signals/images"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
+  registerUnloadFlush,
   updateLocalStorage,
 } from "../utils/localStorage"
 import { useToast } from "./Toast"
@@ -227,8 +228,7 @@ export function ImageCard(props: ImageCardProps) {
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('touchcancel', _disarmDrag)
   window.addEventListener('keydown', _handleDragEscape, true)
-  window.addEventListener('beforeunload', flushLocalStorageOnUnload)
-  window.addEventListener('pagehide', flushLocalStorageOnUnload)
+  const unregisterUnloadFlush = registerUnloadFlush(CardTypes.IMAGES, flushLocalStorageOnUnload)
   document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
@@ -236,8 +236,7 @@ export function ImageCard(props: ImageCardProps) {
     window.removeEventListener('mouseup', _handleMouseUp)
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
-    window.removeEventListener('beforeunload', flushLocalStorageOnUnload)
-    window.removeEventListener('pagehide', flushLocalStorageOnUnload)
+    unregisterUnloadFlush()
     window.removeEventListener('blur', _disarmDrag)
     window.removeEventListener('touchcancel', _disarmDrag)
     window.removeEventListener('keydown', _handleDragEscape, true)

@@ -24,6 +24,7 @@ import { useToast } from "./Toast"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
+  registerUnloadFlush,
 } from "../utils/localStorage"
 
 interface NoteCardProps {
@@ -245,8 +246,7 @@ export function NoteCard(props: NoteCardProps) {
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('touchcancel', _disarmDrag)
   window.addEventListener('keydown', _handleDragEscape, true)
-  window.addEventListener('beforeunload', flushLocalStorageOnUnload)
-  window.addEventListener('pagehide', flushLocalStorageOnUnload)
+  const unregisterUnloadFlush = registerUnloadFlush("notes", flushLocalStorageOnUnload)
   document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
@@ -254,8 +254,7 @@ export function NoteCard(props: NoteCardProps) {
     window.removeEventListener('mouseup', _handleMouseUp)
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
-    window.removeEventListener('beforeunload', flushLocalStorageOnUnload)
-    window.removeEventListener('pagehide', flushLocalStorageOnUnload)
+    unregisterUnloadFlush()
     document.removeEventListener('focusin', _handleFocusIn)
     window.removeEventListener('blur', _disarmDrag)
     window.removeEventListener('touchcancel', _disarmDrag)

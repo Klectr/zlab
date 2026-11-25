@@ -21,6 +21,7 @@ import { EditorView } from "@codemirror/view"
 import {
   claimSaveFailureReport,
   clearSaveFailureReport,
+  registerUnloadFlush,
 } from "../utils/localStorage"
 
 interface TextCardProps {
@@ -386,8 +387,7 @@ export function TextItem(props: TextCardProps) {
   window.addEventListener('blur', _disarmDrag)
   window.addEventListener('touchcancel', _disarmDrag)
   window.addEventListener('keydown', _handleDragEscape, true)
-  window.addEventListener('beforeunload', flushLocalStorageOnUnload)
-  window.addEventListener('pagehide', flushLocalStorageOnUnload)
+  const unregisterUnloadFlush = registerUnloadFlush(CardTypes.TEXTS, flushLocalStorageOnUnload)
   document.addEventListener('focusin', _handleFocusIn)
 
   onCleanup(() => {
@@ -399,8 +399,7 @@ export function TextItem(props: TextCardProps) {
     window.removeEventListener('mouseup', _handleMouseUp)
     window.removeEventListener('mousemove', _handleResizeMove)
     window.removeEventListener('mouseup', _handleResizeMouseUp)
-    window.removeEventListener('beforeunload', flushLocalStorageOnUnload)
-    window.removeEventListener('pagehide', flushLocalStorageOnUnload)
+    unregisterUnloadFlush()
     window.removeEventListener('blur', _disarmDrag)
     window.removeEventListener('touchcancel', _disarmDrag)
     window.removeEventListener('keydown', _handleDragEscape, true)
