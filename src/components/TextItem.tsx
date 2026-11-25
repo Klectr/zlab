@@ -119,6 +119,8 @@ export function TextItem(props: TextCardProps) {
   const initialResizeH = ref(0)
   const dragStartPos = ref<{ x: number; y: number } | null>(null)
   const dragKind = ref<string | null>(null)
+  const dragStartPointer = ref<{ x: number; y: number } | null>(null)
+  const dragMoved = ref(false)
   const elRef = ref<HTMLDivElement>(null)
   const pRef = ref<HTMLParagraphElement>(null)
   const openContextMenu = signal(false)
@@ -218,6 +220,13 @@ export function TextItem(props: TextCardProps) {
     }
     e.preventDefault()
     if (!pressed.value) return
+    if (!dragMoved.current) {
+      if (!dragStartPointer.current) return
+      const dx = e.pageX - dragStartPointer.current.x
+      const dy = e.pageY - dragStartPointer.current.y
+      if (dx * dx + dy * dy < 16) return
+      dragMoved.current = true
+    }
 
     newX.current = Math.min(
       Math.max(0, e.pageX - offsetX.current),
@@ -238,6 +247,8 @@ export function TextItem(props: TextCardProps) {
     e?.preventDefault()
     pressed.value = false
     dragKind.current = null
+    dragMoved.current = false
+    dragStartPointer.current = null
     window.removeEventListener('mousemove', _handleMouseMove)
     window.removeEventListener('mouseup', _handleMouseUp)
   }
@@ -251,6 +262,8 @@ export function TextItem(props: TextCardProps) {
     offsetX.current = e.pageX - item.value.position.x
     offsetY.current = e.pageY - item.value.position.y
     dragStartPos.current = { x: item.value.position.x, y: item.value.position.y }
+    dragStartPointer.current = { x: e.pageX, y: e.pageY }
+    dragMoved.current = false
     dragKind.current = "move"
     pressed.value = true
     window.addEventListener('mousemove', _handleMouseMove)
