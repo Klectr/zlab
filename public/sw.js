@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v43"
+const CACHE_NAME = "zlab-v44"
 
 async function bodyLooksHtml(response) {
   try {
@@ -354,7 +354,8 @@ self.addEventListener("fetch", (event) => {
           let isShellPath = false
           try {
             const finalPath = new URL(response.url || request.url).pathname
-            isShellPath = finalPath === "/" || finalPath === "/index.html"
+            const requestPath = new URL(request.url).pathname
+            isShellPath = finalPath === "/" || finalPath === "/index.html" || (!response.redirected && (requestPath === "/" || requestPath === "/index.html"))
           } catch {}
           if (response.ok && !isShellPath && response.type !== "opaqueredirect" && isStableCacheable(url)) {
             const copy = response.clone()
@@ -368,7 +369,13 @@ self.addEventListener("fetch", (event) => {
               event.waitUntil(put)
             } catch {}
           }
-          if (response.ok && isShellPath && contentType.includes("text/html")) {
+          if (
+            response.ok &&
+            isShellPath &&
+            (contentType.includes("text/html") ||
+              contentType.includes("application/xhtml+xml") ||
+              (await bodyLooksHtml(response)))
+          ) {
             const copy = response.clone()
             const rootCopy = response.clone()
             const textCopy = response.clone()
