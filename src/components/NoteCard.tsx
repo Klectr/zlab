@@ -316,6 +316,8 @@ export function NoteCard(props: NoteCardProps) {
   }
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
+    const target = e.target as HTMLElement | null
+    if (target && typeof target.closest === "function" && target.closest(".cm-editor")) return
     e.preventDefault()
     if (pressed.value || isAnyDragArmed()) return
     const rect = e.currentTarget.getBoundingClientRect()
