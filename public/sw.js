@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v51"
+const CACHE_NAME = "zlab-v52"
 
 async function bodyLooksHtml(response) {
   try {
@@ -536,6 +536,7 @@ self.addEventListener("fetch", (event) => {
             if (response.ok) {
               const copy = response.clone()
               const put = (async () => {
+                if (url.search !== "") return
                 if (cacheForbidden(response)) return
                 if (redirectedToDifferentPath(url.pathname, response)) return
                 if (await isHtmlForAsset(url.pathname, response)) return
