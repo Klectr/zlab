@@ -62,6 +62,7 @@ export function registerUnloadFlush(location: string, flush: () => void) {
 
 export function backupCorruptStoredValue(key: string, raw: string) {
   try {
+    if (localStorage.getItem(`${key}.corrupt`) !== null) return
     localStorage.setItem(`${key}.corrupt`, raw)
   } catch {
     return

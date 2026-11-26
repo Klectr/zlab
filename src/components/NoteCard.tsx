@@ -277,11 +277,13 @@ export function NoteCard(props: NoteCardProps) {
       : null
     const ownMarker = findMinimapMarker(itemKey)
     moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
-    NotesSigal.default.removeNote(item.value.id)
+    const removed = item.value
+    NotesSigal.default.removeNote(removed.id)
     try {
       persistLocalStorage()
       toast.showToast("success", "Note deleted.")
     } catch {
+      NotesSigal.default.restoreNote(removed)
       if (claimSaveFailureReport()) {
         toast.showToast("error", "Could not save your changes!")
       }

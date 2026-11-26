@@ -67,6 +67,10 @@ function addImage(data: Omit<ImageCardType, "id">) {
   return newCard.id
 }
 
+function restoreImage(card: ImageCardType) {
+  images.value[card.id] = card
+  images.notify()
+}
 function removeImage(id: ImageCardType["id"]) {
   delete images.value[id]
   images.notify()
@@ -90,6 +94,7 @@ export default {
   images,
   addImage,
   removeImage,
+  restoreImage,
   updateImageProperty,
   loadLocalStorage,
 }
