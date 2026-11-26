@@ -648,6 +648,10 @@ export function TextItem(props: TextCardProps) {
         }
       }
       if (range && el.contains(range.startContainer)) {
+        const current = sel.rangeCount > 0 ? sel.getRangeAt(0) : null
+        if (current && !current.collapsed && el.contains(current.commonAncestorContainer) && typeof current.comparePoint === "function" && current.comparePoint(range.startContainer, range.startOffset) === 0) {
+          return true
+        }
         sel.removeAllRanges()
         sel.addRange(range)
         return true
