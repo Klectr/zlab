@@ -538,12 +538,12 @@ export function TextItem(props: TextCardProps) {
     })
   }
 
-  function _insertPlainText(text: string) {
+  function _insertPlainText(text: string, appendOnly = false) {
     const el = pRef.current
     if (!el) return
     const sel = document.getSelection()
     let inserted = false
-    if (sel && sel.rangeCount > 0) {
+    if (!appendOnly && sel && sel.rangeCount > 0) {
       const range = sel.getRangeAt(0)
       if (el.contains(range.commonAncestorContainer)) {
         range.deleteContents()
@@ -627,7 +627,7 @@ export function TextItem(props: TextCardProps) {
     }
   }
 
-  function _placeCaretAtDropPoint(e: DragEvent) {
+  function _placeCaretAtDropPoint(e: DragEvent): boolean {
     const el = pRef.current
     const sel = document.getSelection()
     if (el && sel) {
@@ -647,9 +647,13 @@ export function TextItem(props: TextCardProps) {
           range.collapse(true)
         }
       }
-      sel.removeAllRanges()
-      if (range && el.contains(range.startContainer)) sel.addRange(range)
+      if (range && el.contains(range.startContainer)) {
+        sel.removeAllRanges()
+        sel.addRange(range)
+        return true
+      }
     }
+    return false
   }
 
   function _handleDrop(e: DragEvent) {
@@ -666,16 +670,16 @@ export function TextItem(props: TextCardProps) {
       if (!files.length) return
       const companion = _companionText(dt)
       if (!companion) return
-      _placeCaretAtDropPoint(e)
-      _insertPlainText(companion)
+      const caretPlaced = _placeCaretAtDropPoint(e)
+      _insertPlainText(companion, !caretPlaced)
       return
     }
     const html = typeof dt.getData === "function" ? dt.getData("text/html") : ""
     if (!/<img[\s/>]/i.test(html)) return
     const companion = _companionText(dt)
     if (!companion) return
-    _placeCaretAtDropPoint(e)
-    _insertPlainText(companion)
+    const caretPlaced = _placeCaretAtDropPoint(e)
+    _insertPlainText(companion, !caretPlaced)
   }
 
   function _handleKeyDown(e: KeyboardEvent) {
