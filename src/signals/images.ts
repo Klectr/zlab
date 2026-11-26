@@ -38,6 +38,7 @@ function loadLocalStorage(): boolean {
       entry.type = CardTypes.IMAGES
       const claimedId = claimLoadedCardId(key)
       if (claimedId !== key) {
+        droppedAny = true
         entry.id = claimedId
         images.value[claimedId] = entry
         delete images.value[key]
