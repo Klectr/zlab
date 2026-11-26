@@ -36,6 +36,7 @@ function loadLocalStorage(): boolean {
       entry.type = CardTypes.NOTES
       const claimedId = claimLoadedCardId(key)
       if (claimedId !== key) {
+        droppedAny = true
         entry.id = claimedId
         notes.value[claimedId] = entry
         delete notes.value[key]
