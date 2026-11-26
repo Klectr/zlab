@@ -253,11 +253,13 @@ export function ImageCard(props: ImageCardProps) {
       : null
     const ownMarker = findMinimapMarker(itemKey)
     moveFocusToToolbarAfterDelete(cardRef.current, (e?.currentTarget as HTMLElement | null) ?? null, ownMenu, ownMarker)
-    ImagesSignal.default.removeImage(item.value.id)
+    const removed = item.value
+    ImagesSignal.default.removeImage(removed.id)
     try {
       updateLocalStorage(CardTypes.IMAGES, images.images).notify()
       toast.showToast("success", "Image deleted.")
     } catch {
+      ImagesSignal.default.restoreImage(removed)
       if (claimSaveFailureReport()) {
         toast.showToast("error", "Could not save your changes!")
       }

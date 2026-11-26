@@ -65,6 +65,10 @@ function addNote(data: Omit<NoteCardType, "id">) {
   return newCard.id
 }
 
+function restoreNote(card: NoteCardType) {
+  notes.value[card.id] = card
+  notes.notify()
+}
 function removeNote(id: NoteCardType["id"]) {
   delete notes.value[id]
   notes.notify()
@@ -88,6 +92,7 @@ export default {
   notes,
   addNote,
   removeNote,
+  restoreNote,
   updateNoteProperty,
   loadLocalStorage,
 }

@@ -67,6 +67,10 @@ function addText(data: Omit<TextCardType, "id">) {
   return newCard.id
 }
 
+function restoreText(card: TextCardType) {
+  texts.value[card.id] = card
+  texts.notify()
+}
 function removeText(id: TextCardType["id"]) {
   delete texts.value[id]
   texts.notify()
@@ -90,6 +94,7 @@ export default {
   texts,
   addText,
   removeText,
+  restoreText,
   updateTextProperty,
   loadLocalStorage,
 }

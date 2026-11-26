@@ -417,11 +417,13 @@ export function TextItem(props: TextCardProps) {
       : null
     const ownMarker = findMinimapMarker(itemKey)
     moveFocusToToolbarAfterDelete(elRef.current, (e?.currentTarget as HTMLElement | null | undefined) ?? null, ownMenu, ownMarker)
-    TextSignal.default.removeText(item.value.id)
+    const removed = item.value
+    TextSignal.default.removeText(removed.id)
     try {
       persistLocalStorage()
       toast.showToast("success", "Text deleted.")
     } catch {
+      TextSignal.default.restoreText(removed)
       if (claimSaveFailureReport()) {
         toast.showToast("error", "Could not save your changes!")
       }
