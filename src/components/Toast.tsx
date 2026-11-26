@@ -33,6 +33,8 @@ interface ToastProviderProps {
 
 export function ToastContextProvider({ children }: ToastProviderProps) {
   const toasts = signal<Toast[]>([])
+  const politeAnnouncement = signal("")
+  const assertiveAnnouncement = signal("")
   const pauseSources = new Map<number, { since: number; sources: Set<string> }>()
 
   const pauseToast = (ts: number, source: string) => {
@@ -128,6 +130,8 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
   })
 
   let lastToastTs = 0
+  let politeTimer: ReturnType<typeof setTimeout> | undefined
+  let assertiveTimer: ReturnType<typeof setTimeout> | undefined
 
   const showToast = (
     type: Toast["type"],
@@ -143,11 +147,43 @@ export function ToastContextProvider({ children }: ToastProviderProps) {
       expires: ts + (duration ?? defaultDuration),
     }
     toasts.value = evictOverflowToasts([...toasts.value, toast])
+    const announcement =
+      type === "error" ? assertiveAnnouncement : politeAnnouncement
+    if (type === "error") {
+      clearTimeout(assertiveTimer)
+    } else {
+      clearTimeout(politeTimer)
+    }
+    announcement.value = ""
+    const timer = setTimeout(() => {
+      announcement.value = message
+    }, 50)
+    if (type === "error") {
+      assertiveTimer = timer
+    } else {
+      politeTimer = timer
+    }
   }
 
   return () => (
     <ToastContext value={{ showToast }}>
       {children}
+      <span
+        id="toast-live-polite"
+        role="status"
+        aria-live="polite"
+        className="sr-only"
+      >
+        {politeAnnouncement.value}
+      </span>
+      <span
+        id="toast-live-assertive"
+        role="alert"
+        aria-live="assertive"
+        className="sr-only"
+      >
+        {assertiveAnnouncement.value}
+      </span>
       <Portal container={() => document.getElementById("toast-root")!}>
         {toasts.value.map((toast) => (
           <Transition
@@ -203,7 +239,7 @@ function ToastItem({
       onmouseenter={() => onPause("hover")}
       onmouseleave={() => onResume("hover")}
     >
-      <span role={toast.type === "error" ? "alert" : "status"} className="toast-message pr-4">{toast.message}</span>
+      <span className="toast-message pr-4">{toast.message}</span>
       <button
         type="button"
         aria-label={`Dismiss notification: ${toast.message}`}
