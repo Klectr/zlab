@@ -278,6 +278,38 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 const hasFiles = (event.dataTransfer?.files?.length ?? 0) > 0 ||
                   Array.from(event.dataTransfer?.items ?? []).some((i) => i.kind === "file")
                 if (hasFiles) {
+                  const dt = event.dataTransfer
+                  const plain = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
+                  const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
+                  if (plain.trim() && !plainTextIsImageAddress(plain, uriList)) {
+                    const fileNames = new Set<string>()
+                    for (const f of Array.from(dt?.files ?? [])) if (f.name) fileNames.add(f.name)
+                    for (const i of Array.from(dt?.items ?? [])) {
+                      if (i.kind !== "file") continue
+                      const f = typeof i.getAsFile === "function" ? i.getAsFile() : null
+                      if (f?.name) fileNames.add(f.name)
+                    }
+                    if (!fileNames.has(plain.trim())) {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      editorView.focus()
+                      let pos = editorView.state.selection.main.head
+                      if (typeof event.clientX === "number" && typeof event.clientY === "number") {
+                        try {
+                          pos = editorView.posAtCoords({ x: event.clientX, y: event.clientY }) ?? pos
+                        } catch {
+                          pos = editorView.state.selection.main.head
+                        }
+                      }
+                      const range = dropInsertRange(editorView.state, pos)
+                      editorView.dispatch({
+                        changes: { from: range.from, to: range.to, insert: plain },
+                        selection: selectionAfterDropInsert(editorView.state, range.from, range.to, plain.length),
+                        userEvent: "input.drop",
+                      })
+                      return true
+                    }
+                  }
                   onDropRejected?.()
                   event.preventDefault()
                   event.stopPropagation()
