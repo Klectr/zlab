@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v49"
+const CACHE_NAME = "zlab-v50"
 
 async function bodyLooksHtml(response) {
   try {
@@ -251,12 +251,30 @@ self.addEventListener("install", (event) => {
           })
         )
         const shell = await staging.match("/index.html")
+        if (shell) {
+          const shellContentType = shell.headers?.get?.("content-type") ?? ""
+          if (
+            !shellContentType.includes("text/html") &&
+            !shellContentType.includes("application/xhtml+xml") &&
+            !(await bodyLooksHtml(shell))
+          )
+            throw new Error("shell is not html: /index.html")
+        }
         newHtml = shell ? await shell.text() : ""
         const assets = [...assetRefs(newHtml)]
         if (assets.length === 0) throw new Error("shell has no bundle assets")
         if (shell && redirectedOutsideShellPair(shell))
           throw new Error("shell redirected: /index.html")
         const root = await staging.match("/")
+        if (root) {
+          const rootContentType = root.headers?.get?.("content-type") ?? ""
+          if (
+            !rootContentType.includes("text/html") &&
+            !rootContentType.includes("application/xhtml+xml") &&
+            !(await bodyLooksHtml(root))
+          )
+            throw new Error("shell is not html: /")
+        }
         const rootHtml = root ? await root.text() : ""
         if (root && redirectedOutsideShellPair(root))
           throw new Error("shell redirected: /")
