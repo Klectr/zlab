@@ -5,31 +5,33 @@ import { clearEditorFocusRequest, requestEditorFocus } from "../../utils/editorF
 import { updateLocalStorage } from "../../utils/localStorage"
 import { useToast } from "../Toast"
 import { Tooltip } from "./Tooltip"
-import { allCardPositions, cascadeSpawnPosition, clickSpawnPoint, defaultClassName } from "./utils"
+import { allCardPositions, cascadeSpawnPosition, clampSpawnToViewport, clickSpawnPoint, defaultClassName } from "./utils"
 
 export function StickyNoteButton() {
   const toast = useToast()
   function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     const { pageX, pageY } = clickSpawnPoint(e)
+    const base = {
+      x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
+      y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 200))
+    }
     const spawn = cascadeSpawnPosition(
-      {
-        x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
-        y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 200))
-      },
+      base,
       allCardPositions(),
       {
         x: Math.max(0, canvasDimentsion.value.width - 200),
         y: Math.max(0, canvasDimentsion.value.height - 200)
       }
     )
+    const clamped = clampSpawnToViewport(spawn, base, 200, 200, {
+      x: Math.max(0, canvasDimentsion.value.width - 200),
+      y: Math.max(0, canvasDimentsion.value.height - 200)
+    })
     const noteId = NotesSigal.default.addNote({
       type: CardTypes.NOTES,
       title: "New Note",
       contents: "",
-      position: {
-        x: Math.min(spawn.x, Math.max(0, canvasDimentsion.value.width - 200)),
-        y: Math.min(spawn.y, Math.max(0, canvasDimentsion.value.height - 200))
-      },
+      position: clamped,
       dimensions: {
         w: 200,
         h: 200
