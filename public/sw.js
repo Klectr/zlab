@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v52"
+const CACHE_NAME = "zlab-v53"
 
 async function bodyLooksHtml(response) {
   try {
@@ -112,6 +112,12 @@ const STABLE_CACHEABLE = new Set(OPTIONAL_SHELL)
 
 function isStableCacheable(url) {
   return url.search === "" && STABLE_CACHEABLE.has(url.pathname)
+}
+
+function isShellFallbackPath(pathname) {
+  if (pathname === "/" || pathname === "/index.html") return true
+  const lastSegment = pathname.split("/").pop() ?? ""
+  return !lastSegment.includes(".")
 }
 
 function assetRefs(html) {
@@ -410,7 +416,7 @@ self.addEventListener("fetch", (event) => {
             if (response.type === "opaqueredirect") return response
             const cachedExact = await matchOwnCache(request)
             if (cachedExact) return cachedExact
-            const cachedShell = await matchOwnCache("/index.html")
+            const cachedShell = isShellFallbackPath(url.pathname) ? await matchOwnCache("/index.html") : null
             if (cachedShell) return cachedShell
             return response
           }
@@ -522,7 +528,15 @@ self.addEventListener("fetch", (event) => {
           }
           return response
         })
-        .catch(async () => (await matchOwnCache(request)) ?? (await matchOwnCache("/index.html")) ?? offlinePageResponse())
+        .catch(async () => {
+          const cachedExact = await matchOwnCache(request)
+          if (cachedExact) return cachedExact
+          if (isShellFallbackPath(url.pathname)) {
+            const cachedShell = await matchOwnCache("/index.html")
+            if (cachedShell) return cachedShell
+          }
+          return offlinePageResponse()
+        })
     )
     return
   }
