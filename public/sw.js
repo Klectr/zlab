@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v53"
+const CACHE_NAME = "zlab-v54"
 
 async function bodyLooksHtml(response) {
   try {
@@ -303,25 +303,28 @@ self.addEventListener("install", (event) => {
           if (staged && !(await stableAssetBodyOk(asset, staged)))
             throw new Error("asset failed shape check: " + asset)
         }
-        try {
-          for (const asset of assets.filter((a) => a.endsWith(".css"))) {
-            const cssResponse = await staging.match(asset)
-            const css = cssResponse ? await cssResponse.text() : ""
-            const refs = [
-              ...new Set(
-                [...css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)].map((m) => m[1])
-              ),
-            ]
-            await Promise.all(
-              refs.map(async (r) => {
-                await staging.add(r).catch(() => {})
-                const stagedRef = await staging.match(r).catch(() => undefined)
-                if (stagedRef && (cacheForbidden(stagedRef) || redirectedToDifferentPath(r, stagedRef) || (await isHtmlForAsset(r, stagedRef)) || !(await stableAssetBodyOk(r, stagedRef))))
-                  await staging.delete(r).catch(() => {})
-              })
-            )
+        for (const asset of assets.filter((a) => a.endsWith(".css"))) {
+          const cssResponse = await staging.match(asset)
+          const css = cssResponse ? await cssResponse.text() : ""
+          const refs = [
+            ...new Set(
+              [...css.matchAll(/url\(["']?(\/assets\/[^)"']+)["']?\)/g)].map((m) => m[1])
+            ),
+          ]
+          await Promise.all(refs.map((r) => staging.add(r)))
+          for (const r of refs) {
+            const stagedRef = await staging.match(r)
+            if (!stagedRef) throw new Error("derived asset missing: " + r)
+            if (cacheForbidden(stagedRef))
+              throw new Error("derived asset forbids caching: " + r)
+            if (redirectedToDifferentPath(r, stagedRef))
+              throw new Error("derived asset redirected: " + r)
+            if (await isHtmlForAsset(r, stagedRef))
+              throw new Error("derived asset served as html: " + r)
+            if (!(await stableAssetBodyOk(r, stagedRef)))
+              throw new Error("derived asset failed shape check: " + r)
           }
-        } catch {}
+        }
       } catch (err) {
         await caches.delete(stagingName).catch(() => {})
         throw err
@@ -494,12 +497,19 @@ self.addEventListener("fetch", (event) => {
                       if (await cache.match(ref)) return
                       try {
                         const fetched = await fetch(ref)
-                        if (fetched.ok && !cacheForbidden(fetched) && !redirectedToDifferentPath(ref, fetched) && !(await isHtmlForAsset(ref, fetched)) && (await stableAssetBodyOk(ref, fetched)))
+                        if (fetched.ok && !cacheForbidden(fetched) && !redirectedToDifferentPath(ref, fetched) && !(await isHtmlForAsset(ref, fetched)) && (await stableAssetBodyOk(ref, fetched))) {
                           await cache.put(ref, fetched)
-                      } catch {}
+                        } else {
+                          assetsOk = false
+                        }
+                      } catch {
+                        assetsOk = false
+                      }
                     })
                   )
-                } catch {}
+                } catch {
+                  assetsOk = false
+                }
               }
               if (!assetsOk) return
               let shellOk = false
