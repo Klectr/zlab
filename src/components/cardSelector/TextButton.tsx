@@ -3,7 +3,7 @@ import { TextSignal, canvasDimentsion } from "../../signals";
 import texts from "../../signals/texts";
 import { updateLocalStorage } from "../../utils/localStorage";
 import { useToast } from "../Toast";
-import { allCardPositions, cascadeSpawnPosition, clickSpawnPoint, defaultClassName } from "./utils";
+import { allCardPositions, cascadeSpawnPosition, clampSpawnToViewport, clickSpawnPoint, defaultClassName } from "./utils";
 import { CardTypes } from "../../types";
 import { clearEditorFocusRequest, requestEditorFocus } from "../../utils/editorFocus";
 
@@ -12,26 +12,28 @@ export function TextButton() {
 
   function _handleClick(e: Kiru.MouseEvent<HTMLButtonElement>) {
     const { pageX, pageY } = clickSpawnPoint(e)
+    const base = {
+      x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
+      y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 100))
+    }
     const spawn = cascadeSpawnPosition(
-      {
-        x: Math.min(Math.max(0, pageX - 100), Math.max(0, canvasDimentsion.value.width - 200)),
-        y: Math.min(Math.max(0, pageY + (window.innerHeight / 2) - 100), Math.max(0, canvasDimentsion.value.height - 100))
-      },
+      base,
       allCardPositions(),
       {
         x: Math.max(0, canvasDimentsion.value.width - 200),
         y: Math.max(0, canvasDimentsion.value.height - 100)
       }
     )
+    const clamped = clampSpawnToViewport(spawn, base, 200, 100, {
+      x: Math.max(0, canvasDimentsion.value.width - 200),
+      y: Math.max(0, canvasDimentsion.value.height - 100)
+    })
     const textId = TextSignal.default.addText({
       fontSize: 84,
       type: CardTypes.TEXTS,
       title: "New Note",
       contents: "todo: fill me",
-      position: {
-        x: Math.min(spawn.x, Math.max(0, canvasDimentsion.value.width - 200)),
-        y: Math.min(spawn.y, Math.max(0, canvasDimentsion.value.height - 100))
-      },
+      position: clamped,
       dimensions: {
         w: 200,
         h: 100

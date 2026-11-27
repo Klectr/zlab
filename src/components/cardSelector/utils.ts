@@ -28,3 +28,23 @@ export function allCardPositions() {
 }
 
 export { cascadeSpawnPosition } from "../../utils/cascadeSpawnPosition"
+
+export function clampSpawnToViewport(
+  position: { x: number; y: number },
+  base: { x: number; y: number },
+  w: number,
+  h: number,
+  max: { x: number; y: number }
+) {
+  const viewportW = document.documentElement.clientWidth || window.innerWidth
+  const viewportH = document.documentElement.clientHeight || window.innerHeight
+  const viewLeft = window.scrollX
+  const viewTop = window.scrollY
+  const loX = Math.min(viewLeft, base.x)
+  const hiX = Math.max(viewLeft + viewportW - w, base.x)
+  const loY = Math.min(viewTop, base.y)
+  const hiY = Math.max(viewTop + viewportH - h, base.y)
+  const x = Math.min(Math.max(position.x, loX), hiX)
+  const y = Math.min(Math.max(position.y, loY), hiY)
+  return { x: Math.min(x, max.x), y: Math.min(y, max.y) }
+}
