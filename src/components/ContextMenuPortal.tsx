@@ -252,7 +252,13 @@ export function ContextMenuPortal({
       items[next].focus({ preventScroll: true })
     }
     function _handleViewportChange() {
-      dismissedWithoutFocusRestore = true
+      const el = elRef.current
+      const active = document.activeElement as HTMLElement | null
+      const activeInPortal =
+        !!active &&
+        (!!el?.contains(active) ||
+          !!active.closest?.("#context-menu-portal"))
+      if (!activeInPortal) dismissedWithoutFocusRestore = true
       closeAction?.()
     }
     function _handleScroll(e: Event) {
