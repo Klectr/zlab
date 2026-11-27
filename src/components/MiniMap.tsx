@@ -150,8 +150,10 @@ export function MiniMap() {
 
           function _handleItemClick() {
             focusedItem.value = noteKey
-            const newLeft = note.position.x - ((viewportWidth / 2) - (note.dimensions.w / 2))
-            const newTop = note.position.y - ((viewportHeight / 2) - (note.dimensions.h / 2))
+            const vw = document.documentElement.clientWidth || window.innerWidth
+            const vh = document.documentElement.clientHeight || window.innerHeight
+            const newLeft = note.position.x - ((vw / 2) - (note.dimensions.w / 2))
+            const newTop = note.position.y - ((vh / 2) - (note.dimensions.h / 2))
             window.scrollTo({
               left: newLeft,
               top: newTop,
@@ -185,8 +187,10 @@ export function MiniMap() {
 
           function _handleItemClick() {
             focusedItem.value = imageKey
-            const newLeft = image.position.x - ((viewportWidth / 2) - (image.dimensions.w / 2))
-            const newTop = image.position.y - ((viewportHeight / 2) - (image.dimensions.h / 2))
+            const vw = document.documentElement.clientWidth || window.innerWidth
+            const vh = document.documentElement.clientHeight || window.innerHeight
+            const newLeft = image.position.x - ((vw / 2) - (image.dimensions.w / 2))
+            const newTop = image.position.y - ((vh / 2) - (image.dimensions.h / 2))
 
             window.scrollTo({
               left: newLeft,
@@ -221,9 +225,11 @@ export function MiniMap() {
 
           function _handleItemClick() {
             focusedItem.value = textKey
+            const vw = document.documentElement.clientWidth || window.innerWidth
+            const vh = document.documentElement.clientHeight || window.innerHeight
             window.scrollTo({
-              left: text.position.x - ((viewportWidth / 2) - (text.dimensions.w / 2)),
-              top: text.position.y - ((viewportHeight / 2) - (text.dimensions.h / 2)),
+              left: text.position.x - ((vw / 2) - (text.dimensions.w / 2)),
+              top: text.position.y - ((vh / 2) - (text.dimensions.h / 2)),
               behavior: _scrollBehavior()
             })
           }
