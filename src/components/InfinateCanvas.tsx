@@ -230,7 +230,7 @@ export default function InfiniteCanvas() {
               width: `${canvasDimentsion.value.width}px`,
               height: `${canvasDimentsion.value.height}px`,
               backgroundSize: "30px 30px",
-              backgroundImage: `radial-gradient(circle, rgba(${isDarkTheme ? '255, 255, 255, 0.2' : '0, 0, 0, 0.2'}) 1px, transparent 1px)`,
+              backgroundImage: `radial-gradient(circle, rgba(${isDarkTheme ? '255, 255, 255, 0.38' : '0, 0, 0, 0.45'}) 1px, transparent 1px)`,
             }}>
             {Object.keys(NotesSigal.default.notes.value).map((itemKey: string) => {
               const item = NotesSigal.default.notes.value[itemKey]
