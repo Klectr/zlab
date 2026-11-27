@@ -148,11 +148,14 @@ export function isValidImageContents(contents: string): boolean {
   if (!/^[a-zA-Z0-9.+-]+$/.test(subtype)) return false
   const payload = contents.slice(commaIndex + 1).replace(/\s/g, "")
   if (!payload || !/^[A-Za-z0-9+/]+={0,2}$/.test(payload)) return false
-  try {
-    return atob(payload).length > 0
-  } catch {
-    return false
-  }
+  const padding = payload.endsWith("==") ? 2 : payload.endsWith("=") ? 1 : 0
+  if (padding > 0 && payload.length % 4 !== 0) return false
+  const dataLength = payload.length - padding
+  if (dataLength % 4 === 1) return false
+  const decodedLength =
+    Math.floor(dataLength / 4) * 3 +
+    (dataLength % 4 === 2 ? 1 : dataLength % 4 === 3 ? 2 : 0)
+  return decodedLength > 0
 }
 
 export function canonicalImageContents(contents: string): string {
