@@ -172,6 +172,7 @@ export function isValidCardEntry(
 ) {
   if (!isRecord(value)) return false
   if (expectedId !== undefined && value.id !== expectedId) return false
+  if (value.id === "__proto__") return false
   if (typeof value.title !== "string") return false
   if (typeof value.contents !== "string") return false
   if (isImage && !isValidImageContents(value.contents)) return false
