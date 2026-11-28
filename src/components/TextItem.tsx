@@ -431,8 +431,8 @@ export function TextItem(props: TextCardProps) {
   }
 
   function _handleMouseClick(e: Kiru.MouseEvent<HTMLDivElement>) {
-    e.preventDefault()
     if (pressed.value || isAnyDragArmed()) return
+    e.preventDefault()
     const rect = e.currentTarget.getBoundingClientRect()
     mouse.value = {
       x: e.clientX !== 0 ? e.clientX : rect.left,
