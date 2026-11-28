@@ -660,6 +660,11 @@ export function TextItem(props: TextCardProps) {
     return false
   }
 
+  function _focusForDrop() {
+    focusedItem.value = itemKey
+    pRef.current?.focus()
+  }
+
   function _handleDrop(e: DragEvent) {
     const dt = e.dataTransfer
     if (!dt) return
@@ -674,6 +679,7 @@ export function TextItem(props: TextCardProps) {
       if (!files.length) return
       const companion = _companionText(dt)
       if (!companion) return
+      _focusForDrop()
       const caretPlaced = _placeCaretAtDropPoint(e)
       _insertPlainText(companion, !caretPlaced)
       return
@@ -682,6 +688,7 @@ export function TextItem(props: TextCardProps) {
     if (!/<img[\s/>]/i.test(html)) return
     const companion = _companionText(dt)
     if (!companion) return
+    _focusForDrop()
     const caretPlaced = _placeCaretAtDropPoint(e)
     _insertPlainText(companion, !caretPlaced)
   }
