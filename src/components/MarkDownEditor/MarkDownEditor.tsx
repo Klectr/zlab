@@ -237,6 +237,12 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                 const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => !!l && !l.startsWith("#"))
                 if (lines.length > 0 && lines.every((l) => l.startsWith("file://"))) {
                   text = ""
+                } else if (lines.length > 0) {
+                  const htmlText = typeof dt?.getData === "function" ? dt.getData("text/html") : ""
+                  const imgSrcs = Array.from(htmlText.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)).map((m) => m[1])
+                  if (imgSrcs.length > 0 && lines.every((l) => imgSrcs.includes(l))) {
+                    text = ""
+                  }
                 }
               }
               let fromHtml = false
