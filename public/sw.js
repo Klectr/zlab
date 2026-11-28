@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v54"
+const CACHE_NAME = "zlab-v55"
 
 async function bodyLooksHtml(response) {
   try {
@@ -456,6 +456,7 @@ self.addEventListener("fetch", (event) => {
             const textCopy = response.clone()
             const lifetime = (async () => {
               if (cacheForbidden(response)) return
+              if (redirectedOutsideShellPair(response)) return
               let previousHtml = ""
               let previousInit
               let newHtml = ""
