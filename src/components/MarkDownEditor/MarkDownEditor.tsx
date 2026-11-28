@@ -330,7 +330,12 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
                     const plain = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
                     const uriList = typeof dt?.getData === "function" ? dt.getData("text/uri-list") : ""
                     if (plain.trim() && !plainTextIsImageAddress(plain, uriList)) return false
-                    if (plainTextIsImageAddress(residualText, uriList)) return false
+                    if (plainTextIsImageAddress(residualText, uriList)) {
+                      onDropRejected?.()
+                      event.preventDefault()
+                      event.stopPropagation()
+                      return true
+                    }
                     event.preventDefault()
                     event.stopPropagation()
                     editorView.focus()
