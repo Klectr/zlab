@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v55"
+const CACHE_NAME = "zlab-v56"
 
 async function bodyLooksHtml(response) {
   try {
@@ -584,6 +584,7 @@ self.addEventListener("fetch", (event) => {
     fetch(request)
       .then(async (response) => {
         if (!response.ok) {
+          if (response.type === "opaqueredirect") return response
           const cached = await matchOwnCache(request)
           if (cached) return cached
           return response
