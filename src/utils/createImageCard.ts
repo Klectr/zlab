@@ -129,30 +129,31 @@ export function createImageCardFromFile(
         x: Math.max(0, canvasDimentsion.value.width - normalizedW),
         y: Math.max(0, canvasDimentsion.value.height - normalizedH),
       }
-      const clampedPosition = cascadeSpawnPosition(
-        {
-          x: Math.min(Math.max(position.x, 0), maxPosition.x),
-          y: Math.min(Math.max(position.y, 0), maxPosition.y),
-        },
-        Object.values(images.images.value).map((card) => card.position),
-        maxPosition
-      )
+      let cascadeMax = maxPosition
+      let cascadeMin = { x: 0, y: 0 }
+      const basePosition = {
+        x: Math.min(Math.max(position.x, 0), maxPosition.x),
+        y: Math.min(Math.max(position.y, 0), maxPosition.y),
+      }
       if (clampToViewport) {
         const viewportW = document.documentElement.clientWidth || window.innerWidth
         const viewportH = document.documentElement.clientHeight || window.innerHeight
         const viewLeft = window.scrollX
         const viewTop = window.scrollY
-        clampedPosition.x = Math.min(
-          Math.max(clampedPosition.x, viewLeft),
-          Math.max(viewLeft, viewLeft + viewportW - normalizedW)
-        )
-        clampedPosition.y = Math.min(
-          Math.max(clampedPosition.y, viewTop),
-          Math.max(viewTop, viewTop + viewportH - normalizedH)
-        )
-        clampedPosition.x = Math.min(clampedPosition.x, maxPosition.x)
-        clampedPosition.y = Math.min(clampedPosition.y, maxPosition.y)
+        cascadeMax = {
+          x: Math.min(maxPosition.x, Math.max(viewLeft, viewLeft + viewportW - normalizedW)),
+          y: Math.min(maxPosition.y, Math.max(viewTop, viewTop + viewportH - normalizedH)),
+        }
+        basePosition.x = Math.min(Math.max(basePosition.x, viewLeft), cascadeMax.x)
+        basePosition.y = Math.min(Math.max(basePosition.y, viewTop), cascadeMax.y)
+        cascadeMin = { x: viewLeft, y: viewTop }
       }
+      const clampedPosition = cascadeSpawnPosition(
+        basePosition,
+        Object.values(images.images.value).map((card) => card.position),
+        cascadeMax,
+        cascadeMin
+      )
 
       const focusBeforeAdd = focusedItem.value
       const imgId = ImagesSignal.default.addImage({
