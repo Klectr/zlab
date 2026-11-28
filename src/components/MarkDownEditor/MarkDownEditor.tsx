@@ -151,6 +151,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
           EditorView.domEventHandlers({
             paste: (event, editorView) => {
               if (!onPasteImage) return false
+              onFocus?.()
               const dispatchPastedText = (text: string) => {
                 const lines = text.split("\n").map((l) => l.endsWith("\r") ? l.slice(0, -1) : l)
                 if (lines.length > 1 && lines.length === editorView.state.selection.ranges.length) {
