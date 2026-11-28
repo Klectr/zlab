@@ -359,6 +359,7 @@ export function MarkDownEditor(props: MarkDownEditorProps) {
               event.preventDefault()
               event.stopPropagation()
               editorView.focus()
+              onFocus?.()
               const dt = event.dataTransfer
               let text = typeof dt?.getData === "function" ? dt.getData("text/plain") : ""
               if (text) {
