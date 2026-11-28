@@ -1,4 +1,4 @@
-const CACHE_NAME = "zlab-v56"
+const CACHE_NAME = "zlab-v57"
 
 async function bodyLooksHtml(response) {
   try {
@@ -69,6 +69,10 @@ async function stableAssetBodyOk(pathname, response) {
       const bytes = new Uint8Array(await response.clone().arrayBuffer())
       const signature = [0x77, 0x4f, 0x46, 0x32]
       return bytes.length >= signature.length && signature.every((b, i) => bytes[i] === b)
+    }
+    if (pathname.endsWith(".js") || pathname.endsWith(".css")) {
+      const bytes = new Uint8Array(await response.clone().arrayBuffer())
+      return bytes.length > 0
     }
     if (pathname.endsWith(".webmanifest")) {
       const parsed = JSON.parse(await response.clone().text())
